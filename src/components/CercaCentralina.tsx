@@ -77,15 +77,15 @@ export function CercaCentralina({ onPrenota }: { onPrenota: (p: Prefill) => void
       {errore ? <p className="err">{errore}</p> : null}
       {stato === "cerca" ? (
         <div className="box">
-          <b>Sto cercando online…</b>
-          <p className="muted" style={{ fontSize: 14 }}>Identifico la centralina, cerco il prezzo del nuovo e i guasti più comuni. Di solito ci vuole meno di un minuto.</p>
+          <b>Stiamo analizzando la tua centralina…</b>
+          <p className="muted" style={{ fontSize: 14 }}>Identifichiamo il modello e prepariamo il preventivo di riparazione. Di solito ci vuole meno di un minuto.</p>
           <button className="btn btn-ghost btn-sm" onClick={() => ctl.current?.abort()}>Ferma</button>
         </div>
       ) : null}
       {r && !r.trovata ? (
         <div className="res">
           <h3>Non ho trovato questa centralina</h3>
-          <p className="muted">{r.note || "Controlla il codice sull'etichetta, oppure mandaci una foto: la identifica il tecnico."}</p>
+          <p className="muted">Controlla il codice sull&apos;etichetta, oppure prenota il ritiro: la identifica il nostro tecnico al banco.</p>
           <button className="btn btn-primary btn-block" onClick={() => onPrenota({ codice: q })}>Prenota il ritiro: la identifichiamo noi</button>
         </div>
       ) : null}
@@ -102,17 +102,14 @@ export function CercaCentralina({ onPrenota }: { onPrenota: (p: Prefill) => void
           <div className="prices">
             <div className="pnew">
               <span className="label">Centralina nuova</span>
-              {r.baseDa === "laboratorio" && r.prezzo ? (
-                <><b>{eur(r.prezzo.base)}</b><span className="hint">Prezzo di listino del nuovo</span></>
-              ) : r.prezzi_nuova.length ? (
-                <><b>{eur(Math.min(...r.prezzi_nuova.map((p) => p.prezzo_eur)))}{r.prezzi_nuova.length > 1 ? ` – ${eur(Math.max(...r.prezzi_nuova.map((p) => p.prezzo_eur)))}` : ""}</b>
-                <span className="hint">{r.prezzi_nuova.length} {r.prezzi_nuova.length === 1 ? "offerta trovata" : "offerte trovate"} online</span></>
-              ) : (<><b>—</b><span className="hint">Nessun prezzo del nuovo trovato online</span></>)}
+              {r.prezzo ? (
+                <><b>{eur(r.prezzo.base)}</b><span className="hint">Prezzo indicativo del ricambio nuovo</span></>
+              ) : (<><b>—</b><span className="hint">Prezzo del nuovo non disponibile</span></>)}
             </div>
             <div className="prep">
               <span className="label">Riparazione Lion ECU</span>
               {r.prezzo ? (
-                <><b>{eur(r.prezzo.prezzo)}</b>{r.prezzo.risparmio > 0 ? <span className="save">Risparmi circa il {r.prezzo.risparmio}%</span> : null}<span className="hint">{r.baseDa === "laboratorio" ? `Dal listino Lion ECU (nuovo ${eur(r.prezzo.base)})` : `Calcolata sul nuovo a ${eur(r.prezzo.base)}`}</span></>
+                <><b>{eur(r.prezzo.prezzo)}</b>{r.prezzo.risparmio > 0 ? <span className="save">Risparmi circa il {r.prezzo.risparmio}%</span> : null}</>
               ) : (<><b style={{ fontSize: 20 }}>Su richiesta</b><span className="hint">Il prezzo te lo diamo noi, subito</span></>)}
             </div>
           </div>
@@ -130,22 +127,6 @@ export function CercaCentralina({ onPrenota }: { onPrenota: (p: Prefill) => void
               <dl>{r.dati_tecnici.map((d, i) => <Fragment key={i}><dt>{d.voce}</dt><dd>{d.valore}</dd></Fragment>)}</dl>
             </div>
           ) : null}
-          {r.prezzi_nuova.length ? (
-            <div className="section" style={{ gap: 6 }}><span className="label">Prezzi del nuovo trovati</span>
-              <ul className="src">{r.prezzi_nuova.map((p, i) => <li key={i}><span className="mono">{eur(p.prezzo_eur)}</span>{p.valuta && p.valuta !== "EUR" && p.prezzo_originale ? <span className="muted"> ({p.prezzo_originale.toLocaleString("it-IT")} {p.valuta})</span> : null}{p.listino_eur ? <span className="muted"> (listino {eur(p.listino_eur)})</span> : null} · <a href={p.url} target="_blank" rel="noopener noreferrer">{p.venditore || p.url}</a></li>)}</ul>
-            </div>
-          ) : null}
-          {r.altri_prezzi.length ? (
-            <details className="section" style={{ gap: 6 }}><summary className="label" style={{ cursor: "pointer" }}>Altri prezzi trovati (usato, elenchi, esclusi)</summary>
-              <ul className="src" style={{ marginTop: 6 }}>{r.altri_prezzi.map((p, i) => <li key={i}><span className="mono">{eur(p.prezzo_eur)}</span>{p.condizione ? <span className="muted"> · {p.condizione}</span> : null} · <a href={p.url} target="_blank" rel="noopener noreferrer">{p.venditore || p.url}</a></li>)}</ul>
-            </details>
-          ) : null}
-          {r.fonti.length ? (
-            <div className="section" style={{ gap: 6 }}><span className="label">Fonti e foto</span>
-              <ul className="src">{r.fonti.map((f, i) => <li key={i}><a href={f.url} target="_blank" rel="noopener noreferrer">{f.titolo || f.url}</a></li>)}</ul>
-            </div>
-          ) : null}
-          {r.note ? <p className="hint">{r.note}</p> : null}
         </div>
       ) : null}
     </div>
