@@ -4,6 +4,8 @@ import { richiediOfficina } from "@/lib/sessione";
 import { FASI, eur, dataBreve } from "@/lib/fasi";
 import { PillaFase } from "@/components/Fasi";
 import { Paga } from "@/components/Paga";
+import { FormFattura } from "../../profilo/FormFattura";
+import { fatturazioneCompleta } from "@/lib/fatturazione";
 import type { Evento, Pratica } from "@/lib/types";
 
 const spunta = <svg viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12l5 5 9-10" /></svg>;
@@ -11,7 +13,7 @@ const spunta = <svg viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3
 export default async function DettaglioPratica({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ nuova?: string; pagato?: string }> }) {
   const { id } = await params;
   const sp = await searchParams;
-  const { sb } = await richiediOfficina();
+  const { sb, officina } = await richiediOfficina();
   const { data } = await sb.from("pratiche").select("*").eq("id", id).maybeSingle();
   if (!data) notFound();
   const p = data as Pratica;
@@ -40,7 +42,7 @@ export default async function DettaglioPratica({ params, searchParams }: { param
           <h3>La centralina è riparabile</h3>
           {p.nota_laboratorio ? <p style={{ fontSize: 14 }}>{p.nota_laboratorio}</p> : null}
           <div className="row"><span className="muted">Prezzo riparazione</span><b className="mono" style={{ fontSize: 20 }}>{eur(p.prezzo_confermato_eur)}</b></div>
-          <Paga praticaId={p.id} importo={eur(p.prezzo_confermato_eur)} />
+          {fatturazioneCompleta(officina) ? <Paga praticaId={p.id} importo={eur(p.prezzo_confermato_eur)} /> : <FormFattura o={officina} />}
           <p className="hint">Garanzia a vita sul guasto riparato. Ritiro e riconsegna inclusi.</p>
         </div>
       ) : null}

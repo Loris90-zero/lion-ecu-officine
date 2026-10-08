@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { CercaCentralina, type Prefill } from "./CercaCentralina";
 import { FormRitiro } from "@/app/(officina)/ritiro/FormRitiro";
 
-type Props = { userId: string; indirizzo: string; iniziale?: Prefill | null };
+type Props = { userId: string; indirizzo: string | null; iniziale?: Prefill | null };
 
 /** Un solo flusso: cerca la centralina, poi prenota il ritiro nella stessa schermata. */
 export function Flusso({ userId, indirizzo, iniziale = null }: Props) {

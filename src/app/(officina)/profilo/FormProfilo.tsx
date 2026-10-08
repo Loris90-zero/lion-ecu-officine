@@ -15,7 +15,7 @@ export function FormProfilo({ o }: { o: Officina }) {
           <div className="field"><label htmlFor="partita_iva">Partita IVA</label><input id="partita_iva" name="partita_iva" className="mono" inputMode="numeric" maxLength={13} defaultValue={o.partita_iva ?? ""} /></div>
           <div className="field"><label htmlFor="citta">Città e provincia</label><input id="citta" name="citta" defaultValue={o.citta ?? ""} /></div>
         </div>
-        <div className="field"><label htmlFor="sede_legale">Sede legale</label><input id="sede_legale" name="sede_legale" defaultValue={o.sede_legale ?? ""} placeholder="Via, numero, CAP, città (se diversa dall'indirizzo di ritiro)" /></div>
+        <div className="field"><label htmlFor="sede_legale">Sede legale</label><input id="sede_legale" name="sede_legale" defaultValue={o.sede_legale ?? ""} placeholder="Via, numero, CAP, città " /></div>
       </div>
 
       <div className="box">
@@ -39,7 +39,7 @@ export function FormProfilo({ o }: { o: Officina }) {
 
       <div className="box">
         <span className="label">Ritiri</span>
-        <div className="field"><label htmlFor="indirizzo_ritiro">Indirizzo dove il corriere ritira</label><input id="indirizzo_ritiro" name="indirizzo_ritiro" defaultValue={o.indirizzo_ritiro} required /></div>
+        <div className="field"><label htmlFor="indirizzo_ritiro">Indirizzo dove il corriere ritira</label><input id="indirizzo_ritiro" name="indirizzo_ritiro" defaultValue={o.indirizzo_ritiro ?? ""} placeholder="Via, numero, CAP, città (provincia)" /></div>
         <div className="field"><label htmlFor="orari_ritiro">Orari in cui siete aperti</label><input id="orari_ritiro" name="orari_ritiro" defaultValue={o.orari_ritiro ?? ""} placeholder="Es. lun-ven 8-12 e 14-18, sabato chiuso" /></div>
       </div>
 

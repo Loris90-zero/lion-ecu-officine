@@ -25,7 +25,7 @@ create table if not exists public.officine (
   referente text not null,
   telefono text not null,
   email text,
-  indirizzo_ritiro text not null,
+  indirizzo_ritiro text,               -- chiesto al primo ritiro
   citta text,
   consenso_whatsapp boolean not null default false,
   pec text,

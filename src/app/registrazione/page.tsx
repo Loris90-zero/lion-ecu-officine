@@ -17,7 +17,7 @@ export default async function Registrazione() {
       <Logo />
       <div className="section">
         <h1>I dati della tua officina</h1>
-        <p className="muted">Un minuto, una volta sola. Servono per i ritiri del corriere e per i certificati di garanzia.</p>
+        <p className="muted">Quattro dati e sei dentro. L&apos;indirizzo di ritiro te lo chiediamo al primo ritiro, i dati per la fattura solo quando paghi.</p>
       </div>
       <FormRegistrazione email={user.email ?? ""} nome={nome} />
     </main>

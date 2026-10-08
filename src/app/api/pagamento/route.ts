@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import Stripe from "stripe";
 import { supabaseServer } from "@/lib/supabase/server";
 import { supabaseAdmin } from "@/lib/supabase/admin";
+import { fatturazioneCompleta } from "@/lib/fatturazione";
 
 export async function POST(request: Request) {
   const sb = await supabaseServer();
@@ -13,6 +14,9 @@ export async function POST(request: Request) {
   if (!p) return NextResponse.json({ errore: "Pratica non trovata." }, { status: 404 });
   if (p.pagato) return NextResponse.json({ errore: "Già pagata." }, { status: 400 });
   if (p.esito !== "riparabile" || !p.prezzo_confermato_eur) return NextResponse.json({ errore: "Non ancora da pagare." }, { status: 400 });
+
+  const { data: o } = await sb.from("officine").select("partita_iva, sede_legale, codice_sdi, pec").eq("owner_id", user.id).maybeSingle();
+  if (!o || !fatturazioneCompleta(o)) return NextResponse.json({ errore: "Mancano i dati per la fattura." }, { status: 400 });
 
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
   const base = process.env.NEXT_PUBLIC_SITE_URL || new URL(request.url).origin;

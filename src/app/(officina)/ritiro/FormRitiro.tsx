@@ -5,7 +5,7 @@ import { TIPI_MEZZO, FASCE, eur } from "@/lib/fasi";
 import { supabaseBrowser } from "@/lib/supabase/client";
 import { ridimensiona } from "@/lib/foto";
 
-type Props = { userId: string; indirizzo: string; centralina: string; codice: string; stima: number | null; base: number | null; nota?: string };
+type Props = { userId: string; indirizzo: string | null; centralina: string; codice: string; stima: number | null; base: number | null; nota?: string };
 
 export function FormRitiro({ userId, indirizzo, centralina, codice, stima, base, nota = "" }: Props) {
   const [stato, azione, inCorso] = useActionState<StatoRitiro, FormData>(creaPratica, {});
@@ -67,7 +67,11 @@ export function FormRitiro({ userId, indirizzo, centralina, codice, stima, base,
         {foto.map((f) => <input key={f.path} type="hidden" name="foto" value={f.path} />)}
         {erroreFoto ? <p className="err">{erroreFoto}</p> : null}
       </div>
-      <div className="field"><label htmlFor="indirizzo_ritiro">Indirizzo di ritiro</label><input id="indirizzo_ritiro" name="indirizzo_ritiro" defaultValue={indirizzo} required /></div>
+      <div className="field">
+        <label htmlFor="indirizzo_ritiro">Indirizzo dove il corriere ritira</label>
+        <input id="indirizzo_ritiro" name="indirizzo_ritiro" autoComplete="street-address" defaultValue={indirizzo ?? ""} required placeholder="Via, numero, CAP, città (provincia)" />
+        <span className="hint">{indirizzo ? "Se lo cambi, aggiorniamo anche il tuo profilo." : "Lo salviamo nel tuo profilo: la prossima volta è già scritto."}</span>
+      </div>
       <div className="grid2">
         <div className="field"><label htmlFor="giorno_ritiro">Giorno</label><select id="giorno_ritiro" name="giorno_ritiro"><option>Domani</option><option>Dopodomani</option></select></div>
         <div className="field"><label htmlFor="fascia_ritiro">Fascia oraria</label><select id="fascia_ritiro" name="fascia_ritiro">{FASCE.map((f) => <option key={f}>{f}</option>)}</select></div>

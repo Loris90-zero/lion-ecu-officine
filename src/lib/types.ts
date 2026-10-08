@@ -1,6 +1,6 @@
 export type Officina = {
   id: string; owner_id: string; ragione_sociale: string; partita_iva: string | null;
-  referente: string; telefono: string; email: string | null; indirizzo_ritiro: string;
+  referente: string; telefono: string; email: string | null; indirizzo_ritiro: string | null;
   citta: string | null; consenso_whatsapp: boolean; creato_il: string;
   pec: string | null; codice_sdi: string | null; sede_legale: string | null; orari_ritiro: string | null; mezzi: string[];
 };

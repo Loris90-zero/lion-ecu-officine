@@ -9,7 +9,7 @@ export async function creaPratica(_: StatoRitiro, fd: FormData): Promise<StatoRi
   const sb = await supabaseServer();
   const { data: { user } } = await sb.auth.getUser();
   if (!user) redirect("/accedi");
-  const { data: officina } = await sb.from("officine").select("id").eq("owner_id", user.id).maybeSingle();
+  const { data: officina } = await sb.from("officine").select("id, indirizzo_ritiro, citta").eq("owner_id", user.id).maybeSingle();
   if (!officina) redirect("/registrazione");
 
   const t = (k: string, max = 500) => String(fd.get(k) ?? "").trim().slice(0, max);
@@ -39,5 +39,9 @@ export async function creaPratica(_: StatoRitiro, fd: FormData): Promise<StatoRi
   if (!dati.indirizzo_ritiro) return { errore: "Manca l'indirizzo di ritiro." };
   const { data, error } = await sb.from("pratiche").insert(dati).select("id").single();
   if (error || !data) return { errore: "Non sono riuscito a registrare la richiesta. Riprova tra poco." };
+  // L'indirizzo usato diventa quello del profilo (resta salvato per i prossimi ritiri)
+  const citta = t("citta", 80);
+  if (dati.indirizzo_ritiro !== officina.indirizzo_ritiro || (citta && citta !== officina.citta))
+    await sb.from("officine").update({ indirizzo_ritiro: dati.indirizzo_ritiro, ...(citta ? { citta } : {}) }).eq("id", officina.id);
   redirect(`/pratica/${data.id}?nuova=1`);
 }
