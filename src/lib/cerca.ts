@@ -21,7 +21,7 @@ Alla fine rispondi SOLO con questo JSON, senza altro testo:
 {"trovata":true,"marca":"","modello":"","tipo":"","famiglia":"","codici":[],"veicoli":[],"dati_tecnici":[{"voce":"","valore":""}],"problemi_comuni":[{"problema":"","sintomi":""}],"prezzi_nuova":[{"prezzo":0,"valuta":"EUR","listino":null,"venditore":"","url":""}],"altri_prezzi":[{"prezzo":0,"valuta":"EUR","condizione":"usata","venditore":"","url":""}],"fonti":[{"titolo":"","url":""}],"note":""}
 Testi in italiano, brevi, per un meccatronico.`;
 
-export async function cercaCentralina(q: string, immagine?: { data: string; tipo: string }): Promise<RisultatoCerca> {
+export async function cercaCentralina(q: string, immagine?: { data: string; tipo: string }, preferite: { dominio: string; categoria: string }[] = []): Promise<RisultatoCerca> {
   const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
   const model = process.env.ANTHROPIC_MODEL || "claude-sonnet-5-5";
 
@@ -46,7 +46,7 @@ export async function cercaCentralina(q: string, immagine?: { data: string; tipo
     const res = await client.messages.create({
       model,
       max_tokens: 4000,
-      system: ISTRUZIONI,
+      system: ISTRUZIONI + (preferite.length ? `\n\nNEGOZI DI RICAMBI DA CONSULTARE PER PRIMI per il prezzo del nuovo originale (usa l'operatore site:, per esempio "site:fixparts-online.com 2027779"), scegliendo quelli adatti al tipo di mezzo:\n${preferite.map((f) => `- ${f.dominio} (${f.categoria})`).join("\n")}\nSe lì non trovi il codice, cerca nel resto del web.` : ""),
       messages,
       tools: [{
         type: "web_search_20250305",

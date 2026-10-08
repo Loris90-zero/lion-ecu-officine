@@ -4,6 +4,8 @@ import { supabaseAdmin } from "@/lib/supabase/admin";
 import { cercaCentralina } from "@/lib/cerca";
 import { calcolaPrezzo, normalizzaPrezzi, type Impostazioni } from "@/lib/prezzo";
 import type { RisultatoCerca } from "@/lib/types";
+import { candidati, fontiPreferite, salvaDaRicerca, trovaRiferimenti } from "@/lib/riferimenti";
+import type { SupabaseClient } from "@supabase/supabase-js";
 
 export const maxDuration = 120;
 
@@ -32,7 +34,7 @@ export async function POST(request: Request) {
     const { data: c } = await admin.from("ricerche").select("risultato").eq("chiave", chiave).eq("risultato->>v", "3")
       .gte("creato_il", da).order("creato_il", { ascending: false }).limit(1).maybeSingle();
     if (c?.risultato) {
-      const r = completa(c.risultato as RisultatoCerca, impostazioni, q);
+      const r = await completa(admin, c.risultato as RisultatoCerca, impostazioni, q, false);
       r.dallaCache = true;
       return NextResponse.json(r);
     }
@@ -45,9 +47,9 @@ export async function POST(request: Request) {
   if ((count ?? 0) >= limite) return NextResponse.json({ errore: "Hai raggiunto il limite di ricerche di oggi. Riprova domani o scrivici." }, { status: 429 });
 
   try {
-    const grezzo = await cercaCentralina(q, img);
+    const grezzo = await cercaCentralina(q, img, await fontiPreferite(admin));
     await admin.from("ricerche").insert({ user_id: user.id, chiave: img ? null : chiave, risultato: grezzo });
-    return NextResponse.json(completa(grezzo, impostazioni, q));
+    return NextResponse.json(await completa(admin, grezzo, impostazioni, q, true));
   } catch (e) {
     console.error("cerca", e);
     await admin.from("ricerche").insert({ user_id: user.id, chiave: null, risultato: null });
@@ -55,11 +57,28 @@ export async function POST(request: Request) {
   }
 }
 
-/** Normalizza i prezzi (valute, pagine di elenco, anomalie) e calcola il nostro prezzo. */
-function completa(grezzo: RisultatoCerca, imp: Impostazioni, q: string): RisultatoCerca {
+/** Normalizza i prezzi, li confronta con la tabella dei prezzi di riferimento e calcola il nostro prezzo. */
+async function completa(admin: SupabaseClient, grezzo: RisultatoCerca, imp: Impostazioni, q: string, salva: boolean): Promise<RisultatoCerca> {
   const r = normalizzaPrezzi(grezzo, imp);
-  r.prezzo = calcolaPrezzo(r.prezzi_nuova.map((p) => p.prezzo_eur), imp);
-  // Ricerca per sola famiglia (es. "EDC17CV41") invece del codice dell'etichetta
+  const cand = candidati(q, r.codici);
+  if (salva && r.trovata) await salvaDaRicerca(admin, r, cand).catch((e) => console.error("salva riferimenti", e));
+  const rif = await trovaRiferimenti(admin, cand);
+  if (rif.laboratorio.length) {
+    // Il prezzo inserito dal laboratorio vince sempre
+    const l = rif.laboratorio[0];
+    r.prezzo = calcolaPrezzo([Number(l.prezzo_eur)], imp);
+    r.baseDa = "laboratorio";
+    r.baseFonte = { nome: l.fonte_nome, url: l.fonte_url };
+  } else {
+    const prezzi = new Map<string, number>();
+    for (const p of r.prezzi_nuova) prezzi.set(p.url, p.prezzo_eur);
+    for (const x of rif.ricerca) if (x.fonte_url && !prezzi.has(x.fonte_url)) {
+      prezzi.set(x.fonte_url, Number(x.prezzo_eur));
+      r.prezzi_nuova.push({ prezzo_eur: Number(x.prezzo_eur), valuta: x.valuta, prezzo_originale: Number(x.prezzo_originale ?? x.prezzo_eur), venditore: `${x.fonte_nome || "fonte salvata"} (salvato il ${new Date(x.aggiornato_il).toLocaleDateString("it-IT")})`, url: x.fonte_url });
+    }
+    r.prezzo = calcolaPrezzo([...prezzi.values()], imp);
+    r.baseDa = r.prezzo ? "ricerca" : null;
+  }
   const fam = (r.famiglia || "").toUpperCase().replace(/[^A-Z0-9]/g, "");
   const cod = q.toUpperCase().replace(/[^A-Z0-9]/g, "");
   r.generico = !!fam && cod === fam;

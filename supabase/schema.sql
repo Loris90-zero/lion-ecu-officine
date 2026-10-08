@@ -218,3 +218,35 @@ grant execute on function public.is_staff() to authenticated;
 -- ---------- Primo membro dello staff ----------
 -- Sostituisci con l'email con cui entri tu nell'app, poi esegui:
 -- insert into public.staff(email, nome) values ('tua-email@esempio.it', 'Loris');
+
+-- ---------- Prezzi di riferimento (prezzo del nuovo originale per codice) ----------
+create table if not exists public.prezzi_riferimento (
+  id bigserial primary key,
+  codici text[] not null,
+  descrizione text,
+  prezzo_eur numeric not null check (prezzo_eur > 0),
+  valuta text not null default 'EUR',
+  prezzo_originale numeric,
+  fonte_nome text,
+  fonte_url text,
+  origine text not null default 'ricerca' check (origine in ('ricerca','laboratorio')),
+  attivo boolean not null default true,
+  creato_il timestamptz not null default now(),
+  aggiornato_il timestamptz not null default now()
+);
+create index if not exists prezzi_riferimento_codici_idx on public.prezzi_riferimento using gin (codici);
+create index if not exists prezzi_riferimento_url_idx on public.prezzi_riferimento (fonte_url);
+
+-- ---------- Negozi di ricambi consultati per primi dalla ricerca ----------
+create table if not exists public.fonti_preferite (
+  dominio text primary key,
+  categoria text not null,
+  nota text,
+  attivo boolean not null default true,
+  creato_il timestamptz not null default now()
+);
+
+alter table public.prezzi_riferimento enable row level security;
+alter table public.fonti_preferite enable row level security;
+create policy prezzi_rif_staff on public.prezzi_riferimento for all using (public.is_staff()) with check (public.is_staff());
+create policy fonti_pref_staff on public.fonti_preferite for all using (public.is_staff()) with check (public.is_staff());

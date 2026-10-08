@@ -31,4 +31,6 @@ export type RisultatoCerca = {
   dallaCache?: boolean;
   v?: number;
   generico?: boolean;
+  baseDa?: "laboratorio" | "ricerca" | null;
+  baseFonte?: { nome?: string | null; url?: string | null } | null;
 };

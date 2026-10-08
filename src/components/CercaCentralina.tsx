@@ -102,7 +102,9 @@ export function CercaCentralina({ onPrenota }: { onPrenota: (p: Prefill) => void
           <div className="prices">
             <div className="pnew">
               <span className="label">Centralina nuova</span>
-              {r.prezzi_nuova.length ? (
+              {r.baseDa === "laboratorio" && r.prezzo ? (
+                <><b>{eur(r.prezzo.base)}</b><span className="hint">Prezzo di listino del nuovo</span></>
+              ) : r.prezzi_nuova.length ? (
                 <><b>{eur(Math.min(...r.prezzi_nuova.map((p) => p.prezzo_eur)))}{r.prezzi_nuova.length > 1 ? ` – ${eur(Math.max(...r.prezzi_nuova.map((p) => p.prezzo_eur)))}` : ""}</b>
                 <span className="hint">{r.prezzi_nuova.length} {r.prezzi_nuova.length === 1 ? "offerta trovata" : "offerte trovate"} online</span></>
               ) : (<><b>—</b><span className="hint">Nessun prezzo del nuovo trovato online</span></>)}
@@ -110,7 +112,7 @@ export function CercaCentralina({ onPrenota }: { onPrenota: (p: Prefill) => void
             <div className="prep">
               <span className="label">Riparazione Lion ECU</span>
               {r.prezzo ? (
-                <><b>{eur(r.prezzo.prezzo)}</b>{r.prezzo.risparmio > 0 ? <span className="save">Risparmi circa il {r.prezzo.risparmio}%</span> : null}<span className="hint">Calcolata sul nuovo a {eur(r.prezzo.base)}</span></>
+                <><b>{eur(r.prezzo.prezzo)}</b>{r.prezzo.risparmio > 0 ? <span className="save">Risparmi circa il {r.prezzo.risparmio}%</span> : null}<span className="hint">{r.baseDa === "laboratorio" ? `Dal listino Lion ECU (nuovo ${eur(r.prezzo.base)})` : `Calcolata sul nuovo a ${eur(r.prezzo.base)}`}</span></>
               ) : (<><b style={{ fontSize: 20 }}>Su richiesta</b><span className="hint">Il prezzo te lo diamo noi, subito</span></>)}
             </div>
           </div>
