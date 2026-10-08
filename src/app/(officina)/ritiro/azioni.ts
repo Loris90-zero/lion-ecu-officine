@@ -31,7 +31,10 @@ export async function creaPratica(_: StatoRitiro, fd: FormData): Promise<StatoRi
     prezzo_stimato_eur: num("stima"),
     prezzo_nuovo_base_eur: num("base"),
     foto,
+    accetta_preventivo: fd.get("accetta_preventivo") === "si",
+    prezzo_accettato_eur: fd.get("accetta_preventivo") === "si" ? num("stima") : null,
   };
+  if (!dati.accetta_preventivo) return { errore: "Per prenotare il ritiro spunta l'accettazione del preventivo." };
   if (!dati.mezzo || !dati.sintomo) return { errore: "Scrivi almeno marca e modello del mezzo e cosa succede." };
   if (!dati.indirizzo_ritiro) return { errore: "Manca l'indirizzo di ritiro." };
   const { data, error } = await sb.from("pratiche").insert(dati).select("id").single();

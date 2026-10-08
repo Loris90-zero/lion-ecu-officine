@@ -154,3 +154,7 @@ nav.tabs div{max-width:520px;margin:0 auto;display:grid;grid-auto-flow:column;gr
 .lab-grid>*{min-width:0}
 @media (max-width:820px){.lab-grid{grid-template-columns:1fr}}
 @media (max-width:380px){.prices,.grid2{grid-template-columns:1fr}}
+.accetta{flex-direction:row;align-items:flex-start;gap:12px;cursor:pointer;border-color:var(--accent);margin-bottom:12px}
+.accetta input{width:22px;height:22px;flex:none;margin-top:2px;accent-color:var(--accent)}
+.accetta span{display:flex;flex-direction:column;gap:6px;font-size:15px;line-height:1.4}
+.accetta small{font-size:13px}

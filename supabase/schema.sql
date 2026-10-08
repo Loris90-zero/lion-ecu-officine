@@ -71,6 +71,9 @@ create table if not exists public.pratiche (
   prezzo_stimato_eur numeric,          -- dalla ricerca centralina, se fatta
   prezzo_nuovo_base_eur numeric,
   foto text[] not null default '{}',   -- percorsi nello storage "foto"
+  accetta_preventivo boolean not null default false, -- spunta finale del modulo ritiro
+  prezzo_accettato_eur numeric,        -- prezzo accettato dall'officina (null = da confermare dopo diagnosi)
+  accettato_il timestamptz,
   -- dati gestiti dal laboratorio
   fase smallint not null default 0 check (fase between 0 and 5),
   esito text check (esito in ('riparabile','non_riparabile')),
@@ -123,6 +126,8 @@ begin
       new.nota_laboratorio := null; new.guasto_riparato := null;
       new.corriere := null; new.tracking := null;
     end if;
+    new.accettato_il := case when new.accetta_preventivo then now() else null end;
+    if not new.accetta_preventivo then new.prezzo_accettato_eur := null; end if;
     return new;
   end if;
   new.aggiornato_il := now();

@@ -10,6 +10,7 @@ export type Pratica = {
   tipo_mezzo: string; mezzo: string; centralina: string | null; codice_etichetta: string | null;
   sintomo: string; codici_errore: string | null; indirizzo_ritiro: string; giorno_ritiro: string; fascia_ritiro: string;
   prezzo_stimato_eur: number | null; prezzo_nuovo_base_eur: number | null; foto: string[];
+  accetta_preventivo: boolean; prezzo_accettato_eur: number | null; accettato_il: string | null;
   fase: number; esito: "riparabile" | "non_riparabile" | null; prezzo_confermato_eur: number | null;
   pagato: boolean; pagato_il: string | null; stripe_session_id: string | null;
   nota_laboratorio: string | null; guasto_riparato: string | null; corriere: string | null; tracking: string | null;

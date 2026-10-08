@@ -72,6 +72,17 @@ export function FormRitiro({ userId, indirizzo, centralina, codice, stima, base,
         <div className="field"><label htmlFor="giorno_ritiro">Giorno</label><select id="giorno_ritiro" name="giorno_ritiro"><option>Domani</option><option>Dopodomani</option></select></div>
         <div className="field"><label htmlFor="fascia_ritiro">Fascia oraria</label><select id="fascia_ritiro" name="fascia_ritiro">{FASCE.map((f) => <option key={f}>{f}</option>)}</select></div>
       </div>
+      <label className="box accetta">
+        <input type="checkbox" name="accetta_preventivo" value="si" required />
+        <span>
+          {stima ? (
+            <>Se dalla diagnosi la centralina risulta <b>riparabile</b>, accetto la riparazione al prezzo di <b>{eur(stima)}</b>. Se non è riparabile me la rispedite gratis, senza costi.</>
+          ) : (
+            <>Accetto che il prezzo della riparazione mi venga comunicato dopo la diagnosi. Se la centralina <b>non è riparabile</b> me la rispedite gratis, senza costi.</>
+          )}
+          <small className="muted">Se dopo la diagnosi il prezzo risultasse più alto, vi contatteremo prima di procedere.</small>
+        </span>
+      </label>
       {stato.errore ? <p className="err">{stato.errore}</p> : null}
       <button className="btn btn-primary btn-block" type="submit" disabled={inCorso || carico}>{inCorso ? "Invio…" : "Prenota il ritiro gratuito"}</button>
       <p className="hint">Paghi solo se dopo la diagnosi la centralina è riparabile. Se non lo è, te la rispediamo gratis.</p>

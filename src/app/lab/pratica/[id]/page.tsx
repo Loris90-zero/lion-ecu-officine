@@ -36,6 +36,9 @@ export default async function PraticaLab({ params }: { params: Promise<{ id: str
               {p.codici_errore ? <><dt>Codici errore</dt><dd className="mono">{p.codici_errore}</dd></> : null}
               <dt>Ritiro</dt><dd>{p.giorno_ritiro}, {p.fascia_ritiro} · richiesta del {dataBreve(p.creato_il)}<br />{p.indirizzo_ritiro}</dd>
               {p.prezzo_stimato_eur ? <><dt>Stima dalla ricerca</dt><dd>{eur(p.prezzo_stimato_eur)}{p.prezzo_nuovo_base_eur ? ` (nuova ${eur(p.prezzo_nuovo_base_eur)})` : ""}</dd></> : null}
+              <dt>Preventivo</dt><dd>{p.accetta_preventivo
+                ? (p.prezzo_accettato_eur ? <>Accettato fino a <b>{eur(p.prezzo_accettato_eur)}</b>{p.accettato_il ? ` il ${dataBreve(p.accettato_il)}` : ""}{p.prezzo_confermato_eur && p.prezzo_confermato_eur > p.prezzo_accettato_eur ? <span className="err"> · prezzo confermato più alto: richiedi nuova conferma</span> : null}</> : <>Accettato, prezzo da comunicare dopo la diagnosi</>)
+                : <span className="muted">Non accettato (richiesta precedente)</span>}</dd>
               {p.pagato ? <><dt>Pagamento</dt><dd>Pagata {eur(p.prezzo_confermato_eur)}{p.pagato_il ? ` il ${dataBreve(p.pagato_il)}` : ""}</dd></> : null}
             </dl>
             {fotoUrl.length ? <div className="photos">{fotoUrl.map((u) => <a key={u} href={u} target="_blank" rel="noopener noreferrer"><img src={u} alt="Foto della centralina" /></a>)}</div> : null}

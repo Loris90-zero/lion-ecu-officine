@@ -77,6 +77,7 @@ export default async function DettaglioPratica({ params, searchParams }: { param
           {p.codici_errore ? <><dt>Codici errore</dt><dd className="mono">{p.codici_errore}</dd></> : null}
           <dt>Ritiro</dt><dd>{p.giorno_ritiro}, {p.fascia_ritiro}<br />{p.indirizzo_ritiro}</dd>
           {p.prezzo_stimato_eur && !p.prezzo_confermato_eur ? <><dt>Stima</dt><dd>{eur(p.prezzo_stimato_eur)}</dd></> : null}
+          {p.accetta_preventivo ? <><dt>Preventivo</dt><dd>{p.prezzo_accettato_eur ? `Accettato: ${eur(p.prezzo_accettato_eur)} se riparabile` : "Accettato, prezzo dopo la diagnosi"}</dd></> : null}
           {p.corriere ? <><dt>Corriere</dt><dd>{p.corriere}{p.tracking ? <> · <span className="mono">{p.tracking}</span></> : null}</dd></> : null}
           {p.pagato ? <><dt>Pagamento</dt><dd>{eur(p.prezzo_confermato_eur)} pagato{p.pagato_il ? ` il ${dataBreve(p.pagato_il)}` : ""}</dd></> : null}
         </dl>
