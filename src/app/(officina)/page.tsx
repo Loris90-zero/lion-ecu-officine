@@ -1,3 +1,4 @@
+import { PuntiForti } from "@/components/PuntiForti";
 import Link from "next/link";
 import { richiediOfficina } from "@/lib/sessione";
 import { BarraFasi, PillaFase } from "@/components/Fasi";
@@ -18,6 +19,7 @@ export default async function Home({ searchParams }: { searchParams: Promise<Rec
 
   return (
     <section className="screen">
+      <PuntiForti />
       {benvenuto ? <p className="okmsg">Benvenuti, {officina.referente.split(" ")[0]}. La vostra officina è registrata.</p> : null}
       <Installa />
       {daPagare.length ? (
