@@ -29,7 +29,7 @@ export async function POST(request: Request) {
   // Cache: stessa ricerca nelle ultime 2 settimane, senza foto
   if (chiave && !img) {
     const da = new Date(Date.now() - 14 * 864e5).toISOString();
-    const { data: c } = await admin.from("ricerche").select("risultato").eq("chiave", chiave).eq("risultato->>v", "2")
+    const { data: c } = await admin.from("ricerche").select("risultato").eq("chiave", chiave).eq("risultato->>v", "3")
       .gte("creato_il", da).order("creato_il", { ascending: false }).limit(1).maybeSingle();
     if (c?.risultato) {
       const r = completa(c.risultato as RisultatoCerca, impostazioni, q);

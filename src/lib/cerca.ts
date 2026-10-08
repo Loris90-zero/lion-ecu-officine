@@ -10,7 +10,7 @@ Un'officina ti dà un codice o una foto dell'etichetta. Devi:
    b) il prezzo della centralina NUOVA ORIGINALE: cerca il codice ricambio del veicolo con "nuova originale prezzo" e il codice del costruttore con "new price"; preferisci ricambisti, concessionari e negozi di ricambi per mezzi pesanti;
    c) i guasti comuni della famiglia, solo se servono.
 3. Prezzi: riporta solo prezzi letti nei risultati, ognuno con l'URL esatto della pagina e la VALUTA originale ("EUR", "USD", "GBP"...). NON convertire le valute: lo fa il sistema.
-   - "prezzi_nuova" solo se la pagina è quella di UN SINGOLO PRODOTTO dichiarato nuovo (originale o nuovo compatibile). Pagine di elenco o di ricerca con tanti annunci (es. eBay /b/ o /sch/), annunci tra privati, usato, rigenerato, riparato o "da codificare" vanno in "altri_prezzi".
+   - "prezzi_nuova" solo se la pagina è quella di UN SINGOLO PRODOTTO NUOVO ORIGINALE (marchio del costruttore della centralina o del veicolo). Compatibili, aftermarket, copie e offerte da Alibaba/AliExpress vanno in "altri_prezzi" con condizione "compatibile". Pagine di elenco o di ricerca con tanti annunci (es. eBay /b/ o /sch/), annunci tra privati, usato, rigenerato, riparato o "da codificare" vanno in "altri_prezzi".
    - Se una pagina mostra prezzo scontato e listino, metti lo scontato in prezzo e il listino in listino.
    - Mai inventare un prezzo o un URL: il prezzo del nuovo è la base del nostro prezzo di riparazione, un errore qui fa sbagliare il preventivo.
 4. Elenca 2-4 guasti comuni di quella famiglia, con i sintomi che vede l'officina. Senza fonti usa conoscenze tecniche generali e resta prudente.
@@ -97,6 +97,6 @@ function pulisci(j: unknown, urls: Set<string>): RisultatoCerca {
       .map((p: any) => { const v = num(p.prezzo ?? p.prezzo_eur)!; return { prezzo_eur: v, prezzo_originale: v, valuta: str(p.valuta, 5) || "EUR", condizione: str(p.condizione, 40), venditore: str(p.venditore, 80), url: p.url }; }).slice(0, 10),
     fonti: arr(o.fonti).filter((f: any) => ok(f?.url)).map((f: any) => ({ titolo: str(f.titolo, 160), url: f.url })).slice(0, 8),
     note: str(o.note, 400),
-    v: 2,
+    v: 3,
   };
 }

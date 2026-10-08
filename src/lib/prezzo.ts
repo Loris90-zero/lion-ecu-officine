@@ -36,6 +36,15 @@ export function paginaElenco(url: string) {
   } catch { return true; }
 }
 
+/** Compatibili, aftermarket e marketplace esteri di ricambi generici: non sono la base giusta. */
+export function nonOriginale(x: { url: string; venditore?: string; condizione?: string }) {
+  try {
+    const h = new URL(x.url).hostname;
+    if (/alibaba|aliexpress|made-in-china|dhgate|temu|wish\.com|banggood/.test(h)) return true;
+  } catch { return true; }
+  return /compatib|non originale|aftermarket|replica|copia/i.test(`${x.venditore || ""} ${x.condizione || ""}`);
+}
+
 /** Converte le valute, sposta tra gli "altri prezzi" le pagine di elenco e i prezzi anomali. */
 export function normalizzaPrezzi<T extends { prezzi_nuova: Voce[]; altri_prezzi: Voce[] }>(r: T, imp: Impostazioni): T {
   const cambio = (v?: string) => {
@@ -56,9 +65,16 @@ export function normalizzaPrezzi<T extends { prezzi_nuova: Voce[]; altri_prezzi:
   for (const x of r.prezzi_nuova) {
     const y = converti(x); if (!y) continue;
     if (paginaElenco(y.url)) altri.push({ ...y, condizione: "pagina di elenco, non verificabile" });
+    else if (nonOriginale(y)) altri.push({ ...y, condizione: "compatibile, non originale" });
     else nuovi.push(y);
   }
   for (const x of r.altri_prezzi) { const y = converti(x); if (y) altri.push(y); }
+  // Un "nuovo" che costa meno dell'usato originale non è credibile
+  const maxUsato = Math.max(0, ...altri.filter((a) => /usat/i.test(a.condizione || "")).map((a) => a.prezzo_eur));
+  if (maxUsato > 0) {
+    altri.push(...nuovi.filter((n) => n.prezzo_eur <= maxUsato).map((n) => ({ ...n, condizione: "costa meno dell'usato, non credibile" })));
+    nuovi = nuovi.filter((n) => n.prezzo_eur > maxUsato);
+  }
   const soglia = Number(imp.soglia_anomali) || 0.4;
   if (nuovi.length > 1) {
     const max = Math.max(...nuovi.map((n) => n.prezzo_eur));
