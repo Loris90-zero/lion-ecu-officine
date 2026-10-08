@@ -48,6 +48,9 @@ export default async function PraticaLab({ params }: { params: Promise<{ id: str
               <dt>Telefono</dt><dd className="mono">{o.telefono}</dd>
               {o.email ? <><dt>Email</dt><dd>{o.email}</dd></> : null}
               <dt>WhatsApp</dt><dd>{o.consenso_whatsapp ? "Consenso dato" : "Nessun consenso"}</dd>
+              {o.sede_legale ? <><dt>Sede legale</dt><dd>{o.sede_legale}</dd></> : null}
+              <dt>Fatturazione</dt><dd className="mono">{o.codice_sdi || o.pec ? [o.codice_sdi ? `SDI ${o.codice_sdi}` : null, o.pec].filter(Boolean).join(" · ") : "SDI/PEC mancanti"}</dd>
+              {o.orari_ritiro ? <><dt>Orari</dt><dd>{o.orari_ritiro}</dd></> : null}
             </dl>
           </div>
           <div className="box">

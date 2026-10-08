@@ -28,6 +28,11 @@ create table if not exists public.officine (
   indirizzo_ritiro text not null,
   citta text,
   consenso_whatsapp boolean not null default false,
+  pec text,
+  codice_sdi text,
+  sede_legale text,
+  orari_ritiro text,
+  mezzi text[] not null default '{}',
   consenso_privacy_il timestamptz not null default now(),
   creato_il timestamptz not null default now()
 );
