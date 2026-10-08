@@ -60,6 +60,19 @@ export function Cerca() {
         </label>
         <button className="btn btn-primary" type="submit" disabled={stato === "cerca"}>Cerca</button>
       </form>
+      <details className="box" style={{ padding: "10px 14px" }}>
+        <summary style={{ cursor: "pointer", fontWeight: 600, fontSize: 14 }}>Dove trovo il codice?</summary>
+        <div className="section" style={{ gap: 8, marginTop: 10, fontSize: 14 }}>
+          <p>Sull&apos;<b>etichetta della centralina</b> ci sono di solito più codici. Va bene uno qualsiasi:</p>
+          <ul style={{ margin: 0, paddingLeft: 18, display: "flex", flexDirection: "column", gap: 4 }}>
+            <li><b>Codice del costruttore della centralina</b>, es. Bosch <span className="mono">0281020459</span></li>
+            <li><b>Codice ricambio del mezzo</b>, es. Iveco <span className="mono">5802061525</span>: spesso trova più prezzi</li>
+            <li><b>Famiglia</b>, se stampata, es. <span className="mono">EDC17CV41</span></li>
+          </ul>
+          <p>Più codici e non sai quale scrivere? <b>Fotografa l&apos;etichetta</b> con il pulsante della fotocamera: li leggiamo noi.</p>
+          <p>Etichetta illeggibile o centralina difficile da raggiungere? Leggi il codice con la <b>diagnosi</b> (identificazione centralina), oppure <a href="/ritiro">richiedi direttamente il ritiro</a>: la identifichiamo al banco.</p>
+        </div>
+      </details>
       {foto ? (
         <div className="row" style={{ justifyContent: "flex-start" }}>
           <img src={foto.url} alt="Foto da analizzare" style={{ width: 64, height: 64, objectFit: "cover", borderRadius: 8 }} />
