@@ -1,27 +1,9 @@
-import { richiediOfficina } from "@/lib/sessione";
-import { FormRitiro } from "./FormRitiro";
+import { redirect } from "next/navigation";
 
-export const metadata = { title: "Richiedi ritiro — Lion ECU" };
-
+/** Il ritiro ora si prenota dalla home: porta lì i dati eventualmente passati. */
 export default async function Ritiro({ searchParams }: { searchParams: Promise<Record<string, string | undefined>> }) {
-  const { officina, user } = await richiediOfficina();
   const sp = await searchParams;
-  const num = (v?: string) => { const n = Number(v); return isFinite(n) && n > 0 ? n : null; };
-  return (
-    <section className="screen">
-      <div className="section">
-        <h1>Richiedi un ritiro</h1>
-        <p className="muted">Due minuti. Il corriere passa gratis entro 24 ore lavorative.</p>
-      </div>
-      <FormRitiro
-        userId={user.id}
-        indirizzo={officina.indirizzo_ritiro}
-        centralina={sp.centralina ?? ""}
-        codice={sp.codice ?? ""}
-        stima={num(sp.stima)}
-        base={num(sp.base)}
-        nota={(sp.nota ?? "").slice(0, 120)}
-      />
-    </section>
-  );
+  const p = new URLSearchParams({ ritiro: "1" });
+  for (const k of ["centralina", "codice", "nota", "stima", "base"]) if (sp[k]) p.set(k, sp[k]!);
+  redirect(`/?${p.toString()}`);
 }

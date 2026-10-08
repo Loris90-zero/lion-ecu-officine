@@ -1,11 +1,12 @@
 "use client";
 import { Fragment, useRef, useState } from "react";
-import Link from "next/link";
 import { eur } from "@/lib/fasi";
 import { aBase64, ridimensiona } from "@/lib/foto";
 import type { RisultatoCerca } from "@/lib/types";
 
-export function Cerca() {
+export type Prefill = { centralina?: string; codice?: string; stima?: number | null; base?: number | null; nota?: string };
+
+export function CercaCentralina({ onPrenota }: { onPrenota: (p: Prefill) => void }) {
   const [q, setQ] = useState("");
   const [foto, setFoto] = useState<{ blob: Blob; url: string } | null>(null);
   const [stato, setStato] = useState<"idle" | "cerca">("idle");
@@ -37,21 +38,15 @@ export function Cerca() {
     setFoto({ blob, url: URL.createObjectURL(blob) });
   }
 
-  const linkRitiro = (x: RisultatoCerca) => {
-    const p = new URLSearchParams();
-    const nome = [x.marca, x.modello].filter(Boolean).join(" ");
-    if (nome) p.set("centralina", nome);
-    p.set("codice", x.codici[0] || q);
-    if (x.prezzo) { p.set("stima", String(x.prezzo.prezzo)); p.set("base", String(x.prezzo.base)); }
-    return `/ritiro?${p.toString()}`;
-  };
+  const prefill = (x: RisultatoCerca): Prefill => ({
+    centralina: [x.marca, x.modello].filter(Boolean).join(" "),
+    codice: x.codici[0] || q,
+    stima: x.prezzo?.prezzo ?? null,
+    base: x.prezzo?.base ?? null,
+  });
 
   return (
-    <section className="screen">
-      <div className="section">
-        <h1>Cerca centralina</h1>
-        <p className="muted">Scrivi il codice dell&apos;etichetta, e se vuoi aggiungi una foto. Ti diciamo cos&apos;è, i guasti tipici, quanto costa nuova e quanto costa ripararla da noi.</p>
-      </div>
+    <div className="section" style={{ gap: 14 }}>
       <form className="search" onSubmit={cerca} noValidate style={{ flexDirection: "row" }}>
         <input className="mono" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Es. 0281020459 o EDC17CV41" autoComplete="off" disabled={stato === "cerca"} aria-label="Codice centralina" />
         <label className="btn btn-ghost" style={{ padding: "0 12px" }} aria-label="Aggiungi foto dell'etichetta" title="Foto dell'etichetta">
@@ -70,7 +65,7 @@ export function Cerca() {
             <li><b>Famiglia</b>, se stampata, es. <span className="mono">EDC17CV41</span></li>
           </ul>
           <p>Più codici e non sai quale scrivere? <b>Fotografa l&apos;etichetta</b> con il pulsante della fotocamera: li leggiamo noi.</p>
-          <p>Etichetta illeggibile o centralina difficile da raggiungere? Leggi il codice con la <b>diagnosi</b> (identificazione centralina), oppure <a href="/ritiro">richiedi direttamente il ritiro</a>: la identifichiamo al banco.</p>
+          <p>Etichetta illeggibile o centralina difficile da raggiungere? Leggi il codice con la <b>diagnosi</b> (identificazione centralina), oppure <button type="button" className="linkbtn" onClick={() => onPrenota({})}>prenota direttamente il ritiro</button>: la identifichiamo al banco.</p>
         </div>
       </details>
       {foto ? (
@@ -91,7 +86,7 @@ export function Cerca() {
         <div className="res">
           <h3>Non ho trovato questa centralina</h3>
           <p className="muted">{r.note || "Controlla il codice sull'etichetta, oppure mandaci una foto: la identifica il tecnico."}</p>
-          <Link className="btn btn-primary btn-block" href="/ritiro">Chiedi al tecnico</Link>
+          <button className="btn btn-primary btn-block" onClick={() => onPrenota({ codice: q })}>Prenota il ritiro: la identifichiamo noi</button>
         </div>
       ) : null}
       {r && r.trovata ? (
@@ -118,7 +113,7 @@ export function Cerca() {
               ) : (<><b style={{ fontSize: 20 }}>Su richiesta</b><span className="hint">Il prezzo te lo diamo noi, subito</span></>)}
             </div>
           </div>
-          <Link className="btn btn-primary btn-block" href={linkRitiro(r)}>{r.prezzo ? "Richiedi il ritiro di questa centralina" : "Chiedi il prezzo della riparazione"}</Link>
+          <button className="btn btn-primary btn-block" onClick={() => onPrenota(prefill(r))}>Prenota il ritiro di questa centralina</button>
           <p className="hint">Prezzo confermato dal tecnico dopo la diagnosi. Paghi solo se la centralina è riparabile, altrimenti te la rispediamo gratis.</p>
           {r.problemi_comuni.length ? (
             <div className="section" style={{ gap: 8 }}>
@@ -145,6 +140,6 @@ export function Cerca() {
           {r.note ? <p className="hint">{r.note}</p> : null}
         </div>
       ) : null}
-    </section>
+    </div>
   );
 }

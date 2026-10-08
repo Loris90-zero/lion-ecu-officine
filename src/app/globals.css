@@ -106,7 +106,7 @@ dl{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;margin:0;font-size:1
 dt{color:var(--ink-2)}dd{margin:0;min-width:0;overflow-wrap:anywhere}
 
 nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:10;background:var(--surface);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px)}
-nav.tabs div{max-width:520px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr)}
+nav.tabs div{max-width:520px;margin:0 auto;display:grid;grid-auto-flow:column;grid-auto-columns:1fr}
 .tab{color:var(--ink-2);font:500 11px var(--f-body);padding:9px 4px 10px;display:flex;flex-direction:column;align-items:center;gap:3px;text-decoration:none}
 .tab svg{width:22px;height:22px}
 .tab[aria-current="page"]{color:var(--ink)}
