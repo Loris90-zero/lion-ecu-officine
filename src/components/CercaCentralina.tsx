@@ -98,6 +98,7 @@ export function CercaCentralina({ onPrenota }: { onPrenota: (p: Prefill) => void
             {r.veicoli.length ? <p className="muted" style={{ fontSize: 13 }}>Montata su: {r.veicoli.join(", ")}</p> : null}
           </div>
           {foto ? <img className="preview-img" src={foto.url} alt="La tua foto della centralina" /> : null}
+          {r.generico ? <p className="err" style={{ background: "var(--warn-soft)", color: "var(--warn)" }}>Hai cercato una famiglia di centraline: i prezzi possono riferirsi a modelli diversi. Per un prezzo preciso scrivi il codice completo dell&apos;etichetta o fotografala.</p> : null}
           <div className="prices">
             <div className="pnew">
               <span className="label">Centralina nuova</span>
@@ -129,8 +130,13 @@ export function CercaCentralina({ onPrenota }: { onPrenota: (p: Prefill) => void
           ) : null}
           {r.prezzi_nuova.length ? (
             <div className="section" style={{ gap: 6 }}><span className="label">Prezzi del nuovo trovati</span>
-              <ul className="src">{r.prezzi_nuova.map((p, i) => <li key={i}><span className="mono">{eur(p.prezzo_eur)}</span>{p.listino_eur ? <span className="muted"> (listino {eur(p.listino_eur)})</span> : null} · <a href={p.url} target="_blank" rel="noopener noreferrer">{p.venditore || p.url}</a></li>)}</ul>
+              <ul className="src">{r.prezzi_nuova.map((p, i) => <li key={i}><span className="mono">{eur(p.prezzo_eur)}</span>{p.valuta && p.valuta !== "EUR" && p.prezzo_originale ? <span className="muted"> ({p.prezzo_originale.toLocaleString("it-IT")} {p.valuta})</span> : null}{p.listino_eur ? <span className="muted"> (listino {eur(p.listino_eur)})</span> : null} · <a href={p.url} target="_blank" rel="noopener noreferrer">{p.venditore || p.url}</a></li>)}</ul>
             </div>
+          ) : null}
+          {r.altri_prezzi.length ? (
+            <details className="section" style={{ gap: 6 }}><summary className="label" style={{ cursor: "pointer" }}>Altri prezzi trovati (usato, elenchi, esclusi)</summary>
+              <ul className="src" style={{ marginTop: 6 }}>{r.altri_prezzi.map((p, i) => <li key={i}><span className="mono">{eur(p.prezzo_eur)}</span>{p.condizione ? <span className="muted"> · {p.condizione}</span> : null} · <a href={p.url} target="_blank" rel="noopener noreferrer">{p.venditore || p.url}</a></li>)}</ul>
+            </details>
           ) : null}
           {r.fonti.length ? (
             <div className="section" style={{ gap: 6 }}><span className="label">Fonti e foto</span>

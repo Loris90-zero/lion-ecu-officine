@@ -24,6 +24,11 @@ export function FormImpostazioni({ imp }: { imp: Impostazioni }) {
           </select>
         </div>
       </div>
+      <div className="grid2">
+        <div className="field"><label htmlFor="cambio_usd">1 dollaro in euro</label><input id="cambio_usd" name="cambio_usd" inputMode="decimal" defaultValue={Number(imp.cambio_usd ?? 0.9)} /></div>
+        <div className="field"><label htmlFor="cambio_gbp">1 sterlina in euro</label><input id="cambio_gbp" name="cambio_gbp" inputMode="decimal" defaultValue={Number(imp.cambio_gbp ?? 1.15)} /></div>
+      </div>
+      <div className="field"><label htmlFor="soglia_anomali">Escludi i &quot;nuovi&quot; sotto questa % del nuovo più caro trovato</label><input id="soglia_anomali" name="soglia_anomali" inputMode="decimal" defaultValue={Math.round(Number(imp.soglia_anomali ?? 0.4) * 100)} /><span className="hint">Serve a scartare usati o compatibili classificati male come nuovi.</span></div>
       {esempio ? <p className="hint">Esempio: con prezzi del nuovo a 1.200, 1.490 e 1.900 € la riparazione costa {eur(esempio.prezzo)} (risparmio {esempio.risparmio}%).</p> : null}
       {stato.errore ? <p className="err">{stato.errore}</p> : null}
       {stato.ok ? <p className="okmsg">{stato.ok}</p> : null}

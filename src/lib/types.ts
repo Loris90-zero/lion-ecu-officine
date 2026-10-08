@@ -23,10 +23,12 @@ export type RisultatoCerca = {
   codici: string[]; veicoli: string[];
   dati_tecnici: { voce: string; valore: string }[];
   problemi_comuni: { problema: string; sintomi?: string }[];
-  prezzi_nuova: { prezzo_eur: number; listino_eur?: number | null; venditore?: string; url: string }[];
-  altri_prezzi: { prezzo_eur: number; condizione?: string; venditore?: string; url: string }[];
+  prezzi_nuova: { prezzo_eur: number; listino_eur?: number | null; venditore?: string; url: string; valuta?: string; prezzo_originale?: number }[];
+  altri_prezzi: { prezzo_eur: number; condizione?: string; venditore?: string; url: string; valuta?: string; prezzo_originale?: number }[];
   fonti: { titolo?: string; url: string }[];
   note?: string;
   prezzo?: { base: number; prezzo: number; risparmio: number } | null;
   dallaCache?: boolean;
+  v?: number;
+  generico?: boolean;
 };

@@ -39,10 +39,15 @@ export async function salvaImpostazioni(_: StatoLab, fd: FormData): Promise<Stat
   const minimo_eur = n("minimo_eur");
   const arrotonda_eur = n("arrotonda_eur");
   const base = String(fd.get("base"));
+  const cambio_usd = n("cambio_usd");
+  const cambio_gbp = n("cambio_gbp");
+  const soglia_anomali = n("soglia_anomali") / 100;
+  if (!(cambio_usd > 0) || !(cambio_gbp > 0)) return { errore: "Controlla i cambi di dollaro e sterlina." };
+  if (!(soglia_anomali >= 0 && soglia_anomali < 1)) return { errore: "La soglia dei prezzi anomali deve essere tra 0 e 99." };
   if (!(percentuale > 0 && percentuale < 1)) return { errore: "La percentuale deve essere tra 1 e 99." };
   if (!(minimo_eur >= 0) || !(arrotonda_eur >= 1)) return { errore: "Controlla minimo e arrotondamento." };
   if (!["mediana", "minimo", "massimo"].includes(base)) return { errore: "Base non valida." };
-  const { error } = await sb.from("impostazioni").update({ percentuale, minimo_eur, arrotonda_eur, base, aggiornato_il: new Date().toISOString() }).eq("id", 1);
+  const { error } = await sb.from("impostazioni").update({ percentuale, minimo_eur, arrotonda_eur, base, cambio_usd, cambio_gbp, soglia_anomali, aggiornato_il: new Date().toISOString() }).eq("id", 1);
   if (error) return { errore: "Salvataggio non riuscito." };
   revalidatePath("/lab/impostazioni");
   return { ok: "Impostazioni salvate. Valgono dalla prossima ricerca." };

@@ -39,6 +39,9 @@ create table if not exists public.impostazioni (
   minimo_eur numeric not null default 150,
   arrotonda_eur numeric not null default 10,
   base text not null default 'mediana' check (base in ('mediana','minimo','massimo')),
+  cambio_usd numeric not null default 0.90,
+  cambio_gbp numeric not null default 1.15,
+  soglia_anomali numeric not null default 0.40,
   aggiornato_il timestamptz not null default now()
 );
 insert into public.impostazioni (id) values (1) on conflict do nothing;
