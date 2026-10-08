@@ -1,0 +1,15 @@
+{
+  "name": "Lion ECU — Officine",
+  "short_name": "Lion ECU",
+  "description": "Ritiro, riparazione e garanzia delle centraline dei mezzi pesanti.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#eef1f4",
+  "theme_color": "#24384d",
+  "lang": "it",
+  "icons": [
+    { "src": "/icone/icona-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icone/icona-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "/icone/icona-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
