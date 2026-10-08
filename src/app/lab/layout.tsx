@@ -13,6 +13,7 @@ export default async function LayoutLab({ children }: { children: React.ReactNod
         <nav style={{ display: "flex", gap: 16, alignItems: "center", fontSize: 14 }}>
           <Link href="/lab" className="linkbtn">Pratiche</Link>
           <Link href="/lab/impostazioni" className="linkbtn">Impostazioni</Link>
+          <Link href="/registrazione" className="linkbtn">Vista officina</Link>
           <form action="/auth/esci" method="post"><button className="linkbtn" type="submit">Esci</button></form>
         </nav>
       </header>
