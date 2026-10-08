@@ -12,6 +12,7 @@ export function CercaCentralina({ onPrenota }: { onPrenota: (p: Prefill) => void
   const [stato, setStato] = useState<"idle" | "cerca">("idle");
   const [errore, setErrore] = useState<string | null>(null);
   const [r, setR] = useState<RisultatoCerca | null>(null);
+  const [sceltaFoto, setSceltaFoto] = useState(false);
   const ctl = useRef<AbortController | null>(null);
 
   async function cerca(e?: React.FormEvent) {
@@ -33,6 +34,7 @@ export function CercaCentralina({ onPrenota }: { onPrenota: (p: Prefill) => void
 
   async function scegliFoto(e: React.ChangeEvent<HTMLInputElement>) {
     const f = e.target.files?.[0]; e.target.value = "";
+    setSceltaFoto(false);
     if (!f) return;
     const blob = await ridimensiona(f);
     setFoto({ blob, url: URL.createObjectURL(blob) });
@@ -49,12 +51,17 @@ export function CercaCentralina({ onPrenota }: { onPrenota: (p: Prefill) => void
     <div className="section" style={{ gap: 14 }}>
       <form className="search" onSubmit={cerca} noValidate style={{ flexDirection: "row" }}>
         <input className="mono" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Es. 0281020459 o EDC17CV41" autoComplete="off" disabled={stato === "cerca"} aria-label="Codice centralina" />
-        <label className="btn btn-ghost" style={{ padding: "0 12px" }} aria-label="Aggiungi foto dell'etichetta" title="Foto dell'etichetta">
+        <button type="button" className="btn btn-ghost" style={{ padding: "0 12px" }} aria-label="Aggiungi foto dell'etichetta" aria-expanded={sceltaFoto} onClick={() => setSceltaFoto((v) => !v)} disabled={stato === "cerca"}>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M4 7h3l2-3h6l2 3h3v12H4z" /><circle cx="12" cy="13" r="3.5" /></svg>
-          <input type="file" accept="image/*" hidden onChange={scegliFoto} />
-        </label>
+        </button>
         <button className="btn btn-primary" type="submit" disabled={stato === "cerca"}>Cerca</button>
       </form>
+      {sceltaFoto ? (
+        <div className="grid2">
+          <label className="btn btn-ghost">Scatta foto<input type="file" accept="image/*" capture="environment" hidden onChange={scegliFoto} /></label>
+          <label className="btn btn-ghost">Carica dalla galleria<input type="file" accept="image/*" hidden onChange={scegliFoto} /></label>
+        </div>
+      ) : null}
       <details className="box" style={{ padding: "10px 14px" }}>
         <summary style={{ cursor: "pointer", fontWeight: 600, fontSize: 14 }}>Dove trovo il codice?</summary>
         <div className="section" style={{ gap: 8, marginTop: 10, fontSize: 14 }}>

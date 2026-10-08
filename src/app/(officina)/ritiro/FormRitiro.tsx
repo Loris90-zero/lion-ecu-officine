@@ -57,7 +57,12 @@ export function FormRitiro({ userId, indirizzo, centralina, codice, stima, base,
       <div className="field"><label htmlFor="codici_errore">Codici errore letti (se li hai)</label><input id="codici_errore" name="codici_errore" className="mono" placeholder="Es. P0087, SPN 157 FMI 18" /></div>
       <div className="field">
         <span className="flabel">Foto dell&apos;etichetta e della centralina (facoltative)</span>
-        <label className="upload">{carico ? "Caricamento…" : "Tocca per aggiungere foto"}<input type="file" accept="image/*" multiple hidden onChange={aggiungiFoto} disabled={carico || foto.length >= 6} /></label>
+        {carico ? <p className="hint">Caricamento foto…</p> : (
+          <div className="grid2">
+            <label className="btn btn-ghost">Scatta foto<input type="file" accept="image/*" capture="environment" hidden onChange={aggiungiFoto} disabled={foto.length >= 6} /></label>
+            <label className="btn btn-ghost">Carica dalla galleria<input type="file" accept="image/*" multiple hidden onChange={aggiungiFoto} disabled={foto.length >= 6} /></label>
+          </div>
+        )}
         {foto.length ? <div className="photos">{foto.map((f) => <img key={f.path} src={f.url} alt="Foto caricata" />)}</div> : null}
         {foto.map((f) => <input key={f.path} type="hidden" name="foto" value={f.path} />)}
         {erroreFoto ? <p className="err">{erroreFoto}</p> : null}
