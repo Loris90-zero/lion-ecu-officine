@@ -6,6 +6,8 @@ Ultimo step, dopo aver finito l'app. Aggiornata ad ogni modifica.
 - [ ] **Score del cliente** nella sezione Clienti (quiz + comportamento: pratiche, spesa, frequenza, apertura app)
 - [ ] **Notifica di score alto al venditore** assegnato all'officina
 - [ ] **Area venditori** con dashboard personale: le sue officine, chi chiamare, score, provvigioni (50 € per cliente attivato + 5% sui lavori, da confermare)
+- [ ] **Ads automatiche**: libreria creatività per target (Claude scrive i ganci, Canva/Descript fanno grafiche e video), test a budget piccolo, regole giornaliere sui numeri veri (vincenti +20% di budget, perdenti in pausa, nuove varianti delle migliori), tetto giornaliero e mensile, pulsante «ferma tutto», storico azioni + notifica. Da decidere: costo per ritiro massimo (quello della Finanza?), tetto mensile, approvazione creatività, aumenti automatici o con «Approva»
+- [ ] Listino riparazioni per famiglia di centralina (al posto della % sul nuovo): da decidere
 
 ## Sito eculion.it
 - [ ] **Comprare il dominio** eculion.it (dati della società) e collegarlo a Vercel: eculion.it → sito, app.eculion.it → app
@@ -35,10 +37,10 @@ Ultimo step, dopo aver finito l'app. Aggiornata ad ogni modifica.
 - [ ] **WhatsApp ufficiale** (Bird o API Meta, numero dedicato): i messaggi delle fasi partono da soli (oggi: un tocco dal telefono del tecnico)
 - [ ] **ivot**: risposta dell'assistenza su API/webhook e ads (messaggio già pronto)
 - [ ] **Agente AI su tutti i canali**: email, WhatsApp, Messenger, Direct, commenti + pannello Conversazioni
-- [ ] Connettori: **Bird, Metricool, Canva, Descript, Adspirer**
+- [ ] Connettori: **MCP ufficiale Meta Ads** (mcp.facebook.com/ads, in beta) per creare le campagne + **API Marketing di Meta** (chiave fissa della Business Manager) per le regole di budget; **Adspirer** solo se serve per Google e TikTok; **Bird, Metricool, Canva, Descript**
 - [ ] **Landing con quiz** e punteggio lead (punteggio nel pannello Officine e in «Da chiamare»)
 - [ ] **Pixel Meta + Conversions API**
-- [ ] **Spesa ads automatica** (Adspirer → tabella `marketing_spesa`, fonte «adspirer»): ogni mattina un'attività programmata di Claude legge Meta/Google/TikTok e scrive spesa, click e impression per campagna e target. Poi far leggere la stessa spesa anche alla Finanza (oggi la Finanza usa i costi «Pubblicità» inseriti a mano: attenzione a non contarla due volte)
+- [ ] **Spesa ads automatica** (Meta API/MCP, ed eventualmente Adspirer → tabella `marketing_spesa`): ogni mattina un'attività programmata di Claude legge Meta/Google/TikTok e scrive spesa, click e impression per campagna e target. Poi far leggere la stessa spesa anche alla Finanza (oggi la Finanza usa i costi «Pubblicità» inseriti a mano: attenzione a non contarla due volte)
 - [ ] **Link degli annunci con UTM e target**: `?utm_source=meta&utm_medium=paid&utm_campaign=NOME&t=officine|flotte|partner`
 - [x] Riepilogo mattutino a Loris (cron Vercel alle 6:00 UTC, push solo al titolare). Facoltativo: `CRON_SECRET` su Vercel
 - [ ] **Metricool**: pubblica i post del calendario Social (`social_post`) e riporta like/commenti/visualizzazioni in `risultati`
