@@ -1,10 +1,21 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-const PUBBLICHE = ["/accedi", "/auth", "/api/stripe/webhook", "/manifest.webmanifest", "/manifest-lab.webmanifest", "/sw.js", "/icone", "/privacy"];
+const PUBBLICHE = ["/accedi", "/auth", "/api/stripe/webhook", "/manifest.webmanifest", "/manifest-lab.webmanifest", "/sw.js", "/icone", "/privacy", "/sito", "/robots.txt", "/sitemap.xml"];
 const PUBBLICHE_ESATTE = ["/tecnici"];
 
+/** Domini del sito pubblico: lì il sito sta alla radice (le pagine vivono in /sito). */
+const DOMINI_SITO = ["eculion.it", "www.eculion.it"];
+const DELL_APP = ["/_next", "/api", "/auth", "/icone", "/sw.js", "/manifest", "/privacy", "/robots.txt", "/sitemap.xml", "/favicon"];
+
 export async function middleware(request: NextRequest) {
+  const host = (request.headers.get("host") ?? "").split(":")[0];
+  if (DOMINI_SITO.includes(host)) {
+    const p = request.nextUrl.pathname;
+    if (host.startsWith("www.")) { const url = request.nextUrl.clone(); url.host = "eculion.it"; return NextResponse.redirect(url, 301); }
+    if (p.startsWith("/sito")) { const url = request.nextUrl.clone(); url.pathname = p.slice(5) || "/"; return NextResponse.redirect(url, 301); }
+    if (!DELL_APP.some((x) => p.startsWith(x))) { const url = request.nextUrl.clone(); url.pathname = `/sito${p === "/" ? "" : p}`; return NextResponse.rewrite(url); }
+  }
   let response = NextResponse.next({ request });
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,

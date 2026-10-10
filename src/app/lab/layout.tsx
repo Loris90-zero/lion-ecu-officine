@@ -24,6 +24,7 @@ export default async function LayoutLab({ children }: { children: React.ReactNod
             Notifiche{nuove ? <span className="pallino">{nuove > 99 ? "99+" : nuove}</span> : null}
           </Link>
           <Link href="/lab/officine" className="linkbtn">Officine</Link>
+          {admin ? <Link href="/lab/sito" className="linkbtn">Sito</Link> : null}
           {admin ? <Link href="/lab/prezzi" className="linkbtn">Prezzi</Link> : null}
           {admin ? <Link href="/lab/impostazioni" className="linkbtn">Impostazioni</Link> : null}
           {admin ? <Link href="/registrazione" className="linkbtn">Vista officina</Link> : null}

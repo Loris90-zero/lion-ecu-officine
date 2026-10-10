@@ -424,3 +424,36 @@ drop policy if exists fin_c_all on public.costi;
 create policy fin_c_all on public.costi for all using (public.is_titolare()) with check (public.is_titolare());
 drop policy if exists fin_b_all on public.beni_ammortizzabili;
 create policy fin_b_all on public.beni_ammortizzabili for all using (public.is_titolare()) with check (public.is_titolare());
+
+-- =====================================================================
+-- Sito pubblico: lead del quiz, catalogo centraline, guide, candidature
+-- (le letture pubbliche passano dal server con filtro stato = 'pubblicata')
+-- =====================================================================
+create table if not exists public.lead (
+  id bigserial primary key, nome_officina text not null, nome text not null, telefono text not null, email text not null,
+  provincia text, risposte jsonb not null default '{}', score int not null default 0, origine text, utm jsonb,
+  officina_id uuid references public.officine(id) on delete set null, creato_il timestamptz not null default now()
+);
+alter table public.lead enable row level security;
+alter table public.officine add column if not exists score int;
+create table if not exists public.pagine_centraline (
+  slug text primary key, titolo text not null, codice text, marca text, famiglia text, tipo text,
+  veicoli text[] not null default '{}', mezzi text[] not null default '{}', descrizione text,
+  guasti jsonb not null default '[]', faq jsonb not null default '[]', prezzo_da numeric, prezzo_nuovo numeric,
+  stato text not null default 'bozza' check (stato in ('bozza','pubblicata')), ricerca_chiave text,
+  creato_il timestamptz not null default now(), aggiornato_il timestamptz not null default now()
+);
+alter table public.pagine_centraline enable row level security;
+create table if not exists public.articoli (
+  slug text primary key, titolo text not null, sommario text, corpo text not null, categoria text,
+  centralina_slug text references public.pagine_centraline(slug) on delete set null,
+  stato text not null default 'bozza' check (stato in ('bozza','pubblicata')), pubblicato_il timestamptz,
+  creato_il timestamptz not null default now(), aggiornato_il timestamptz not null default now()
+);
+alter table public.articoli enable row level security;
+create table if not exists public.candidature (
+  id bigserial primary key, nome text not null, email text not null, telefono text, ruolo text not null, messaggio text,
+  creato_il timestamptz not null default now()
+);
+alter table public.candidature enable row level security;
+-- policy: vedi la migrazione «sito_contenuti_lead» (staff legge lead; admin gestisce pagine e articoli; admin legge candidature)

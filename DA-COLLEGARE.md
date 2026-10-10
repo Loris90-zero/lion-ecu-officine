@@ -7,6 +7,17 @@ Ultimo step, dopo aver finito l'app. Aggiornata ad ogni modifica.
 - [ ] **Notifica di score alto al venditore** assegnato all'officina
 - [ ] **Area venditori** con dashboard personale: le sue officine, chi chiamare, score, provvigioni (50 € per cliente attivato + 5% sui lavori, da confermare)
 
+## Sito eculion.it
+- [ ] **Comprare il dominio** eculion.it (dati della società) e collegarlo a Vercel: eculion.it → sito, app.eculion.it → app
+- [ ] Su Vercel: `NEXT_PUBLIC_SITO_BASE=""`, `NEXT_PUBLIC_SITO_URL=https://eculion.it`, `NEXT_PUBLIC_APP_URL=https://app.eculion.it` (così il sito va alla radice e Google lo indicizza)
+- [ ] **Banner cookie** e consenso prima del pixel Meta
+- [ ] **Contatti veri** in `src/sito/config.ts`: telefono, WhatsApp, email, indirizzo, ragione sociale, P.IVA
+- [ ] **Foto e video veri** del laboratorio (pagina Chi siamo e home)
+- [ ] Prime **10-20 pagine del catalogo** (dal pannello Laboratorio → Sito) e prime guide, controllate a mano prima di pubblicarle
+- [ ] Google Search Console + invio della sitemap
+- [ ] Versioni in inglese, tedesco e rumeno
+- [ ] Mappa delle officine partner per camionisti, quando ci sono i primi partner
+
 ## Account e chiavi (le inserisce Loris su Vercel/Supabase, mai in chat)
 - [ ] **Dominio ufficiale** (es. app.eculion.it) su Vercel + Site URL e Redirect URL in Supabase
 - [ ] **Resend**: email automatiche dal dominio (accesso, benvenuto, fasi, diagnosi, garanzia) + SMTP in Supabase

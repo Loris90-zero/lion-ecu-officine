@@ -4,6 +4,7 @@ import { dataBreve } from "@/lib/fasi";
 import { livelliOfficine, livelloDa } from "@/lib/fedelta";
 import { STATI_CRM, nomeStato } from "./stati";
 import type { Officina } from "@/lib/types";
+import { SOGLIA_CALDO } from "@/sito/score";
 
 type Crm = { stato: string; note: string | null; prossimo_contatto: string | null } | null;
 type Riga = Officina & { officine_crm: Crm };
@@ -17,6 +18,8 @@ export default async function OfficineLab({ searchParams }: { searchParams: Prom
   const { data: pr } = await sb.from("pratiche").select("officina_id, creato_il, fase, pagato");
   const { regole, livelli } = await livelliOfficine(sb);
   const oggi = new Date().toISOString().slice(0, 10);
+  const { data: ld } = await sb.from("lead").select("*").is("officina_id", null).order("score", { ascending: false }).limit(100);
+  const lead = (ld ?? []) as { id: number; nome_officina: string; nome: string; telefono: string; email: string; provincia: string | null; score: number; creato_il: string }[];
 
   const statsPer = new Map<string, { n: number; aperte: number; ultima: string | null }>();
   for (const p of pr ?? []) {
@@ -35,6 +38,7 @@ export default async function OfficineLab({ searchParams }: { searchParams: Prom
     // Chi chiamare: mai contattata, ricontatto scaduto, o cliente fermo da 60 giorni
     const motivo =
       crm?.prossimo_contatto && crm.prossimo_contatto <= oggi ? "Ricontatto previsto"
+      : (o.score ?? 0) >= SOGLIA_CALDO && stato === "nuova" ? `Score alto (${o.score}): chiamala`
       : stato === "nuova" ? (st.n ? "Prima pratica: da conoscere" : "Mai contattata")
       : st.n && giorniFermo !== null && giorniFermo > 60 && stato !== "persa" ? `Nessuna pratica da ${giorniFermo} giorni`
       : null;
@@ -76,6 +80,21 @@ export default async function OfficineLab({ searchParams }: { searchParams: Prom
       <p className="hint">
         Ordina per: <Link href={link({ ordina: undefined })}>registrazione</Link> · <Link href={link({ ordina: "punti" })}>punti</Link> · <Link href={link({ ordina: "pratiche" })}>numero di pratiche</Link>
       </p>
+      {lead.length ? (
+        <div className="box">
+          <span className="label">Dal quiz del sito, non ancora registrate · {lead.length}</span>
+          <table className="tbl"><tbody>
+            {lead.map((l) => (
+              <tr key={l.id}>
+                <td><b>{l.nome_officina}</b><div className="hint">{l.nome}{l.provincia ? ` · ${l.provincia}` : ""}</div></td>
+                <td className="mono" style={{ fontSize: 13 }}><a href={`tel:${l.telefono}`}>{l.telefono}</a><div className="hint">{l.email}</div></td>
+                <td>Score <b>{l.score}</b>{l.score >= SOGLIA_CALDO ? <div><span className="badge-chiama">Da chiamare</span></div> : null}</td>
+                <td className="mono hint">{dataBreve(l.creato_il)}</td>
+              </tr>
+            ))}
+          </tbody></table>
+        </div>
+      ) : null}
       <div className="tblw">
         <table className="tbl">
           <thead><tr><th>Officina</th><th>Contatti</th><th>Stato</th><th>Livello</th><th>Pratiche</th><th>Registrata</th></tr></thead>
@@ -86,7 +105,7 @@ export default async function OfficineLab({ searchParams }: { searchParams: Prom
                 <td><Link href={`/lab/officine/${o.id}`}><b>{o.ragione_sociale}</b></Link><div className="hint">{o.referente}{o.citta ? ` · ${o.citta}` : ""}</div></td>
                 <td className="mono" style={{ fontSize: 13 }}><a href={`tel:${o.telefono}`}>{o.telefono}</a>{o.email ? <div className="hint">{o.email}</div> : null}</td>
                 <td>{nomeStato(stato)}{motivo ? <div><span className="badge-chiama">Da chiamare</span></div> : null}{motivo ? <div className="hint">{motivo}</div> : null}</td>
-                <td>{liv.nome}<div className="hint mono">{liv.punti.toLocaleString("it-IT")} punti</div></td>
+                <td>{liv.nome}<div className="hint mono">{liv.punti.toLocaleString("it-IT")} punti</div>{o.score !== null && o.score !== undefined ? <div className="hint">Score quiz <b>{o.score}</b></div> : null}</td>
                 <td className="mono">{st.n}{st.aperte ? <div className="hint">{st.aperte} in corso</div> : null}{st.ultima ? <div className="hint">ultima {dataBreve(st.ultima)}</div> : null}</td>
                 <td className="mono hint">{dataBreve(o.creato_il)}</td>
               </tr>
