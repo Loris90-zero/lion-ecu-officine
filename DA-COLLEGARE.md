@@ -41,6 +41,8 @@ Ultimo step, dopo aver finito l'app. Aggiornata ad ogni modifica.
 - [ ] **Landing con quiz** e punteggio lead (punteggio nel pannello Officine e in «Da chiamare»)
 - [ ] **Pixel Meta + Conversions API**
 - [ ] **Spesa ads automatica** (Meta API/MCP, ed eventualmente Adspirer → tabella `marketing_spesa`): ogni mattina un'attività programmata di Claude legge Meta/Google/TikTok e scrive spesa, click e impression per campagna e target. Poi far leggere la stessa spesa anche alla Finanza (oggi la Finanza usa i costi «Pubblicità» inseriti a mano: attenzione a non contarla due volte)
+- [ ] **Split test della home** (almeno 3 varianti, es. titolo/apertura, ordine delle sezioni, pulsante principale): ogni visitatore vede sempre la stessa variante, il cruscotto confronta contatti, preventivi e ritiri per variante e indica la vincente quando i numeri bastano
+- [ ] **Split test delle ads**: per ogni target più ganci e creatività a confronto, stesso budget di partenza, la vincente prende il budget (collegato alle regole automatiche)
 - [ ] **Link degli annunci con UTM e target**: `?utm_source=meta&utm_medium=paid&utm_campaign=NOME&t=officine|flotte|partner`
 - [x] Riepilogo mattutino a Loris (cron Vercel alle 6:00 UTC, push solo al titolare). Facoltativo: `CRON_SECRET` su Vercel
 - [ ] **Metricool**: pubblica i post del calendario Social (`social_post`) e riporta like/commenti/visualizzazioni in `risultati`
