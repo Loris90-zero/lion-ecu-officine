@@ -2,6 +2,11 @@
 
 Ultimo step, dopo aver finito l'app. Aggiornata ad ogni modifica.
 
+## Da costruire nell'app (prima del collegamento)
+- [ ] **Score del cliente** nella sezione Clienti (quiz + comportamento: pratiche, spesa, frequenza, apertura app)
+- [ ] **Notifica di score alto al venditore** assegnato all'officina
+- [ ] **Area venditori** con dashboard personale: le sue officine, chi chiamare, score, provvigioni (50 € per cliente attivato + 5% sui lavori, da confermare)
+
 ## Account e chiavi (le inserisce Loris su Vercel/Supabase, mai in chat)
 - [ ] **Dominio ufficiale** (es. app.eculion.it) su Vercel + Site URL e Redirect URL in Supabase
 - [ ] **Resend**: email automatiche dal dominio (accesso, benvenuto, fasi, diagnosi, garanzia) + SMTP in Supabase
