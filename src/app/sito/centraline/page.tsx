@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Wa } from "@/sito/Whatsapp";
 import { u, app, BASE } from "@/sito/config";
 import { RicercaLive } from "./RicercaLive";
 import { centralinePubblicate } from "@/sito/dati";
@@ -39,6 +40,7 @@ export default async function Centraline({ searchParams }: { searchParams: Promi
             <h2 className="s-h3">{q ? "Questa centralina non è ancora nel catalogo pubblico" : "Il catalogo è in preparazione"}</h2>
             <p>Nell&apos;app la cerchiamo per te: identifichiamo la centralina, ti mostriamo i guasti comuni, il prezzo del nuovo e quello della riparazione.</p>
             <a className="s-btn s-btn-p" href={app("/accedi")}>Cercala nell&apos;app</a>
+            <Wa testo={`Ciao EcuLion, vorrei un preventivo per la centralina ${q ?? ""}.`} />
           </div>
         )}
       </div>

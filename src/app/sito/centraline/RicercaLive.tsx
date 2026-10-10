@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import { Wa } from "@/sito/Whatsapp";
 
 type R = {
   trovata: boolean; marca?: string; modello?: string; tipo?: string; famiglia?: string; codici: string[]; veicoli: string[];
@@ -27,6 +28,7 @@ export function RicercaLive({ q, base, app }: { q: string; base: string; app: st
         <h2 className="s-h3">{errore}</h2>
         <p>Nell&apos;app puoi cercare senza limiti, anche fotografando l&apos;etichetta.</p>
         <a className="s-btn s-btn-p" href={`${app}/accedi`}>Entra nell&apos;app</a>
+        <Wa testo={`Ciao EcuLion, vorrei un preventivo per la centralina ${q}.`} />
       </div>
     );
   if (!r)
@@ -43,6 +45,7 @@ export function RicercaLive({ q, base, app }: { q: string; base: string; app: st
         <h2 className="s-h3">Non riusciamo a identificare «{q}»</h2>
         <p>Controlla il codice sull&apos;etichetta, oppure prenota il ritiro: la identifichiamo noi al banco, gratis.</p>
         <a className="s-btn s-btn-p" href={`${app}/accedi`}>Prenota un ritiro gratuito</a>
+        <Wa testo={`Ciao EcuLion, non trovo la centralina ${q}: potete aiutarmi?`} />
       </div>
     );
 
@@ -72,6 +75,7 @@ export function RicercaLive({ q, base, app }: { q: string; base: string; app: st
         {r.prezzo && r.prezzo.risparmio > 0 ? <p className="s-ok" style={{ margin: 0 }}>Risparmi circa il {r.prezzo.risparmio}% rispetto al nuovo.</p> : null}
         <p className="s-muted" style={{ margin: 0 }}>Prezzo indicativo: lo conferma il tecnico dopo la diagnosi. Ritiro, diagnosi e rispedizione sono gratuiti, e paghi solo se è riparabile.</p>
         <a className="s-btn s-btn-p" href={prenota}>Prenota il ritiro di questa centralina</a>
+        <Wa testo={`Ciao EcuLion, ho visto il preventivo per ${nome} (${q}) e vorrei procedere.`} />
       </div>
     </div>
   );

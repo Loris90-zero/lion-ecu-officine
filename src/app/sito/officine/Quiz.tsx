@@ -1,5 +1,6 @@
 "use client";
 import { useActionState, useEffect, useState } from "react";
+import { Wa } from "@/sito/Whatsapp";
 import { inviaQuiz, type StatoQuiz } from "./azioni";
 import { DOMANDE } from "@/sito/score";
 
@@ -20,6 +21,7 @@ export function Quiz({ appUrl }: { appUrl: string }) {
         <h3 className="s-h3">Grazie, ci siamo.</h3>
         <p>Il prossimo passo è entrare nell&apos;app con <b>{s.email}</b>: da lì cerchi le centraline e prenoti il primo ritiro gratuito. Ti chiamiamo anche noi per conoscerci.</p>
         <a className="s-btn s-btn-p" href={`${appUrl}/accedi`}>Entra nell&apos;app</a>
+        <Wa />
       </div>
     );
 
@@ -58,6 +60,7 @@ export function Quiz({ appUrl }: { appUrl: string }) {
         <div className="s-azioni">
           <button type="button" className="s-btn s-btn-g" onClick={() => setPasso(DOMANDE.length - 1)}>Indietro</button>
           <button className="s-btn s-btn-p" type="submit" disabled={inCorso}>{inCorso ? "Invio…" : "Invia e ricevi l'accesso"}</button>
+          <Wa />
         </div>
       </fieldset>
     </form>

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Wa } from "@/sito/Whatsapp";
 import { notFound } from "next/navigation";
 import { u, app, MEZZI, SITO_URL } from "@/sito/config";
 import { centralina } from "@/sito/dati";
@@ -42,6 +43,7 @@ export default async function Centralina({ params }: { params: Promise<{ slug: s
             </div>
             <p className="s-muted" style={{ margin: 0 }}>Prezzo indicativo: lo conferma il tecnico dopo la diagnosi. Ritiro, diagnosi e rispedizione sono gratuiti.</p>
             <a className="s-btn s-btn-p" href={prenota}>Prenota il ritiro di questa centralina</a>
+            <Wa testo={`Ciao EcuLion, vorrei un preventivo per la centralina ${c.titolo}${c.codice ? ` (${c.codice})` : ""}.`} />
           </div>
         </div>
         <div className="s-corpo">

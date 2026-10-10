@@ -1,5 +1,6 @@
 "use client";
 import { useActionState } from "react";
+import { Wa } from "@/sito/Whatsapp";
 import { inviaFlotta, type StatoFlotta } from "./azioni";
 
 export function FormFlotta() {
@@ -19,6 +20,7 @@ export function FormFlotta() {
       <label className="s-check"><input type="checkbox" name="privacy" /><span>Ho letto l&apos;<a href="/privacy" target="_blank">informativa privacy</a> e accetto di essere ricontattato.</span></label>
       {s.errore ? <p className="s-err" role="alert">{s.errore}</p> : null}
       <button className="s-btn s-btn-p" type="submit" disabled={inCorso}>{inCorso ? "Invio…" : "Parla con noi della tua flotta"}</button>
+      <Wa testo="Ciao EcuLion, ho una flotta di mezzi e vorrei parlare con voi." />
     </form>
   );
 }

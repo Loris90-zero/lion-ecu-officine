@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Wa } from "@/sito/Whatsapp";
 import { notFound } from "next/navigation";
 import { u, app, SITO_URL } from "@/sito/config";
 import { articolo } from "@/sito/dati";
@@ -25,6 +26,7 @@ export default async function Guida({ params }: { params: Promise<{ slug: string
           <div className="s-azioni">
             <a className="s-btn s-btn-p" href={app("/accedi")}>Prenota un ritiro gratuito</a>
             {a.centralina_slug ? <Link className="s-btn s-btn-g" href={u(`/centraline/${a.centralina_slug}`)}>Vedi la centralina</Link> : null}
+            <Wa testo={`Ciao EcuLion, ho letto la guida «${a.titolo}» e ho questo guasto.`} />
           </div>
         </div>
       </article>

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Wa } from "@/sito/Whatsapp";
 import { u, app } from "@/sito/config";
 import { articoliPubblicati } from "@/sito/dati";
 
@@ -19,7 +20,7 @@ export default async function Guasti() {
             {lista.map((a) => <li key={a.slug}><Link href={u(`/guasti/${a.slug}`)} style={{ textDecoration: "none" }}><b className="s-h3">{a.titolo}</b>{a.sommario ? <span className="s-muted">{a.sommario}</span> : null}</Link></li>)}
           </ul>
         ) : (
-          <div className="s-vuoto"><h2 className="s-h3">Le prime guide arrivano a breve</h2><p>Hai un guasto adesso? Cerca la centralina nell&apos;app e prenota un ritiro gratuito.</p><a className="s-btn s-btn-p" href={app("/accedi")}>Entra nell&apos;app</a></div>
+          <div className="s-vuoto"><h2 className="s-h3">Le prime guide arrivano a breve</h2><p>Hai un guasto adesso? Cerca la centralina nell&apos;app e prenota un ritiro gratuito.</p><a className="s-btn s-btn-p" href={app("/accedi")}>Entra nell&apos;app</a><Wa /></div>
         )}
       </div>
     </section>

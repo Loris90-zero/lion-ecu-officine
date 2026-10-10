@@ -1,4 +1,5 @@
 import { u } from "@/sito/config";
+import { Wa } from "@/sito/Whatsapp";
 
 /** La targhetta di alluminio della centralina: il codice si cerca da qui. */
 export function Targa({ id = "codice-targa" }: { id?: string }) {
@@ -9,6 +10,7 @@ export function Targa({ id = "codice-targa" }: { id?: string }) {
       <label htmlFor={id}>Codice sull&apos;etichetta della centralina</label>
       <input id={id} name="q" placeholder="0281 020 459" autoComplete="off" spellCheck={false} />
       <button className="s-btn s-btn-p" type="submit">Calcola il preventivo</button>
+      <Wa />
       <p><b>Gratis, senza registrazione.</b> Il codice è sull&apos;etichetta della centralina, per esempio 0281 020 459.</p>
     </form>
   );

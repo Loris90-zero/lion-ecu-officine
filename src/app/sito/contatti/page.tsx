@@ -1,4 +1,5 @@
 import { CONTATTI, app } from "@/sito/config";
+import { Wa } from "@/sito/Whatsapp";
 
 export const metadata = { title: "Contatti", description: "Contatta il laboratorio EcuLion." };
 
@@ -9,7 +10,7 @@ export default function Contatti() {
         <div className="s-testa" style={{ marginBottom: 0 }}>
           <h1 className="s-h1">Contatti</h1>
           <p className="s-lead">Il modo più veloce per un preventivo è cercare la centralina nell&apos;app: vedi subito il prezzo e prenoti il ritiro.</p>
-          <div className="s-azioni"><a className="s-btn s-btn-p" href={app("/accedi")}>Entra nell&apos;app</a></div>
+          <div className="s-azioni"><a className="s-btn s-btn-p" href={app("/accedi")}>Entra nell&apos;app</a><Wa /></div>
         </div>
         <ul className="s-elenco">
           {CONTATTI.whatsapp ? <li><b>WhatsApp</b><a href={`https://wa.me/${CONTATTI.whatsapp}`}>Scrivici su WhatsApp</a></li> : null}

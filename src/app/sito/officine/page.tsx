@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Wa } from "@/sito/Whatsapp";
 import { u, app } from "@/sito/config";
 import { parametriPubblici } from "@/sito/dati";
 import { Quiz } from "./Quiz";
@@ -36,12 +37,12 @@ export default async function Officine() {
           <div className="s-testa" style={{ marginBottom: 0 }}>
             <h2 className="s-h2">Officine partner</h2>
             <p className="s-lead">Le officine che lavorano con noi con continuità entrano nella rete partner. Stiamo preparando una pagina per camionisti e aziende di trasporto che indica l&apos;officina partner più vicina.</p>
-            <div className="s-azioni"><Link className="s-btn s-btn-g" href={u("/partner")}>Come funziona la rete</Link></div>
+            <div className="s-azioni"><Link className="s-btn s-btn-g" href={u("/partner")}>Come funziona la rete</Link><Wa testo="Ciao EcuLion, vorrei diventare officina partner." /></div>
           </div>
           <div className="s-testa" style={{ marginBottom: 0 }}>
             <h2 className="s-h2">Hai già un account?</h2>
             <p className="s-lead">Entra nell&apos;app e prenota il ritiro.</p>
-            <div className="s-azioni"><a className="s-btn s-btn-p" href={app("/accedi")}>Entra nell&apos;app</a></div>
+            <div className="s-azioni"><a className="s-btn s-btn-p" href={app("/accedi")}>Entra nell&apos;app</a><Wa /></div>
           </div>
         </div>
       </section>

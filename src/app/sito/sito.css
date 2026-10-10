@@ -160,3 +160,8 @@
 .s-faq{display:grid;grid-template-columns:1fr 1fr;gap:28px 56px;max-width:1000px}
 .s-faq p{margin:8px 0 0;color:#2c3946}
 @media (max-width:800px){.s-faq{grid-template-columns:1fr}}
+.s-wa{display:inline-flex;align-items:center;gap:8px;flex-basis:100%;margin-top:4px;font-size:15px;font-weight:600;color:var(--ac);text-decoration:underline;text-underline-offset:3px;width:fit-content}
+.s-wa svg{width:20px;height:20px;color:#1f9d55;flex:none}
+.s-wa:hover{color:#1f9d55}
+.s-scuro .s-wa,.s-piede .s-wa{color:#e8e6df}
+.s-targa .s-wa{margin-top:12px;color:#22303d}

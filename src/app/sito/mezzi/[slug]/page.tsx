@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Wa } from "@/sito/Whatsapp";
 import { notFound } from "next/navigation";
 import { u, app, MEZZI } from "@/sito/config";
 import { supabaseAdmin } from "@/lib/supabase/admin";
@@ -23,7 +24,7 @@ export default async function Mezzo({ params }: { params: Promise<{ slug: string
         <div className="s-testa">
           <h1 className="s-h1">Riparazione centraline {m.nome.toLowerCase()}</h1>
           <p className="s-lead">{m.intro} Ritiro gratuito, diagnosi gratuita, paghi solo se è riparabile.</p>
-          <div className="s-azioni"><a className="s-btn s-btn-p" href={app("/accedi")}>Prenota un ritiro gratuito</a></div>
+          <div className="s-azioni"><a className="s-btn s-btn-p" href={app("/accedi")}>Prenota un ritiro gratuito</a><Wa testo={`Ciao EcuLion, vorrei un preventivo per una centralina di ${m.nome.toLowerCase()}.`} /></div>
         </div>
         <div className="s-due">
           <div><h2 className="s-h3">Cosa ripariamo</h2><ul className="s-elenco">{m.centraline.map((c) => <li key={c}>{c}</li>)}</ul></div>

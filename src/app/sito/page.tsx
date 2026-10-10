@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Wa } from "@/sito/Whatsapp";
 import { u, app, MEZZI } from "@/sito/config";
 import { parametriPubblici } from "@/sito/dati";
 import { Targa } from "./Targa";
@@ -58,6 +59,7 @@ export default async function Home() {
               <p className="s-lead" style={{ marginTop: 0 }}>Il cliente risparmia mille euro e riparte prima. Tu non perdi il lavoro: smonti, rimonti e il margine resta tuo. Noi ripariamo, e il mezzo torna a lavorare.</p>
               <p style={{ fontWeight: 600, fontSize: 19 }}>Vincono tutti, e il cliente si ricorda chi gli ha fatto risparmiare.</p>
               <a className="s-btn s-btn-p" href="#preventivo">Calcola il preventivo per il tuo cliente</a>
+              <Wa testo="Ciao EcuLion, ho un cliente con una centralina guasta: vorrei un preventivo." />
             </div>
           </div>
         </div>
@@ -124,6 +126,7 @@ export default async function Home() {
           <p className="s-muted" style={{ marginTop: 12 }}>Ogni euro speso in riparazioni vale un punto, negli ultimi {p.fedelta_mesi} mesi. Lo sconto si applica da solo.</p>
           <div className="s-azioni" style={{ marginTop: 24 }}>
             <Link className="s-btn s-btn-p" href={u("/officine")}>Scopri se la tua officina è adatta</Link>
+            <Wa testo="Ciao EcuLion, vorrei diventare officina partner." />
           </div>
         </div>
       </section>
@@ -134,7 +137,7 @@ export default async function Home() {
           <div className="s-testa" style={{ marginBottom: 0 }}>
             <h2 className="s-h2">Hai una flotta? Un mezzo fermo costa ogni giorno.</h2>
             <p className="s-lead">Con EcuLion sai subito quanto costa riparare invece di sostituire. La tua officina di fiducia lavora con noi, oppure ti indichiamo un&apos;officina partner nella tua zona.</p>
-            <div className="s-azioni"><a className="s-btn s-btn-g" href="#preventivo">Calcola il preventivo</a></div>
+            <div className="s-azioni"><a className="s-btn s-btn-g" href="#preventivo">Calcola il preventivo</a><Wa testo="Ciao EcuLion, ho una flotta di mezzi e vorrei parlare con voi." /></div>
           </div>
           <FormFlotta />
         </div>
@@ -168,7 +171,7 @@ export default async function Home() {
           <div className="s-testa" style={{ marginBottom: 0 }}>
             <h2 className="s-h2">Hai il codice sotto mano? Scopri adesso quanto costa ripararla.</h2>
             <p className="s-lead">Preventivo in un minuto, gratis e senza registrazione. Se ti convince, prenoti il ritiro dall&apos;app.</p>
-            <div className="s-azioni"><a className="s-btn s-btn-g" href={app("/accedi")}>Entra nell&apos;app</a></div>
+            <div className="s-azioni"><a className="s-btn s-btn-g" href={app("/accedi")}>Entra nell&apos;app</a><Wa /></div>
           </div>
           <Targa id="codice-chiusura" />
         </div>
