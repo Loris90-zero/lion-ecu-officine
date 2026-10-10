@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { u, app } from "@/sito/config";
+import { u, app, BASE } from "@/sito/config";
+import { RicercaLive } from "./RicercaLive";
 import { centralinePubblicate } from "@/sito/dati";
 import { Targa } from "../Targa";
 
@@ -20,7 +21,7 @@ export default async function Centraline({ searchParams }: { searchParams: Promi
           </div>
           <Targa />
         </div>
-        {lista.length ? (
+        {q && !lista.length ? <RicercaLive q={q} base={BASE} app={app("")} /> : lista.length ? (
           <ul className="s-cat">
             {lista.map((c) => (
               <li key={c.slug}>

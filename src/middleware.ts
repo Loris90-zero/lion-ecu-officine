@@ -1,7 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-const PUBBLICHE = ["/accedi", "/auth", "/api/stripe/webhook", "/manifest.webmanifest", "/manifest-lab.webmanifest", "/sw.js", "/icone", "/privacy", "/sito", "/robots.txt", "/sitemap.xml"];
+const PUBBLICHE = ["/accedi", "/auth", "/api/stripe/webhook", "/api/cerca-pubblica", "/manifest.webmanifest", "/manifest-lab.webmanifest", "/sw.js", "/icone", "/privacy", "/sito", "/robots.txt", "/sitemap.xml"];
 const PUBBLICHE_ESATTE = ["/tecnici"];
 
 /** Domini del sito pubblico: lì il sito sta alla radice (le pagine vivono in /sito). */

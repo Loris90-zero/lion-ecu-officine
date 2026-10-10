@@ -139,3 +139,6 @@
 .s-piede ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
 .s-piede .s-marchio{color:var(--bi)}
 @media (prefers-reduced-motion:reduce){.sito *{transition:none!important;animation:none!important}}
+.s-attesa{margin-top:16px}
+.s-attesa i{width:35%;animation:s-scorri 1.4s ease-in-out infinite}
+@keyframes s-scorri{0%{transform:translateX(-100%)}100%{transform:translateX(300%)}}
