@@ -5,6 +5,7 @@ import { supabaseAdmin } from "@/lib/supabase/admin";
 import { percorri, valuta } from "@/sito/quiz";
 import { SOGLIA_CALDO } from "@/sito/score";
 import { notificaStaff } from "@/lib/notifiche";
+import { attribuzioneCorrente } from "@/lib/attribuzione-server";
 
 export type StatoForm = { errore?: string };
 
@@ -29,9 +30,9 @@ export async function creaOfficina(_: StatoForm, fd: FormData): Promise<StatoFor
   const admin = supabaseAdmin();
   const email = String(dati.email).toLowerCase();
   const token = String(fd.get("lead") ?? "");
-  let lead: { id: number; score: number; risposte: { prenota?: Record<string, string> } | null } | null = null;
-  if (/^[0-9a-f-]{36}$/i.test(token)) lead = (await admin.from("lead").select("id, score, risposte").eq("token", token).is("officina_id", null).maybeSingle()).data;
-  if (!lead) lead = (await admin.from("lead").select("id, score, risposte").eq("email", email).is("officina_id", null).order("creato_il", { ascending: false }).limit(1).maybeSingle()).data;
+  let lead: { id: number; score: number; utm: Record<string, unknown> | null; risposte: { prenota?: Record<string, string> } | null } | null = null;
+  if (/^[0-9a-f-]{36}$/i.test(token)) lead = (await admin.from("lead").select("id, score, risposte, utm").eq("token", token).is("officina_id", null).maybeSingle()).data;
+  if (!lead) lead = (await admin.from("lead").select("id, score, risposte, utm").eq("email", email).is("officina_id", null).order("creato_il", { ascending: false }).limit(1).maybeSingle()).data;
   let quiz: ReturnType<typeof valuta> | null = null;
   let flusso: Record<string, unknown> | null = null;
   if (!lead) {
@@ -42,6 +43,7 @@ export async function creaOfficina(_: StatoForm, fd: FormData): Promise<StatoFor
     quiz = valuta(p.risposte);
     flusso = p.risposte;
   }
+  const attr = lead?.utm ?? (await attribuzioneCorrente());
   const { data: nuova, error } = await sb.from("officine").insert(dati).select("id").single();
   if (error || !nuova) return { errore: "Non sono riuscito a salvare i dati. Riprova tra poco." };
   // Lo score va sul profilo: dal quiz del sito, oppure da quello appena compilato
@@ -51,9 +53,9 @@ export async function creaOfficina(_: StatoForm, fd: FormData): Promise<StatoFor
     await admin.from("lead").update({ officina_id: nuova.id, email, nome_officina: dati.ragione_sociale, nome: dati.referente, telefono: dati.telefono }).eq("id", lead.id);
   } else {
     score = quiz!.score;
-    await admin.from("lead").insert({ nome_officina: dati.ragione_sociale, nome: dati.referente, telefono: dati.telefono, email, risposte: { flusso, profilo: quiz!.profilo }, score, origine: "app_registrazione", officina_id: nuova.id });
+    await admin.from("lead").insert({ nome_officina: dati.ragione_sociale, nome: dati.referente, telefono: dati.telefono, email, risposte: { flusso, profilo: quiz!.profilo }, score, origine: "app_registrazione", officina_id: nuova.id, utm: attr });
   }
-  await admin.from("officine").update({ score }).eq("id", nuova.id);
+  await admin.from("officine").update({ score, utm: attr }).eq("id", nuova.id);
   await notificaStaff(admin, {
     per_ruolo: "admin", tipo: "lead",
     titolo: score >= SOGLIA_CALDO ? `Officina calda registrata: score ${score}` : `Nuova officina registrata: score ${score}`,

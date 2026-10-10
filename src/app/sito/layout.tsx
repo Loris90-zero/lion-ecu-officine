@@ -2,6 +2,7 @@ import Link from "next/link";
 import "./sito.css";
 import { NAV, u, app, CONTATTI, MEZZI } from "@/sito/config";
 import { Marchio } from "./Marchio";
+import { Traccia } from "@/components/Traccia";
 
 export const metadata = {
   title: { default: "EcuLion — Riparazione centraline per mezzi pesanti", template: "%s — EcuLion" },
@@ -31,6 +32,7 @@ export default function LayoutSito({ children }: { children: React.ReactNode }) 
         </div>
       </header>
       <main>{children}</main>
+      <Traccia dove="sito" />
       <footer className="s-piede">
         <div className="s-wrap">
           <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>

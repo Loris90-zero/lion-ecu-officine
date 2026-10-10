@@ -6,6 +6,8 @@ import { notificaStaff } from "@/lib/notifiche";
 import { percorri, valuta } from "@/sito/quiz";
 import { SOGLIA_CALDO } from "@/sito/score";
 import { app } from "@/sito/config";
+import { classifica } from "@/lib/attribuzione";
+import { attribuzioneCorrente } from "@/lib/attribuzione-server";
 
 export type StatoQuiz = { errore?: string };
 
@@ -29,11 +31,12 @@ export async function concludiQuiz(_: StatoQuiz, fd: FormData): Promise<StatoQui
   const origine = ["sito_partner", "sito_prenota"].includes(o) ? o : "sito_quiz";
   const prenota = Object.fromEntries(["centralina", "codice", "stima", "base"].map((k) => [k, t(`ritiro_${k}`, 120)]).filter(([, v]) => v));
   const h = await headers();
-  const utm = Object.fromEntries(["utm_source", "utm_medium", "utm_campaign", "fbclid", "gclid"].map((k) => [k, t(k)]).filter(([, v]) => v));
+  const utm = Object.fromEntries(["utm_source", "utm_medium", "utm_campaign", "fbclid", "gclid", "t"].map((k) => [k, t(k)]).filter(([, v]) => v));
+  const attr = (Object.keys(utm).length ? classifica(new URLSearchParams(utm as Record<string, string>), null, "/sito/officine") : null) ?? (await attribuzioneCorrente());
   const admin = supabaseAdmin();
   const { data, error } = await admin.from("lead").insert({
     email: email || null, risposte: { flusso: p.risposte, profilo, ...(Object.keys(prenota).length ? { prenota } : {}) }, score, origine,
-    utm: Object.keys(utm).length ? { ...utm, ref: h.get("referer") } : null,
+    utm: attr ? { ...attr, ref_pagina: h.get("referer") } : null,
   }).select("token").single();
   if (error || !data) return { errore: "Non siamo riusciti a salvare le risposte. Riprova tra poco." };
   await notificaStaff(admin, {

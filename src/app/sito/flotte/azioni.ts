@@ -1,6 +1,7 @@
 "use server";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { notificaStaff } from "@/lib/notifiche";
+import { attribuzioneCorrente } from "@/lib/attribuzione-server";
 
 export type StatoFlotta = { ok?: boolean; errore?: string };
 
@@ -15,7 +16,7 @@ export async function inviaFlotta(_: StatoFlotta, fd: FormData): Promise<StatoFl
   const n = Number(mezzi) || 0;
   const score = Math.min(100, n >= 50 ? 90 : n >= 20 ? 75 : n >= 5 ? 55 : 35);
   const admin = supabaseAdmin();
-  const { error } = await admin.from("lead").insert({ nome_officina: azienda, nome, telefono, email, provincia: provincia || null, risposte: { tipo: "flotta", mezzi: n }, score, origine: "sito_flotta" });
+  const { error } = await admin.from("lead").insert({ nome_officina: azienda, nome, telefono, email, provincia: provincia || null, risposte: { tipo: "flotta", mezzi: n }, score, origine: "sito_flotta", utm: await attribuzioneCorrente() });
   if (error) return { errore: "Invio non riuscito. Riprova tra poco." };
   await notificaStaff(admin, { per_ruolo: "admin", tipo: "lead", titolo: `Flotta dal sito: ${azienda}${n ? `, ${n} mezzi` : ""}`, testo: `${nome}, ${telefono}${provincia ? `, ${provincia}` : ""}.`, link: "/lab/officine" });
   return { ok: true };

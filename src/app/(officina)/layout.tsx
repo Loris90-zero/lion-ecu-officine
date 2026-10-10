@@ -1,6 +1,7 @@
 import { richiediOfficina } from "@/lib/sessione";
 import { Logo } from "@/components/Logo";
 import { TabBar } from "@/components/TabBar";
+import { Traccia } from "@/components/Traccia";
 
 export default async function LayoutOfficina({ children }: { children: React.ReactNode }) {
   const { officina } = await richiediOfficina();
@@ -11,6 +12,7 @@ export default async function LayoutOfficina({ children }: { children: React.Rea
       </header>
       {children}
       <TabBar />
+      <Traccia dove="app" />
     </div>
   );
 }

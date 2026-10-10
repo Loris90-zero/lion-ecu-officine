@@ -4,7 +4,7 @@ import { createECDH, createHash } from "node:crypto";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 export type Notifica = {
-  per_ruolo?: "tutti" | "tecnico" | "admin";
+  per_ruolo?: "tutti" | "tecnico" | "admin" | "titolare";
   tipo: string;
   titolo: string;
   testo?: string;
@@ -45,7 +45,8 @@ export async function notificaStaff(admin: SupabaseClient, n: Notifica) {
     await admin.from("notifiche").insert({ per_ruolo, tipo: n.tipo, titolo: n.titolo, testo: n.testo ?? null, link: n.link ?? null, pratica_id: n.pratica_id ?? null });
     if (!vapid()) return;
     let q = admin.from("staff").select("email").eq("attivo", true);
-    if (per_ruolo === "admin") q = q.eq("ruolo", "admin");
+    if (per_ruolo === "admin") q = q.in("ruolo", ["admin", "titolare"]);
+    if (per_ruolo === "titolare") q = q.eq("ruolo", "titolare");
     const { data: dest } = await q;
     const email = (dest ?? []).map((d) => d.email);
     if (!email.length) return;

@@ -38,8 +38,16 @@ Ultimo step, dopo aver finito l'app. Aggiornata ad ogni modifica.
 - [ ] Connettori: **Bird, Metricool, Canva, Descript, Adspirer**
 - [ ] **Landing con quiz** e punteggio lead (punteggio nel pannello Officine e in «Da chiamare»)
 - [ ] **Pixel Meta + Conversions API**
-- [ ] **Spesa pubblicitaria automatica** da Meta/Google nella dashboard finanza
-- [ ] **Riepilogo mattutino** automatico a Loris
+- [ ] **Spesa ads automatica** (Adspirer → tabella `marketing_spesa`, fonte «adspirer»): ogni mattina un'attività programmata di Claude legge Meta/Google/TikTok e scrive spesa, click e impression per campagna e target. Poi far leggere la stessa spesa anche alla Finanza (oggi la Finanza usa i costi «Pubblicità» inseriti a mano: attenzione a non contarla due volte)
+- [ ] **Link degli annunci con UTM e target**: `?utm_source=meta&utm_medium=paid&utm_campaign=NOME&t=officine|flotte|partner`
+- [x] Riepilogo mattutino a Loris (cron Vercel alle 6:00 UTC, push solo al titolare). Facoltativo: `CRON_SECRET` su Vercel
+- [ ] **Metricool**: pubblica i post del calendario Social (`social_post`) e riporta like/commenti/visualizzazioni in `risultati`
+- [ ] **Canva** (grafiche) e **Descript** (montaggio video) per le bozze del calendario
+- [ ] **WhatsApp Business API**: contare i messaggi veri ricevuti per sorgente (oggi si contano i click sul pulsante WhatsApp)
+- [ ] **Prospezione AI**: Resend con `RESEND_API_KEY`, `EMAIL_MITTENTE` (es. «Loris di EcuLion <loris@eculion.it>»), `EMAIL_RISPOSTE`; dominio verificato (SPF/DKIM) e meglio un sottodominio dedicato agli invii commerciali; risposte ed aperture via webhook Resend → `prospect_attivita`
+- [ ] **Verifica legale prima degli invii**: email commerciali e chiamate a freddo verso aziende (art. 130 Codice Privacy, GDPR, Registro Pubblico delle Opposizioni) con consulente privacy/avvocato
+- [ ] **Agente telefonico AI**: Vapi o Retell AI + numero italiano, `VOICE_API_KEY`, copione da scrivere insieme, webhook esiti → `prospect_attivita` (tipo «chiamata»); usi: richiamare contatti caldi, rispondere fuori orario, seguire la prospezione, ricordare i ritiri
+- [ ] Google Search Console nel Marketing (dopo il dominio)
 
 ## Laboratorio
 - [ ] **Corriere automatico** (BRT/GLS/SDA o Sendcloud/Packlink): prenotazione + tracking (oggi manuale)

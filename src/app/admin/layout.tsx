@@ -12,6 +12,7 @@ export default async function LayoutAdmin({ children }: { children: React.ReactN
         <Logo sotto="Super admin" href="/admin" />
         <nav className="lab-nav">
           <Link href="/admin" className="linkbtn">Finanza</Link>
+          <Link href="/admin/marketing" className="linkbtn">Marketing</Link>
           <Link href="/admin/costi" className="linkbtn">Costi</Link>
           <Link href="/admin/laboratorio" className="linkbtn">Tecnici</Link>
           <Link href="/lab/officine" className="linkbtn">Clienti</Link>

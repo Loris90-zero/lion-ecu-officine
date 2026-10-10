@@ -315,7 +315,7 @@ alter policy staff_select on public.staff using (public.is_staff() or lower(emai
 
 create table if not exists public.notifiche (
   id bigserial primary key,
-  per_ruolo text not null default 'tutti' check (per_ruolo in ('tutti','tecnico','admin')),
+  per_ruolo text not null default 'tutti' check (per_ruolo in ('tutti','tecnico','admin','titolare')),
   tipo text not null, titolo text not null, testo text, link text,
   pratica_id uuid references public.pratiche(id) on delete cascade,
   creato_il timestamptz not null default now()
@@ -457,3 +457,101 @@ create table if not exists public.candidature (
 );
 alter table public.candidature enable row level security;
 -- policy: vedi la migrazione «sito_contenuti_lead» (staff legge lead; admin gestisce pagine e articoli; admin legge candidature)
+
+-- ===== Marketing: attribuzione, spesa ads, eventi, social =====
+alter table public.officine add column if not exists utm jsonb;
+alter table public.officine add column if not exists app_installata_il timestamptz;
+
+create table if not exists public.marketing_eventi (          -- solo server (service role)
+  id bigserial primary key,
+  tipo text not null check (tipo in ('visita','whatsapp','preventivo','app_installata')),
+  sessione text, sorgente text, mezzo text, campagna text, target text, pagina text,
+  officina_id uuid references public.officine(id) on delete set null,
+  creato_il timestamptz not null default now()
+);
+create index if not exists marketing_eventi_giorno on public.marketing_eventi (creato_il);
+alter table public.marketing_eventi enable row level security;
+create policy marketing_eventi_titolare on public.marketing_eventi for select using (public.is_titolare());
+
+create table if not exists public.marketing_spesa (
+  id bigserial primary key,
+  giorno date not null,
+  piattaforma text not null check (piattaforma in ('meta','google','tiktok','linkedin','altro')),
+  campagna text not null default '',
+  target text not null default 'officine' check (target in ('officine','flotte','partner','tutti')),
+  spesa_eur numeric not null default 0,
+  impression int, click int, lead_piattaforma int,
+  fonte text not null default 'manuale',          -- manuale | adspirer | meta | google ...
+  creato_il timestamptz not null default now(),
+  unique (giorno, piattaforma, campagna)
+);
+alter table public.marketing_spesa enable row level security;
+create policy marketing_spesa_titolare on public.marketing_spesa for all using (public.is_titolare()) with check (public.is_titolare());
+
+create table if not exists public.social_post (
+  id bigserial primary key,
+  testo text not null,
+  canali text[] not null default '{}',             -- instagram, facebook, tiktok, linkedin, youtube
+  media_url text,
+  programmato_il timestamptz,
+  stato text not null default 'bozza' check (stato in ('bozza','programmato','pubblicato','errore')),
+  risultati jsonb not null default '{}',           -- like, commenti, condivisioni, visualizzazioni
+  id_esterni jsonb,
+  creato_il timestamptz not null default now()
+);
+alter table public.social_post enable row level security;
+create policy social_post_titolare on public.social_post for all using (public.is_titolare()) with check (public.is_titolare());
+
+-- notifiche: il riepilogo marketing va solo al titolare
+alter policy notifiche_select on public.notifiche using (public.is_titolare() or (public.is_admin() and per_ruolo <> 'titolare') or (public.is_staff() and per_ruolo in ('tutti','tecnico')));
+
+-- ===== Prospezione: officine trovate dall'AI, sequenze email, agente telefonico =====
+create table if not exists public.sequenze (
+  id bigserial primary key, nome text not null,
+  target text not null default 'officine' check (target in ('officine','flotte','partner')),
+  attiva boolean not null default false,
+  passi jsonb not null default '[]',               -- [{giorno, canale: email|chiamata, oggetto, testo}]
+  creato_il timestamptz not null default now()
+);
+alter table public.sequenze enable row level security;
+create policy sequenze_titolare on public.sequenze for all using (public.is_titolare()) with check (public.is_titolare());
+
+create table if not exists public.prospect (
+  id bigserial primary key, nome text not null,
+  categoria text not null default 'officine' check (categoria in ('officine','flotte','partner')),
+  citta text, provincia text, indirizzo text, telefono text, email text, sito text,
+  fonte text not null default 'manuale', fonte_url text,
+  stato text not null default 'nuovo' check (stato in ('nuovo','in_sequenza','risposto','interessato','cliente','escluso','disiscritto')),
+  sequenza_id bigint references public.sequenze(id) on delete set null,
+  passo int not null default 0, prossimo_invio timestamptz, ultimo_contatto timestamptz,
+  opposizione_verificata boolean not null default false,   -- numero controllato nel Registro delle Opposizioni
+  punteggio int, note text,
+  officina_id uuid references public.officine(id) on delete set null,
+  token uuid not null unique default gen_random_uuid(),    -- link di disiscrizione
+  ricerca_id bigint,
+  creato_il timestamptz not null default now()
+);
+create unique index if not exists prospect_email_unico on public.prospect (lower(email)) where email is not null;
+create unique index if not exists prospect_tel_unico on public.prospect (telefono) where telefono is not null;
+create index if not exists prospect_invio on public.prospect (prossimo_invio) where stato = 'in_sequenza';
+alter table public.prospect enable row level security;
+create policy prospect_titolare on public.prospect for all using (public.is_titolare()) with check (public.is_titolare());
+
+create table if not exists public.prospect_attivita (
+  id bigserial primary key,
+  prospect_id bigint not null references public.prospect(id) on delete cascade,
+  tipo text not null check (tipo in ('email_inviata','email_aperta','click','risposta','chiamata','nota','disiscritto','errore')),
+  passo int, oggetto text, dettaglio text, esito text, durata_s int, registrazione_url text,
+  creato_il timestamptz not null default now()
+);
+alter table public.prospect_attivita enable row level security;
+create policy prospect_attivita_titolare on public.prospect_attivita for all using (public.is_titolare()) with check (public.is_titolare());
+
+create table if not exists public.ricerche_prospect (
+  id bigserial primary key, zona text not null, categoria text not null default 'officine',
+  stato text not null default 'fatta' check (stato in ('in_corso','fatta','errore')),
+  trovati int not null default 0, nuovi int not null default 0,
+  creato_il timestamptz not null default now()
+);
+alter table public.ricerche_prospect enable row level security;
+create policy ricerche_prospect_titolare on public.ricerche_prospect for all using (public.is_titolare()) with check (public.is_titolare());

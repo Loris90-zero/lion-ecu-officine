@@ -13,7 +13,7 @@ export function Quiz({ origine = "sito_quiz", ritiro }: { appUrl?: string; origi
   const [utm, setUtm] = useState<Record<string, string>>({});
   useEffect(() => {
     const q = new URLSearchParams(window.location.search);
-    setUtm(Object.fromEntries(["utm_source", "utm_medium", "utm_campaign", "fbclid", "gclid"].map((k) => [k, q.get(k) ?? ""]).filter(([, v]) => v)));
+    setUtm(Object.fromEntries(["utm_source", "utm_medium", "utm_campaign", "fbclid", "gclid", "t"].map((k) => [k, q.get(k) ?? ""]).filter(([, v]) => v)));
   }, []);
 
   return (
