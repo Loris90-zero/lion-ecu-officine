@@ -369,3 +369,58 @@ create policy audio_staff_insert on storage.objects for insert to authenticated 
 drop policy if exists audio_staff_select on storage.objects;
 create policy audio_staff_select on storage.objects for select to authenticated using (bucket_id = 'audio' and public.is_staff());
 -- Nota: in pratiche_proteggi() l'officina non può impostare sconto_pct, prezzo_pagato_eur e certificato.
+
+-- =====================================================================
+-- Super admin (titolare) e finanza
+-- =====================================================================
+alter table public.staff drop constraint if exists staff_ruolo_check;
+alter table public.staff add constraint staff_ruolo_check check (ruolo in ('titolare','admin','tecnico'));
+create or replace function public.is_admin() returns boolean
+language sql stable security definer set search_path = public as $$
+  select exists (select 1 from public.staff s where lower(s.email) = lower(auth.jwt() ->> 'email') and s.attivo and s.ruolo in ('admin','titolare'));
+$$;
+create or replace function public.is_titolare() returns boolean
+language sql stable security definer set search_path = public as $$
+  select exists (select 1 from public.staff s where lower(s.email) = lower(auth.jwt() ->> 'email') and s.attivo and s.ruolo = 'titolare');
+$$;
+revoke execute on function public.is_titolare() from public, anon;
+grant execute on function public.is_titolare() to authenticated;
+
+create table if not exists public.impostazioni_finanza (
+  id int primary key default 1 check (id = 1),
+  corriere_per_pratica numeric not null default 15, materiali_per_pratica numeric not null default 30,
+  iva_vendite numeric not null default 0.22, iva_costi_variabili numeric not null default 0.22,
+  commissione_pct numeric not null default 0.015, commissione_fissa numeric not null default 0.25,
+  aliquota_tasse numeric not null default 0.279, mesi_cliente numeric not null default 12, quota_cac numeric not null default 0.33,
+  aggiornato_il timestamptz not null default now()
+);
+insert into public.impostazioni_finanza (id) values (1) on conflict do nothing;
+create table if not exists public.costi_ricorrenti (
+  id bigserial primary key, nome text not null,
+  categoria text not null check (categoria in ('operai','affitto_utenze','commercialista','software','pubblicita','assicurazioni','altro')),
+  importo_mensile numeric not null check (importo_mensile >= 0), iva numeric not null default 0,
+  dal date not null default date_trunc('month', now())::date, al date, attivo boolean not null default true,
+  creato_il timestamptz not null default now()
+);
+create table if not exists public.costi (
+  id bigserial primary key, data date not null default current_date,
+  categoria text not null check (categoria in ('operai','affitto_utenze','commercialista','software','pubblicita','assicurazioni','corriere','materiali','attrezzature','altro')),
+  descrizione text not null, importo numeric not null check (importo >= 0), iva numeric not null default 0.22,
+  creato_il timestamptz not null default now()
+);
+create table if not exists public.beni_ammortizzabili (
+  id bigserial primary key, nome text not null, costo numeric not null check (costo > 0), anni numeric not null check (anni > 0),
+  acquistato_il date not null default current_date, creato_il timestamptz not null default now()
+);
+alter table public.impostazioni_finanza enable row level security;
+alter table public.costi_ricorrenti enable row level security;
+alter table public.costi enable row level security;
+alter table public.beni_ammortizzabili enable row level security;
+drop policy if exists fin_imp_all on public.impostazioni_finanza;
+create policy fin_imp_all on public.impostazioni_finanza for all using (public.is_titolare()) with check (public.is_titolare());
+drop policy if exists fin_cr_all on public.costi_ricorrenti;
+create policy fin_cr_all on public.costi_ricorrenti for all using (public.is_titolare()) with check (public.is_titolare());
+drop policy if exists fin_c_all on public.costi;
+create policy fin_c_all on public.costi for all using (public.is_titolare()) with check (public.is_titolare());
+drop policy if exists fin_b_all on public.beni_ammortizzabili;
+create policy fin_b_all on public.beni_ammortizzabili for all using (public.is_titolare()) with check (public.is_titolare());

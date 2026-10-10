@@ -9,7 +9,7 @@ export const metadata = {
 };
 
 export default async function LayoutLab({ children }: { children: React.ReactNode }) {
-  const { sb, admin, user } = await richiediStaff();
+  const { sb, admin, titolare, user } = await richiediStaff();
   const { data: io } = await sb.from("staff").select("letto_fino").eq("email", (user.email ?? "").toLowerCase()).maybeSingle();
   const { count } = await sb.from("notifiche").select("id", { count: "exact", head: true }).gt("creato_il", io?.letto_fino ?? new Date(0).toISOString());
   const nuove = count ?? 0;
@@ -18,6 +18,7 @@ export default async function LayoutLab({ children }: { children: React.ReactNod
       <header className="top lab-top">
         <Logo sotto="Laboratorio" href="/lab" />
         <nav className="lab-nav">
+          {titolare ? <Link href="/admin" className="linkbtn"><b>Super admin</b></Link> : null}
           <Link href="/lab" className="linkbtn">Pratiche</Link>
           <Link href="/lab/notifiche" className="linkbtn campanella" aria-label={`Notifiche${nuove ? `, ${nuove} nuove` : ""}`}>
             Notifiche{nuove ? <span className="pallino">{nuove > 99 ? "99+" : nuove}</span> : null}

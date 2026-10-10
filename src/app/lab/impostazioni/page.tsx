@@ -47,12 +47,12 @@ export default async function ImpostazioniLab() {
         {attivi.map((s) => (
           <form key={s.email} action={gestisciStaff} className="riga-staff">
             <input type="hidden" name="email" value={s.email} />
-            <div><b>{s.nome ?? s.email}</b> <span className="hint">· {s.ruolo === "admin" ? "Amministratore" : "Tecnico"}</span><div className="hint">{s.email}{s.telefono ? ` · ${s.telefono}` : ""}</div></div>
+            <div><b>{s.nome ?? s.email}</b> <span className="hint">· {s.ruolo === "titolare" ? "Titolare" : s.ruolo === "admin" ? "Amministratore" : "Tecnico"}</span><div className="hint">{s.email}{s.telefono ? ` · ${s.telefono}` : ""}</div></div>
             <div className="azioni-staff">
-              {s.ruolo === "admin"
+              {s.ruolo === "titolare" ? null : s.ruolo === "admin"
                 ? <button className="linkbtn" name="azione" value="approva_tecnico">Rendi tecnico</button>
                 : <button className="linkbtn" name="azione" value="approva_admin">Rendi admin</button>}
-              <button className="linkbtn" name="azione" value="disattiva">Disattiva</button>
+              {s.ruolo === "titolare" ? null : <button className="linkbtn" name="azione" value="disattiva">Disattiva</button>}
             </div>
           </form>
         ))}

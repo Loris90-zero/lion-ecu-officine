@@ -26,7 +26,7 @@ export async function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname;
   if (!user && !PUBBLICHE.some((p) => path.startsWith(p)) && !PUBBLICHE_ESATTE.includes(path)) {
     const url = request.nextUrl.clone();
-    url.pathname = path.startsWith("/lab") || path.startsWith("/tecnici") ? "/tecnici" : "/accedi";
+    url.pathname = path.startsWith("/lab") || path.startsWith("/tecnici") || path.startsWith("/admin") ? "/tecnici" : "/accedi";
     url.search = "";
     return NextResponse.redirect(url);
   }

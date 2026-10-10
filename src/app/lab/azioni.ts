@@ -81,25 +81,34 @@ export async function salvaFedelta(_: StatoLab, fd: FormData): Promise<StatoLab>
 }
 
 export async function aggiungiStaff(_: StatoLab, fd: FormData): Promise<StatoLab> {
-  const { sb } = await richiediAdmin();
+  const { sb, titolare } = await richiediAdmin();
   const email = String(fd.get("email") ?? "").trim().toLowerCase();
   const nome = String(fd.get("nome") ?? "").trim() || null;
   if (!email.includes("@")) return { errore: "Email non valida." };
-  const ruolo = fd.get("ruolo") === "admin" ? "admin" : "tecnico";
+  const r = String(fd.get("ruolo"));
+  if (r === "titolare" && !titolare) return { errore: "Solo un titolare può aggiungere un titolare." };
+  const ruolo = r === "titolare" ? "titolare" : r === "admin" ? "admin" : "tecnico";
   const { error } = await sb.from("staff").insert({ email, nome, ruolo, attivo: true });
   if (error) return { errore: error.code === "23505" ? "Questa email è già nello staff." : "Non sono riuscito ad aggiungerla." };
   revalidatePath("/lab/impostazioni");
-  return { ok: `${email} ora vede il pannello laboratorio.` };
+  revalidatePath("/admin/accessi");
+  return { ok: ruolo === "titolare" ? `${email} è titolare: quando entra da /tecnici vede tutto, finanza compresa.` : `${email} ora vede il pannello laboratorio.` };
 }
 
-/** Approva una richiesta di accesso (o cambia ruolo / disattiva). */
+/** Approva una richiesta di accesso (o cambia ruolo / disattiva). Il ruolo titolare lo gestisce solo un titolare. */
 export async function gestisciStaff(fd: FormData) {
-  const { sb } = await richiediAdmin();
+  const { sb, titolare, user } = await richiediAdmin();
   const email = String(fd.get("email") ?? "").toLowerCase();
   const azione = String(fd.get("azione"));
+  const { data: lui } = await sb.from("staff").select("ruolo").eq("email", email).maybeSingle();
+  if (!lui) return;
+  if ((lui.ruolo === "titolare" || azione === "rendi_titolare") && !titolare) return;
+  if (email === (user.email ?? "").toLowerCase() && azione !== "approva_admin") return; // non togliersi i permessi da soli
   if (azione === "approva_tecnico") await sb.from("staff").update({ attivo: true, ruolo: "tecnico" }).eq("email", email);
   else if (azione === "approva_admin") await sb.from("staff").update({ attivo: true, ruolo: "admin" }).eq("email", email);
+  else if (azione === "rendi_titolare") await sb.from("staff").update({ attivo: true, ruolo: "titolare" }).eq("email", email);
   else if (azione === "disattiva") await sb.from("staff").update({ attivo: false }).eq("email", email);
   else if (azione === "rimuovi") await sb.from("staff").delete().eq("email", email);
   revalidatePath("/lab/impostazioni");
+  revalidatePath("/admin/accessi");
 }
