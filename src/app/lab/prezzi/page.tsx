@@ -1,4 +1,4 @@
-import { richiediStaff } from "@/lib/sessione";
+import { richiediAdmin } from "@/lib/sessione";
 import { eur, dataLunga } from "@/lib/fasi";
 import { aggiungiPrezzo, aggiornaPrezzo, cambiaAttivo, aggiungiFonte, cambiaFonte } from "./azioni";
 
@@ -8,7 +8,7 @@ type Fonte = { dominio: string; categoria: string; nota: string | null; attivo: 
 export const metadata = { title: "Prezzi di riferimento — Lion ECU" };
 
 export default async function Prezzi({ searchParams }: { searchParams: Promise<{ q?: string }> }) {
-  const { sb } = await richiediStaff();
+  const { sb } = await richiediAdmin();
   const { q } = await searchParams;
   let query = sb.from("prezzi_riferimento").select("*").order("aggiornato_il", { ascending: false }).limit(200);
   const cod = (q ?? "").toUpperCase().replace(/[^A-Z0-9]/g, "");

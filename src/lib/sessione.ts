@@ -16,11 +16,23 @@ export async function richiediOfficina() {
   return { sb, user, officina: officina as Officina };
 }
 
+export type Ruolo = "admin" | "tecnico";
+
+/** Utente dello staff attivo. In attesa di approvazione → pagina di attesa; officina → la sua app. */
 export async function richiediStaff() {
   const sb = await supabaseServer();
   const { data: { user } } = await sb.auth.getUser();
-  if (!user) redirect("/accedi");
-  const { data: staff } = await sb.rpc("is_staff");
-  if (!staff) redirect("/");
-  return { sb, user };
+  if (!user) redirect("/tecnici");
+  const { data: io } = await sb.from("staff").select("email, nome, ruolo, attivo").eq("email", (user.email ?? "").toLowerCase()).maybeSingle();
+  if (!io) redirect("/");
+  if (!io.attivo) redirect("/tecnici/richiesta");
+  const ruolo = io.ruolo as Ruolo;
+  return { sb, user, ruolo, admin: ruolo === "admin", nome: (io.nome as string | null) ?? null };
+}
+
+/** Solo amministratori (prezzi, impostazioni, staff). */
+export async function richiediAdmin() {
+  const s = await richiediStaff();
+  if (!s.admin) redirect("/lab");
+  return s;
 }

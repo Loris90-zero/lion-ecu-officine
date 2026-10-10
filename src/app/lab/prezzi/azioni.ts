@@ -1,12 +1,12 @@
 "use server";
 import { revalidatePath } from "next/cache";
-import { richiediStaff } from "@/lib/sessione";
+import { richiediAdmin } from "@/lib/sessione";
 
 const norm = (s: string) => s.toUpperCase().replace(/[^A-Z0-9]/g, "");
 const numero = (v: FormDataEntryValue | null) => Number(String(v ?? "").replace(/\./g, "").replace(",", "."));
 
 export async function aggiungiPrezzo(fd: FormData) {
-  const { sb } = await richiediStaff();
+  const { sb } = await richiediAdmin();
   const codici = String(fd.get("codici") ?? "").split(/[,;\n]+/).map(norm).filter((c) => c.length >= 4);
   const prezzo = numero(fd.get("prezzo"));
   if (!codici.length || !(prezzo > 0)) return;
@@ -19,7 +19,7 @@ export async function aggiungiPrezzo(fd: FormData) {
 }
 
 export async function aggiornaPrezzo(fd: FormData) {
-  const { sb } = await richiediStaff();
+  const { sb } = await richiediAdmin();
   const id = Number(fd.get("id"));
   const prezzo = numero(fd.get("prezzo"));
   if (!(id > 0) || !(prezzo > 0)) return;
@@ -29,14 +29,14 @@ export async function aggiornaPrezzo(fd: FormData) {
 }
 
 export async function cambiaAttivo(fd: FormData) {
-  const { sb } = await richiediStaff();
+  const { sb } = await richiediAdmin();
   const id = Number(fd.get("id"));
   await sb.from("prezzi_riferimento").update({ attivo: fd.get("attivo") === "1" }).eq("id", id);
   revalidatePath("/lab/prezzi");
 }
 
 export async function aggiungiFonte(fd: FormData) {
-  const { sb } = await richiediStaff();
+  const { sb } = await richiediAdmin();
   const dominio = String(fd.get("dominio") ?? "").trim().toLowerCase().replace(/^https?:\/\//, "").replace(/^www\./, "").split("/")[0];
   const categoria = String(fd.get("categoria") ?? "").trim();
   if (!dominio.includes(".") || !categoria) return;
@@ -45,7 +45,7 @@ export async function aggiungiFonte(fd: FormData) {
 }
 
 export async function cambiaFonte(fd: FormData) {
-  const { sb } = await richiediStaff();
+  const { sb } = await richiediAdmin();
   await sb.from("fonti_preferite").update({ attivo: fd.get("attivo") === "1" }).eq("dominio", String(fd.get("dominio")));
   revalidatePath("/lab/prezzi");
 }

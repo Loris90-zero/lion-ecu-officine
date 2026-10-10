@@ -1,6 +1,6 @@
 "use server";
 import { revalidatePath } from "next/cache";
-import { richiediStaff } from "@/lib/sessione";
+import { richiediStaff, richiediAdmin } from "@/lib/sessione";
 import { livelloOfficina, scontato } from "@/lib/fedelta";
 
 export type StatoLab = { ok?: string; errore?: string };
@@ -41,7 +41,7 @@ export async function aggiornaPratica(_: StatoLab, fd: FormData): Promise<StatoL
 }
 
 export async function salvaImpostazioni(_: StatoLab, fd: FormData): Promise<StatoLab> {
-  const { sb } = await richiediStaff();
+  const { sb } = await richiediAdmin();
   const n = (k: string) => Number(String(fd.get(k) ?? "").replace(",", "."));
   const percentuale = n("percentuale") / 100;
   const minimo_eur = n("minimo_eur");
@@ -62,7 +62,7 @@ export async function salvaImpostazioni(_: StatoLab, fd: FormData): Promise<Stat
 }
 
 export async function salvaFedelta(_: StatoLab, fd: FormData): Promise<StatoLab> {
-  const { sb } = await richiediStaff();
+  const { sb } = await richiediAdmin();
   const n = (k: string) => Number(String(fd.get(k) ?? "").replace(",", "."));
   const dati = {
     fedelta_mesi: Math.round(n("fedelta_mesi")),
@@ -81,12 +81,25 @@ export async function salvaFedelta(_: StatoLab, fd: FormData): Promise<StatoLab>
 }
 
 export async function aggiungiStaff(_: StatoLab, fd: FormData): Promise<StatoLab> {
-  const { sb } = await richiediStaff();
+  const { sb } = await richiediAdmin();
   const email = String(fd.get("email") ?? "").trim().toLowerCase();
   const nome = String(fd.get("nome") ?? "").trim() || null;
   if (!email.includes("@")) return { errore: "Email non valida." };
-  const { error } = await sb.from("staff").insert({ email, nome });
+  const ruolo = fd.get("ruolo") === "admin" ? "admin" : "tecnico";
+  const { error } = await sb.from("staff").insert({ email, nome, ruolo, attivo: true });
   if (error) return { errore: error.code === "23505" ? "Questa email è già nello staff." : "Non sono riuscito ad aggiungerla." };
   revalidatePath("/lab/impostazioni");
   return { ok: `${email} ora vede il pannello laboratorio.` };
+}
+
+/** Approva una richiesta di accesso (o cambia ruolo / disattiva). */
+export async function gestisciStaff(fd: FormData) {
+  const { sb } = await richiediAdmin();
+  const email = String(fd.get("email") ?? "").toLowerCase();
+  const azione = String(fd.get("azione"));
+  if (azione === "approva_tecnico") await sb.from("staff").update({ attivo: true, ruolo: "tecnico" }).eq("email", email);
+  else if (azione === "approva_admin") await sb.from("staff").update({ attivo: true, ruolo: "admin" }).eq("email", email);
+  else if (azione === "disattiva") await sb.from("staff").update({ attivo: false }).eq("email", email);
+  else if (azione === "rimuovi") await sb.from("staff").delete().eq("email", email);
+  revalidatePath("/lab/impostazioni");
 }

@@ -2,18 +2,18 @@
 import { useState } from "react";
 import { supabaseBrowser } from "@/lib/supabase/client";
 
-function urlRitorno() {
+function urlRitorno(dopo?: string) {
   const base = process.env.NEXT_PUBLIC_SITE_URL || window.location.origin;
-  return `${base}/auth/callback`;
+  return `${base}/auth/callback${dopo ? `?next=${encodeURIComponent(dopo)}` : ""}`;
 }
 
-export function FormAccesso() {
+export function FormAccesso({ dopo, segnaposto = "officina@esempio.it" }: { dopo?: string; segnaposto?: string } = {}) {
   const [email, setEmail] = useState("");
   const [stato, setStato] = useState<"idle" | "invio" | "inviata" | "errore">("idle");
 
   async function google() {
     const sb = supabaseBrowser();
-    await sb.auth.signInWithOAuth({ provider: "google", options: { redirectTo: urlRitorno() } });
+    await sb.auth.signInWithOAuth({ provider: "google", options: { redirectTo: urlRitorno(dopo) } });
   }
 
   async function link(e: React.FormEvent) {
@@ -21,7 +21,7 @@ export function FormAccesso() {
     if (!email.includes("@")) return setStato("errore");
     setStato("invio");
     const sb = supabaseBrowser();
-    const { error } = await sb.auth.signInWithOtp({ email: email.trim(), options: { emailRedirectTo: urlRitorno() } });
+    const { error } = await sb.auth.signInWithOtp({ email: email.trim(), options: { emailRedirectTo: urlRitorno(dopo) } });
     setStato(error ? "errore" : "inviata");
   }
 
@@ -44,7 +44,7 @@ export function FormAccesso() {
       <form onSubmit={link} noValidate>
         <div className="field">
           <label htmlFor="email">La tua email</label>
-          <input id="email" type="email" autoComplete="email" inputMode="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="officina@esempio.it" />
+          <input id="email" type="email" autoComplete="email" inputMode="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder={segnaposto} />
         </div>
         {stato === "errore" ? <p className="err">Controlla l&apos;indirizzo email e riprova.</p> : null}
         <button className="btn btn-primary btn-block" type="submit" disabled={stato === "invio"}>

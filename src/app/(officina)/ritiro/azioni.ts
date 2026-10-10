@@ -2,6 +2,8 @@
 import { redirect } from "next/navigation";
 import { supabaseServer } from "@/lib/supabase/server";
 import { TIPI_MEZZO, FASCE } from "@/lib/fasi";
+import { supabaseAdmin } from "@/lib/supabase/admin";
+import { notificaStaff } from "@/lib/notifiche";
 
 export type StatoRitiro = { errore?: string };
 
@@ -9,7 +11,7 @@ export async function creaPratica(_: StatoRitiro, fd: FormData): Promise<StatoRi
   const sb = await supabaseServer();
   const { data: { user } } = await sb.auth.getUser();
   if (!user) redirect("/accedi");
-  const { data: officina } = await sb.from("officine").select("id, indirizzo_ritiro, citta").eq("owner_id", user.id).maybeSingle();
+  const { data: officina } = await sb.from("officine").select("id, ragione_sociale, indirizzo_ritiro, citta").eq("owner_id", user.id).maybeSingle();
   if (!officina) redirect("/registrazione");
 
   const t = (k: string, max = 500) => String(fd.get(k) ?? "").trim().slice(0, max);
@@ -37,11 +39,20 @@ export async function creaPratica(_: StatoRitiro, fd: FormData): Promise<StatoRi
   if (!dati.accetta_preventivo) return { errore: "Per prenotare il ritiro spunta l'accettazione del preventivo." };
   if (!dati.mezzo || !dati.sintomo) return { errore: "Scrivi almeno marca e modello del mezzo e cosa succede." };
   if (!dati.indirizzo_ritiro) return { errore: "Manca l'indirizzo di ritiro." };
-  const { data, error } = await sb.from("pratiche").insert(dati).select("id").single();
+  const { data, error } = await sb.from("pratiche").insert(dati).select("id, numero").single();
   if (error || !data) return { errore: "Non sono riuscito a registrare la richiesta. Riprova tra poco." };
   // L'indirizzo usato diventa quello del profilo (resta salvato per i prossimi ritiri)
   const citta = t("citta", 80);
   if (dati.indirizzo_ritiro !== officina.indirizzo_ritiro || (citta && citta !== officina.citta))
     await sb.from("officine").update({ indirizzo_ritiro: dati.indirizzo_ritiro, ...(citta ? { citta } : {}) }).eq("id", officina.id);
+  // Avviso ai tecnici: nuovo lavoro in arrivo
+  const pezzo = dati.centralina || dati.codice_etichetta || "Centralina da identificare";
+  await notificaStaff(supabaseAdmin(), {
+    tipo: "nuovo_ritiro",
+    titolo: `Nuovo lavoro in arrivo · ${data.numero}`,
+    testo: `${pezzo} (${dati.mezzo}) da ${officina.ragione_sociale}${citta || officina.citta ? `, ${citta || officina.citta}` : ""}. Ritiro ${dati.giorno_ritiro.toLowerCase()}, ${dati.fascia_ritiro.toLowerCase()}.`,
+    link: `/lab/pratica/${data.id}`,
+    pratica_id: data.id,
+  });
   redirect(`/pratica/${data.id}?nuova=1`);
 }

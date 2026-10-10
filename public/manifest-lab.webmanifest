@@ -1,0 +1,17 @@
+{
+  "name": "EcuLion — Laboratorio",
+  "short_name": "EcuLion Lab",
+  "description": "Pannello del laboratorio: pratiche, notifiche e aggiornamenti per tecnici.",
+  "id": "/lab",
+  "start_url": "/lab",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#0f151c",
+  "theme_color": "#0f151c",
+  "lang": "it",
+  "icons": [
+    { "src": "/icone/icona-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icone/icona-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "/icone/icona-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

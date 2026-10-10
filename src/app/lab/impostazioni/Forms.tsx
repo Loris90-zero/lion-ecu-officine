@@ -46,6 +46,7 @@ export function FormStaff() {
         <div className="field"><label htmlFor="s-email">Email</label><input id="s-email" name="email" type="email" /></div>
         <div className="field"><label htmlFor="s-nome">Nome</label><input id="s-nome" name="nome" /></div>
       </div>
+      <div className="field"><label htmlFor="s-ruolo">Ruolo</label><select id="s-ruolo" name="ruolo"><option value="tecnico">Tecnico</option><option value="admin">Amministratore</option></select></div>
       {stato.errore ? <p className="err">{stato.errore}</p> : null}
       {stato.ok ? <p className="okmsg">{stato.ok}</p> : null}
       <button className="btn btn-ghost" type="submit" disabled={inCorso}>Aggiungi allo staff</button>
