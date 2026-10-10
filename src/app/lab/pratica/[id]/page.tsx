@@ -5,6 +5,8 @@ import { eur, dataBreve } from "@/lib/fasi";
 import { PillaFase } from "@/components/Fasi";
 import { FormLab } from "./FormLab";
 import { AzioniRapide } from "./AzioniRapide";
+import { Relazione } from "./Relazione";
+import type { Struttura } from "@/lib/relazione";
 import { segnaInviato } from "./passi";
 import { numeroWa } from "../../officine/stati";
 import { livelloOfficina, scontato, pct } from "@/lib/fedelta";
@@ -20,6 +22,8 @@ export default async function PraticaLab({ params }: { params: Promise<{ id: str
   const liv = await livelloOfficina(sb, o.id);
   const { data: msg } = await sb.from("messaggi").select("id, tipo, testo, stato, creato_da, creato_il").eq("pratica_id", id).order("creato_il", { ascending: false });
   const messaggi = (msg ?? []) as { id: number; tipo: string; testo: string; stato: string; creato_da: string | null; creato_il: string }[];
+  const { data: interv } = await sb.from("interventi").select("testo_tecnico, struttura, audio_path").eq("pratica_id", id).maybeSingle();
+  const mostraRelazione = p.fase >= 2 && !!p.esito;
   const STATI_MSG: Record<string, string> = { da_inviare: "Da inviare", inviato: "Inviato", inviato_a_mano: "Inviato dal tecnico", errore: "Errore", senza_consenso: "Senza consenso WhatsApp" };
   const { data: ev } = await sb.from("eventi").select("*").eq("pratica_id", id).order("creato_il", { ascending: false });
   const fotoUrl = p.foto.length ? (await sb.storage.from("foto").createSignedUrls(p.foto, 3600)).data?.map((x) => x.signedUrl).filter((u): u is string => !!u) ?? [] : [];
@@ -36,6 +40,7 @@ export default async function PraticaLab({ params }: { params: Promise<{ id: str
         <PillaFase p={p} />
       </div>
       <AzioniRapide p={{ id: p.id, fase: p.fase, esito: p.esito, pagato: p.pagato, prezzo_suggerito: p.prezzo_confermato_eur ?? p.prezzo_accettato_eur ?? p.prezzo_stimato_eur ?? null, sconto: liv.sconto, consenso: o.consenso_whatsapp }} />
+      {mostraRelazione ? <Relazione praticaId={p.id} testoIniziale={interv?.testo_tecnico ?? ""} strutturaIniziale={(interv?.struttura as Struttura | null) ?? null} haAudio={!!interv?.audio_path} /> : null}
       <div className="lab-grid">
         <div className="section" style={{ gap: 16 }}>
           <div className="box">

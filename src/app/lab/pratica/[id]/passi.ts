@@ -82,3 +82,48 @@ export async function segnaInviato(fd: FormData) {
   if (id) await sb.from("messaggi").update({ stato: "inviato_a_mano", inviato_il: new Date().toISOString() }).eq("id", id);
   revalidatePath(`/lab/pratica/${String(fd.get("pratica"))}`);
 }
+
+export type EsitoRelazione = EsitoPasso & { struttura?: import("@/lib/relazione").Struttura };
+
+/**
+ * Relazione del tecnico (scritta o dettata): l'AI la ordina, diventa certificato di garanzia
+ * e scheda della banca dati interventi. Se la pratica è spedita, passa a «Garanzia disponibile».
+ */
+export async function salvaRelazione(_: EsitoRelazione, fd: FormData): Promise<EsitoRelazione> {
+  const { sb, user, nome } = await richiediStaff();
+  const id = String(fd.get("id"));
+  const testo = String(fd.get("testo") ?? "").trim().slice(0, 8000);
+  const audio = String(fd.get("audio") ?? "").trim() || null;
+  if (testo.length < 15) return { errore: "Scrivi o detta almeno una frase su cosa avete trovato e riparato." };
+  if (audio && !audio.startsWith(`${id}/`)) return { errore: "Audio non valido." };
+  const { data } = await sb.from("pratiche").select("*, officine(*)").eq("id", id).maybeSingle();
+  if (!data) return { errore: "Pratica non trovata." };
+  const p = data as Pratica & { officine: Officina };
+  const { strutturaRelazione } = await import("@/lib/relazione");
+  const struttura = await strutturaRelazione(testo, { centralina: p.centralina, codice: p.codice_etichetta, mezzo: p.mezzo, sintomo: p.sintomo });
+  const autore = nome ?? user.email ?? "tecnico";
+  const { error } = await sb.from("interventi").upsert({
+    pratica_id: id, testo_tecnico: testo, audio_path: audio, tecnico: autore, struttura,
+    centralina: p.centralina, codice: p.codice_etichetta, tipo_mezzo: p.tipo_mezzo, aggiornato_il: new Date().toISOString(),
+  });
+  if (error) return { errore: "Relazione non salvata. Riprova." };
+  if (p.esito !== "riparabile") {
+    revalidatePath(`/lab/pratica/${id}`);
+    return { ok: "Relazione salvata nella banca dati.", struttura: struttura ?? undefined };
+  }
+  const certificato = struttura
+    ? { guasto: struttura.guasto, testo: struttura.testo_certificato, interventi: struttura.interventi, componenti: struttura.componenti_sostituiti, collaudo: struttura.collaudo, tecnico: autore }
+    : { guasto: testo.slice(0, 200), testo: "", interventi: [], componenti: [], collaudo: "", tecnico: autore };
+  const agg: Record<string, unknown> = { guasto_riparato: certificato.guasto || p.guasto_riparato, certificato };
+  const passaAGaranzia = p.fase === 3;
+  if (passaAGaranzia) agg.fase = 4;
+  const { error: e2 } = await sb.from("pratiche").update(agg).eq("id", id);
+  if (e2) return { errore: "Certificato non salvato. Riprova." };
+  let messaggio: MessaggioPronto | undefined;
+  if (passaAGaranzia) {
+    const testoMsg = testoMessaggio("garanzia", { referente: p.officine.referente, numero: p.numero, pezzo: p.centralina || p.codice_etichetta || "riparata", link: `${await base()}/garanzie/${p.id}` });
+    messaggio = await preparaMessaggio(sb, p.officine, p.id, "garanzia", testoMsg, autore);
+  }
+  revalidatePath(`/lab/pratica/${id}`);
+  return { ok: passaAGaranzia ? "Certificato di garanzia pronto." : "Relazione salvata: il certificato sarà disponibile dopo la spedizione.", struttura: struttura ?? undefined, messaggio };
+}
