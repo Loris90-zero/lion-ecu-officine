@@ -14,10 +14,11 @@ export default async function Officine() {
       <section className="s-hero">
         <div className="s-wrap">
           <div className="s-hero-testo">
-            <h1 className="s-h1">Per le officine che non vogliono più comprare centraline nuove</h1>
-            <p className="s-lead">Il tuo cliente risparmia, tu tieni il lavoro e il margine. Noi ritiriamo, ripariamo e garantiamo a vita il guasto riparato.</p>
+            <p className="s-target">Per officine meccaniche e meccatroniche di mezzi pesanti</p>
+            <h1 className="s-h1">Il preventivo di riparazione in un minuto. Il cliente risparmia, il lavoro resta tuo.</h1>
+            <p className="s-lead">Scrivi il codice, vedi subito quanto costa ripararla: di solito circa un terzo del nuovo. Noi ritiriamo, ripariamo in 3 giorni e garantiamo a vita il guasto riparato.</p>
             <ul className="s-elenco">
-              <li><b>Prezzo prima di spedire</b>Circa il {pct(p.percentuale)} del nuovo, confermato dopo la diagnosi gratuita.</li>
+              <li><b>Preventivo immediato</b>Circa il {pct(p.percentuale)} del nuovo, confermato dopo la diagnosi gratuita.</li>
               <li><b>Zero rischi</b>Se non è riparabile la rispediamo gratis. Paghi solo le riparazioni riuscite.</li>
               <li><b>Tutto dal telefono</b>Ricerca centraline, ritiri, stato della riparazione, pagamenti e certificati.</li>
               <li><b>Sconti da partner</b>{pct(p.sconto_partner)} da {Number(p.soglia_partner_eur).toLocaleString("it-IT")} punti, {pct(p.sconto_gold)} da {Number(p.soglia_gold_eur).toLocaleString("it-IT")} punti negli ultimi {p.fedelta_mesi} mesi.</li>

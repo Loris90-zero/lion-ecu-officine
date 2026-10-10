@@ -5,7 +5,7 @@ import { Marchio } from "./Marchio";
 
 export const metadata = {
   title: { default: "EcuLion — Riparazione centraline per mezzi pesanti", template: "%s — EcuLion" },
-  description: "Ripariamo centraline di camion, bus, gru, macchine movimento terra, agricole, industriali e barche. Ritiro gratuito, diagnosi gratuita, paghi solo se è riparabile. Garanzia a vita sul guasto riparato.",
+  description: "Preventivo di riparazione della centralina in un minuto, dal codice. Per meccanici, meccatronici e flotte di mezzi pesanti: ritiro gratuito, paghi solo se è riparabile, garanzia a vita sul guasto riparato.",
   manifest: "/manifest.webmanifest",
 };
 

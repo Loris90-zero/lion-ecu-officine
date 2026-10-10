@@ -9,7 +9,7 @@
 .sito :focus-visible{outline:3px solid var(--am);outline-offset:2px}
 .s-wrap{max-width:1160px;margin:0 auto;padding:0 20px}
 .s-h1,.s-h2,.s-h3{font-family:var(--fh);font-weight:700;line-height:1.02;letter-spacing:-.005em;margin:0}
-.s-h1{font-size:clamp(44px,7vw,84px)}
+.s-h1{font-size:clamp(40px,5.6vw,74px)}
 .s-h2{font-size:clamp(34px,4.6vw,52px)}
 .s-h3{font-size:26px;line-height:1.1}
 .s-lead{font-size:20px;line-height:1.55;max-width:38em;color:var(--ac)}
@@ -142,3 +142,21 @@
 .s-attesa{margin-top:16px}
 .s-attesa i{width:35%;animation:s-scorri 1.4s ease-in-out infinite}
 @keyframes s-scorri{0%{transform:translateX(-100%)}100%{transform:translateX(300%)}}
+
+/* home: target, garanzie, confronto, domande */
+.s-target{margin:0;font-weight:600;font-size:17px;color:var(--ac);padding-left:12px;border-left:4px solid var(--am)}
+.s-garanzie{list-style:none;margin:4px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:10px 22px;font-weight:600;font-size:16px}
+.s-garanzie li{display:flex;align-items:center;gap:8px}
+.s-garanzie li::before{content:"";width:18px;height:18px;flex:none;border-radius:50%;background:var(--am) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23121212' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 12.5l4 4 8-9'/%3E%3C/svg%3E") center/12px no-repeat}
+.s-confronto{display:grid;border:2px solid var(--as);border-radius:10px;overflow:hidden;background:var(--bi);max-width:920px}
+.s-confronto>div{display:grid;grid-template-columns:1fr 1.3fr 1.3fr;border-top:1px solid var(--al)}
+.s-confronto>div:first-child{border-top:0}
+.s-confronto span{padding:16px 18px;font-size:18px}
+.s-confronto span:nth-child(3){background:#fdf6dc;border-left:3px solid var(--am)}
+.s-confronto [role="rowheader"]{font-weight:600;color:var(--gr);font-size:15px;align-self:center}
+.s-confronto .s-c-testa span{font-family:var(--fh);font-weight:700;font-size:24px;line-height:1.1}
+.s-confronto [role="cell"] b{font-family:var(--fh);font-size:26px;font-weight:700}
+@media (max-width:640px){.s-confronto>div{grid-template-columns:1fr 1fr}.s-confronto [role="rowheader"],.s-confronto .s-c-testa span:first-child{grid-column:1/-1;padding-bottom:0}.s-confronto span{font-size:16px;padding:12px}}
+.s-faq{display:grid;grid-template-columns:1fr 1fr;gap:28px 56px;max-width:1000px}
+.s-faq p{margin:8px 0 0;color:#2c3946}
+@media (max-width:800px){.s-faq{grid-template-columns:1fr}}
