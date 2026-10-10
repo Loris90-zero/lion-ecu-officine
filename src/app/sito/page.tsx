@@ -4,6 +4,7 @@ import { u, app, MEZZI } from "@/sito/config";
 import { parametriPubblici } from "@/sito/dati";
 import { Targa } from "./Targa";
 import { FormFlotta } from "./flotte/FormFlotta";
+import { CtaPartner } from "./CtaPartner";
 
 export const revalidate = 3600;
 
@@ -35,6 +36,7 @@ export default async function Home() {
               <li>Paghi solo se è riparabile</li>
               <li>Garanzia a vita sul guasto</li>
             </ul>
+            <CtaPartner />
           </div>
           <Targa />
         </div>
@@ -128,6 +130,7 @@ export default async function Home() {
             <Link className="s-btn s-btn-p" href={u("/officine")}>Scopri se la tua officina è adatta</Link>
             <Wa testo="Ciao EcuLion, vorrei diventare officina partner." />
           </div>
+          <div style={{ marginTop: 24 }}><CtaPartner /></div>
         </div>
       </section>
 

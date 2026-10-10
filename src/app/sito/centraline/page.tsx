@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Wa } from "@/sito/Whatsapp";
 import { u, app, BASE } from "@/sito/config";
 import { RicercaLive } from "./RicercaLive";
+import { CtaPartner } from "../CtaPartner";
 import { centralinePubblicate } from "@/sito/dati";
 import { Targa } from "../Targa";
 
@@ -20,7 +21,7 @@ export default async function Centraline({ searchParams }: { searchParams: Promi
             <h1 className="s-h1">{q ? `Risultati per «${q}»` : "Catalogo centraline"}</h1>
             <p className="s-lead">Le centraline che ripariamo, con i guasti più comuni e il prezzo indicativo della riparazione.</p>
           </div>
-          <Targa />
+          <div style={{ display: "flex", flexDirection: "column", gap: 16 }}><Targa /><CtaPartner /></div>
         </div>
         {q && !lista.length ? <RicercaLive q={q} base={BASE} app={app("")} /> : lista.length ? (
           <ul className="s-cat">

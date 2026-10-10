@@ -3,6 +3,7 @@ import { Wa } from "@/sito/Whatsapp";
 import { u, app } from "@/sito/config";
 import { parametriPubblici } from "@/sito/dati";
 import { Quiz } from "./Quiz";
+import { CtaPartner } from "../CtaPartner";
 
 export const metadata = { title: "Per le officine", description: "Ripara le centraline dei tuoi clienti senza comprarle nuove: ritiro gratuito, diagnosi gratuita, prezzo prima di spedire e sconti per le officine partner." };
 export const revalidate = 3600;
@@ -24,9 +25,10 @@ export default async function Officine() {
               <li><b>Tutto dal telefono</b>Ricerca centraline, ritiri, stato della riparazione, pagamenti e certificati.</li>
               <li><b>Sconti da partner</b>{pct(p.sconto_partner)} da {Number(p.soglia_partner_eur).toLocaleString("it-IT")} punti, {pct(p.sconto_gold)} da {Number(p.soglia_gold_eur).toLocaleString("it-IT")} punti negli ultimi {p.fedelta_mesi} mesi.</li>
             </ul>
+            <CtaPartner />
           </div>
           <div style={{ background: "var(--bi)", border: "2px solid var(--as)", borderRadius: 10, padding: 28 }} id="quiz">
-            <h2 className="s-h3" style={{ marginBottom: 6 }}>La tua officina è adatta? Cinque domande, un minuto.</h2>
+            <h2 className="s-h3" style={{ marginBottom: 6 }}>La tua officina è adatta? Un minuto, una domanda alla volta.</h2>
             <p className="s-muted" style={{ marginTop: 0 }}>Alla fine ricevi l&apos;accesso all&apos;app.</p>
             <Quiz appUrl={app("")} />
           </div>

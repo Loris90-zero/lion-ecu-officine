@@ -18,6 +18,8 @@ export default async function OfficinaLab({ params }: { params: Promise<{ id: st
   const { data: pr } = await sb.from("pratiche").select("*").eq("officina_id", id).order("creato_il", { ascending: false });
   const pratiche = (pr ?? []) as Pratica[];
   const liv = await livelloOfficina(sb, id);
+  const { data: ld } = await sb.from("lead").select("score, origine, risposte, creato_il").eq("officina_id", id).order("creato_il", { ascending: false }).limit(1).maybeSingle();
+  const prof = (ld?.risposte as { profilo?: { riassunto?: string; leve?: string[]; note?: string[]; centraline_mese?: number } } | null)?.profilo;
   const fatturato = pratiche.filter((p) => p.pagato).reduce((s, p) => s + Number(p.prezzo_pagato_eur ?? p.prezzo_confermato_eur ?? 0), 0);
 
   return (
@@ -77,6 +79,14 @@ export default async function OfficinaLab({ params }: { params: Promise<{ id: st
               <dt>Pagato in totale</dt><dd className="mono">{eur(fatturato)}</dd>
             </dl>
           </div>
+          {ld ? (
+            <div className="box">
+              <span className="label">Profilo dal questionario · score {ld.score}</span>
+              {prof?.riassunto ? <p style={{ margin: 0 }}>{prof.riassunto}</p> : <p className="muted" style={{ margin: 0 }}>Questionario con la versione precedente: solo lo score.</p>}
+              {prof?.leve?.length ? <><b style={{ fontSize: 14 }}>Cosa dire per farci scegliere</b><ul className="src">{prof.leve.map((x) => <li key={x}>{x}</li>)}</ul></> : null}
+              {prof?.note?.length ? <ul className="src">{prof.note.map((x) => <li key={x}>{x}</li>)}</ul> : null}
+            </div>
+          ) : null}
           <div className="box">
             <span className="label">Gestione commerciale</span>
             <FormCrm officinaId={o.id} stato={crm?.stato ?? "nuova"} note={crm?.note ?? ""} prossimo={crm?.prossimo_contatto ?? ""} />

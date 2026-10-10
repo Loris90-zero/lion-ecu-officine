@@ -2,7 +2,8 @@
 import { redirect } from "next/navigation";
 import { supabaseServer } from "@/lib/supabase/server";
 import { supabaseAdmin } from "@/lib/supabase/admin";
-import { DOMANDE, calcolaScore, SOGLIA_CALDO, type Risposte } from "@/sito/score";
+import { percorri, valuta } from "@/sito/quiz";
+import { SOGLIA_CALDO } from "@/sito/score";
 import { notificaStaff } from "@/lib/notifiche";
 
 export type StatoForm = { errore?: string };
@@ -28,16 +29,15 @@ export async function creaOfficina(_: StatoForm, fd: FormData): Promise<StatoFor
   const admin = supabaseAdmin();
   const email = String(dati.email).toLowerCase();
   const { data: lead } = await admin.from("lead").select("id, score").eq("email", email).is("officina_id", null).order("creato_il", { ascending: false }).limit(1).maybeSingle();
-  let risposte: Risposte | null = null;
+  let quiz: ReturnType<typeof valuta> | null = null;
+  let flusso: Record<string, unknown> | null = null;
   if (!lead) {
-    risposte = {};
-    for (const d of DOMANDE) {
-      const valide = d.opzioni.map(([v]) => v as string);
-      if (d.multipla) risposte[d.id] = fd.getAll(d.id).map(String).filter((v) => valide.includes(v));
-      else { const v = String(fd.get(d.id) ?? ""); if (valide.includes(v)) risposte[d.id] = v; }
-    }
-    const mancanti = DOMANDE.filter((d) => (d.multipla ? !(risposte![d.id] as string[]).length : !risposte![d.id]));
-    if (mancanti.length) return { errore: `Rispondi anche a: ${mancanti.map((d) => d.testo).join(" · ")}` };
+    let grezze = {};
+    try { grezze = JSON.parse(String(fd.get("quiz") ?? "{}")); } catch { /* vuoto */ }
+    const p = percorri(grezze);
+    if (!p.completo) return { errore: "Completa il questionario: mancano ancora alcune risposte." };
+    quiz = valuta(p.risposte);
+    flusso = p.risposte;
   }
   const { data: nuova, error } = await sb.from("officine").insert(dati).select("id").single();
   if (error || !nuova) return { errore: "Non sono riuscito a salvare i dati. Riprova tra poco." };
@@ -47,14 +47,14 @@ export async function creaOfficina(_: StatoForm, fd: FormData): Promise<StatoFor
     score = lead.score;
     await admin.from("lead").update({ officina_id: nuova.id }).eq("id", lead.id);
   } else {
-    score = calcolaScore(risposte!);
-    await admin.from("lead").insert({ nome_officina: dati.ragione_sociale, nome: dati.referente, telefono: dati.telefono, email, risposte, score, origine: "app_registrazione", officina_id: nuova.id });
+    score = quiz!.score;
+    await admin.from("lead").insert({ nome_officina: dati.ragione_sociale, nome: dati.referente, telefono: dati.telefono, email, risposte: { flusso, profilo: quiz!.profilo }, score, origine: "app_registrazione", officina_id: nuova.id });
   }
   await admin.from("officine").update({ score }).eq("id", nuova.id);
   await notificaStaff(admin, {
     per_ruolo: "admin", tipo: "lead",
     titolo: score >= SOGLIA_CALDO ? `Officina calda registrata: score ${score}` : `Nuova officina registrata: score ${score}`,
-    testo: `${dati.ragione_sociale}: ${dati.referente}, ${dati.telefono}.`, link: `/lab/officine/${nuova.id}`,
+    testo: `${dati.ragione_sociale}: ${dati.referente}, ${dati.telefono}.${quiz ? ` ${quiz.profilo.riassunto}` : ""}`, link: `/lab/officine/${nuova.id}`,
   });
   redirect("/?benvenuto=1");
 }

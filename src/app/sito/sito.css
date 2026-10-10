@@ -165,3 +165,12 @@
 .s-wa:hover{color:#1f9d55}
 .s-scuro .s-wa,.s-piede .s-wa{color:#e8e6df}
 .s-targa .s-wa{margin-top:12px;color:#22303d}
+.s-cta-partner{display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;padding:14px 18px;border:2px dashed var(--as);border-radius:10px;text-decoration:none;font-size:16px;background:var(--bi);max-width:720px}
+.s-cta-partner b{background:var(--as);color:var(--bi);padding:6px 14px;border-radius:6px;font-size:15px;white-space:nowrap}
+.s-cta-partner:hover{border-style:solid;border-color:var(--am)}
+.s-cta-partner:hover b{background:var(--am);color:var(--as)}
+.s-cta-scuro{background:transparent;border-color:#cfcdc6;color:var(--bi)}
+.s-cta-scuro b{background:var(--am);color:var(--as)}
+.s-benefici{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:2px;background:var(--al);border:2px solid var(--al);border-radius:8px;overflow:hidden}
+.s-benefici li{background:var(--bi);padding:20px}
+.s-benefici b{display:block;font-family:var(--fh);font-size:24px;line-height:1.1;margin-bottom:6px}

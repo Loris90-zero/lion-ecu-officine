@@ -19,7 +19,7 @@ export default async function OfficineLab({ searchParams }: { searchParams: Prom
   const { regole, livelli } = await livelliOfficine(sb);
   const oggi = new Date().toISOString().slice(0, 10);
   const { data: ld } = await sb.from("lead").select("*").is("officina_id", null).order("score", { ascending: false }).limit(100);
-  const lead = (ld ?? []) as { id: number; nome_officina: string; nome: string; telefono: string; email: string; provincia: string | null; score: number; creato_il: string }[];
+  const lead = (ld ?? []) as { id: number; nome_officina: string; nome: string; telefono: string; email: string; provincia: string | null; score: number; creato_il: string; origine: string | null; risposte: { profilo?: { riassunto?: string; leve?: string[] } } | null }[];
 
   const statsPer = new Map<string, { n: number; aperte: number; ultima: string | null }>();
   for (const p of pr ?? []) {
@@ -86,7 +86,7 @@ export default async function OfficineLab({ searchParams }: { searchParams: Prom
           <table className="tbl"><tbody>
             {lead.map((l) => (
               <tr key={l.id}>
-                <td><b>{l.nome_officina}</b><div className="hint">{l.nome}{l.provincia ? ` · ${l.provincia}` : ""}</div></td>
+                <td><b>{l.nome_officina}</b><div className="hint">{l.nome}{l.provincia ? ` · ${l.provincia}` : ""}{l.origine === "sito_partner" ? " · vuole diventare partner" : l.origine === "sito_flotta" ? " · flotta" : ""}</div>{l.risposte?.profilo?.riassunto ? <div className="hint" style={{ maxWidth: 420 }}>{l.risposte.profilo.riassunto}</div> : null}{l.risposte?.profilo?.leve?.length ? <div className="hint" style={{ maxWidth: 420 }}><b>Leve:</b> {l.risposte.profilo.leve.slice(0, 3).join(" · ")}</div> : null}</td>
                 <td className="mono" style={{ fontSize: 13 }}><a href={`tel:${l.telefono}`}>{l.telefono}</a><div className="hint">{l.email}</div></td>
                 <td>Score <b>{l.score}</b>{l.score >= SOGLIA_CALDO ? <div><span className="badge-chiama">Da chiamare</span></div> : null}</td>
                 <td className="mono hint">{dataBreve(l.creato_il)}</td>
