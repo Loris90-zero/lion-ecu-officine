@@ -71,7 +71,7 @@
 
 /* passi */
 .s-passi{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(4,1fr);gap:0;counter-reset:p}
-@media (max-width:900px){.s-passi{grid-template-columns:1fr}}
+@media (max-width:900px){.s-passi{grid-template-columns:1fr}.s-passi li{margin-right:0}}
 .s-passi li{counter-increment:p;padding:28px 24px 28px 0;border-top:4px solid var(--as);margin-right:24px}
 .s-passi li::before{content:counter(p);font-family:var(--fh);font-weight:700;font-size:56px;line-height:1;color:var(--am);display:block;margin-bottom:12px}
 .s-passi h3{font-family:var(--fh);font-size:26px;margin:0 0 8px;line-height:1.1}
