@@ -17,7 +17,8 @@ Ultimo step, dopo aver finito l'app. Aggiornata ad ogni modifica.
 - [ ] Due righe in più su Alex (provenienza, specialità) per la sezione «Chi ripara»
 - [ ] Ricerca dal sito: valutare i limiti (oggi 5 al giorno per visitatore, 150 al giorno in tutto) e una protezione anti-bot se servirà
 - [ ] Prime **10-20 pagine del catalogo** (dal pannello Laboratorio → Sito) e prime guide, controllate a mano prima di pubblicarle
-- [ ] Google Search Console + invio della sitemap
+- [ ] Google Search Console e **Bing Webmaster Tools** + invio della sitemap
+- [ ] Redirect 301 dell'indirizzo di prova lion-ecu-officine.vercel.app verso eculion.it (Bing lo aveva già indicizzato) e togliere il «noindex» dal dominio vero
 - [ ] Versioni in inglese, tedesco e rumeno
 - [ ] Mappa delle officine partner per camionisti, quando ci sono i primi partner
 

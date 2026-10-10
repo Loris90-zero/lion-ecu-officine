@@ -36,11 +36,21 @@ export async function middleware(request: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser();
   const path = request.nextUrl.pathname;
   if (!user && !PUBBLICHE.some((p) => path.startsWith(p)) && !PUBBLICHE_ESATTE.includes(path)) {
+    if (host.endsWith(".vercel.app")) {
+      const url = request.nextUrl.clone();
+      url.pathname = path.startsWith("/lab") || path.startsWith("/tecnici") || path.startsWith("/admin") ? "/tecnici" : "/accedi";
+      url.search = "";
+      const r = NextResponse.redirect(url);
+      r.headers.set("X-Robots-Tag", "noindex, nofollow");
+      return r;
+    }
     const url = request.nextUrl.clone();
     url.pathname = path.startsWith("/lab") || path.startsWith("/tecnici") || path.startsWith("/admin") ? "/tecnici" : "/accedi";
     url.search = "";
     return NextResponse.redirect(url);
   }
+  // Indirizzo di prova (vercel.app): Google e Bing possono leggerlo ma non devono metterlo nei risultati
+  if (host.endsWith(".vercel.app")) response.headers.set("X-Robots-Tag", "noindex, nofollow");
   return response;
 }
 
