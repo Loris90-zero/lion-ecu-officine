@@ -45,6 +45,14 @@ Ultimo step, dopo aver finito l'app. Aggiornata ad ogni modifica.
 - [x] Riepilogo mattutino a Loris (cron Vercel alle 6:00 UTC, push solo al titolare). Facoltativo: `CRON_SECRET` su Vercel
 - [ ] **Metricool**: pubblica i post del calendario Social (`social_post`) e riporta like/commenti/visualizzazioni in `risultati`
 - [ ] **Canva** (grafiche) e **Descript** (montaggio video) per le bozze del calendario
+- [ ] **Creatività AI** (connettori di Claude, a crediti):
+  - **Higgsfield**: video e immagini AI (Kling, Seedance, Soul, ecc.), personaggio ricorrente con la stessa faccia, voce fuori campo, sottotitoli, formati verticali. Esempio dal loro blog: video UGC verticale di 20 s ≈ 13,50 $
+  - **HeyGen**: video con avatar parlante (spiegazioni, «il tecnico ti racconta»)
+  - **Arcads**: video ads in stile UGC con attori AI
+  - **Adobe for creativity** (Photoshop, Premiere, Express) come alternativa a Canva
+  - Regola: personaggi AI come narratori o sketch divertenti, mai come finti clienti o finte testimonianze; rispettare l'etichetta «contenuto AI» di Meta e gli obblighi di trasparenza dell'AI Act
+  - Chiedere sempre il costo in crediti prima di generare (non c'è un tetto automatico)
+- [ ] Testi di marketing generati dall'app con il modello più forte (impostazione su Vercel solo per contenuti: sequenze email, catalogo, annunci)
 - [ ] **WhatsApp Business API**: contare i messaggi veri ricevuti per sorgente (oggi si contano i click sul pulsante WhatsApp)
 - [ ] **Prospezione AI**: Resend con `RESEND_API_KEY`, `EMAIL_MITTENTE` (es. «Loris di EcuLion <loris@eculion.it>»), `EMAIL_RISPOSTE`; dominio verificato (SPF/DKIM) e meglio un sottodominio dedicato agli invii commerciali; risposte ed aperture via webhook Resend → `prospect_attivita`
 - [ ] **Verifica legale prima degli invii**: email commerciali e chiamate a freddo verso aziende (art. 130 Codice Privacy, GDPR, Registro Pubblico delle Opposizioni) con consulente privacy/avvocato
