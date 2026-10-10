@@ -181,3 +181,11 @@ nav.tabs div{max-width:520px;margin:0 auto;display:grid;grid-auto-flow:column;gr
 .notifiche li.nuova{border-color:var(--accent)}
 .notifiche li>a,.notifiche li>div{display:block;padding:12px 14px;color:inherit;text-decoration:none}
 .notifiche li p{margin:4px 0;font-size:14px}
+.btn-xl{min-height:58px;font-size:17px}
+.btn-danger{background:var(--danger);color:#fff}
+.passo{border-color:var(--accent)}
+.msg-pronto{border-color:var(--ok)}
+.msg-testo{white-space:pre-line;font-size:14px;margin:0;background:var(--surface-2);border-radius:10px;padding:10px 12px}
+.msg-lista{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+.msg-lista li{border-top:1px solid var(--line);padding-top:10px}
+.msg-lista details summary{cursor:pointer;font-size:14px}

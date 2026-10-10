@@ -4,6 +4,9 @@ import { richiediStaff } from "@/lib/sessione";
 import { eur, dataBreve } from "@/lib/fasi";
 import { PillaFase } from "@/components/Fasi";
 import { FormLab } from "./FormLab";
+import { AzioniRapide } from "./AzioniRapide";
+import { segnaInviato } from "./passi";
+import { numeroWa } from "../../officine/stati";
 import { livelloOfficina, scontato, pct } from "@/lib/fedelta";
 import type { Evento, Officina, Pratica } from "@/lib/types";
 
@@ -15,6 +18,9 @@ export default async function PraticaLab({ params }: { params: Promise<{ id: str
   const p = data as Pratica & { officine: Officina };
   const o = p.officine;
   const liv = await livelloOfficina(sb, o.id);
+  const { data: msg } = await sb.from("messaggi").select("id, tipo, testo, stato, creato_da, creato_il").eq("pratica_id", id).order("creato_il", { ascending: false });
+  const messaggi = (msg ?? []) as { id: number; tipo: string; testo: string; stato: string; creato_da: string | null; creato_il: string }[];
+  const STATI_MSG: Record<string, string> = { da_inviare: "Da inviare", inviato: "Inviato", inviato_a_mano: "Inviato dal tecnico", errore: "Errore", senza_consenso: "Senza consenso WhatsApp" };
   const { data: ev } = await sb.from("eventi").select("*").eq("pratica_id", id).order("creato_il", { ascending: false });
   const fotoUrl = p.foto.length ? (await sb.storage.from("foto").createSignedUrls(p.foto, 3600)).data?.map((x) => x.signedUrl).filter((u): u is string => !!u) ?? [] : [];
 
@@ -29,6 +35,7 @@ export default async function PraticaLab({ params }: { params: Promise<{ id: str
         </div>
         <PillaFase p={p} />
       </div>
+      <AzioniRapide p={{ id: p.id, fase: p.fase, esito: p.esito, pagato: p.pagato, prezzo_suggerito: p.prezzo_confermato_eur ?? p.prezzo_accettato_eur ?? p.prezzo_stimato_eur ?? null, sconto: liv.sconto, consenso: o.consenso_whatsapp }} />
       <div className="lab-grid">
         <div className="section" style={{ gap: 16 }}>
           <div className="box">
@@ -64,9 +71,34 @@ export default async function PraticaLab({ params }: { params: Promise<{ id: str
             <ul className="src">{(ev as Evento[] | null ?? []).map((e) => <li key={e.id}><span className="mono hint">{dataBreve(e.creato_il)}</span> · {e.testo}</li>)}</ul>
           </div>
         </div>
-        <div className="box">
-          <span className="label">Aggiorna la pratica</span>
-          <FormLab p={p} />
+        <div className="section" style={{ gap: 16 }}>
+          <div className="box">
+            <span className="label">Messaggi all&apos;officina · {messaggi.length}</span>
+            {messaggi.length === 0 ? <p className="muted" style={{ margin: 0 }}>Nessun messaggio ancora.</p> : (
+              <ul className="msg-lista">
+                {messaggi.map((m) => (
+                  <li key={m.id}>
+                    <details>
+                      <summary><b>{STATI_MSG[m.stato] ?? m.stato}</b> · {dataBreve(m.creato_il)}{m.creato_da ? ` · ${m.creato_da}` : ""}</summary>
+                      <p className="msg-testo" style={{ marginTop: 8 }}>{m.testo}</p>
+                    </details>
+                    {m.stato === "da_inviare" || m.stato === "senza_consenso" ? (
+                      <form action={segnaInviato} style={{ flexDirection: "row", gap: 12, alignItems: "center", marginTop: 6 }}>
+                        <input type="hidden" name="messaggio" value={m.id} />
+                        <input type="hidden" name="pratica" value={p.id} />
+                        <a className="linkbtn" href={`https://wa.me/${numeroWa(o.telefono)}?text=${encodeURIComponent(m.testo)}`} target="_blank" rel="noopener noreferrer">Apri WhatsApp</a>
+                        <button className="linkbtn" type="submit">Segna come inviato</button>
+                      </form>
+                    ) : null}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+          <details className="box">
+            <summary className="label" style={{ cursor: "pointer" }}>Modifica avanzata</summary>
+            <FormLab p={p} />
+          </details>
         </div>
       </div>
     </section>
