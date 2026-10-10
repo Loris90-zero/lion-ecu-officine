@@ -1,6 +1,7 @@
 "use client";
 import { useActionState, useState } from "react";
-import { salvaImpostazioni, aggiungiStaff, type StatoLab } from "../azioni";
+import { salvaImpostazioni, aggiungiStaff, salvaFedelta, type StatoLab } from "../azioni";
+import type { RegoleFedelta } from "@/lib/fedelta";
 import { calcolaPrezzo, type Impostazioni } from "@/lib/prezzo";
 import { eur } from "@/lib/fasi";
 
@@ -48,6 +49,26 @@ export function FormStaff() {
       {stato.errore ? <p className="err">{stato.errore}</p> : null}
       {stato.ok ? <p className="okmsg">{stato.ok}</p> : null}
       <button className="btn btn-ghost" type="submit" disabled={inCorso}>Aggiungi allo staff</button>
+    </form>
+  );
+}
+
+export function FormFedelta({ r }: { r: RegoleFedelta }) {
+  const [stato, azione, inCorso] = useActionState<StatoLab, FormData>(salvaFedelta, {});
+  return (
+    <form action={azione}>
+      <div className="field"><label htmlFor="fedelta_mesi">Conta la spesa degli ultimi (mesi)</label><input id="fedelta_mesi" name="fedelta_mesi" inputMode="numeric" defaultValue={Number(r.fedelta_mesi)} /></div>
+      <div className="grid2">
+        <div className="field"><label htmlFor="soglia_partner_eur">Partner da (punti = €)</label><input id="soglia_partner_eur" name="soglia_partner_eur" inputMode="decimal" defaultValue={Number(r.soglia_partner_eur)} /></div>
+        <div className="field"><label htmlFor="sconto_partner">Sconto Partner (%)</label><input id="sconto_partner" name="sconto_partner" inputMode="decimal" defaultValue={Math.round(Number(r.sconto_partner) * 100)} /></div>
+      </div>
+      <div className="grid2">
+        <div className="field"><label htmlFor="soglia_gold_eur">Partner Gold da (punti = €)</label><input id="soglia_gold_eur" name="soglia_gold_eur" inputMode="decimal" defaultValue={Number(r.soglia_gold_eur)} /></div>
+        <div className="field"><label htmlFor="sconto_gold">Sconto Partner Gold (%)</label><input id="sconto_gold" name="sconto_gold" inputMode="decimal" defaultValue={Math.round(Number(r.sconto_gold) * 100)} /></div>
+      </div>
+      {stato.errore ? <p className="err">{stato.errore}</p> : null}
+      {stato.ok ? <p className="okmsg">{stato.ok}</p> : null}
+      <button className="btn btn-primary" type="submit" disabled={inCorso}>Salva</button>
     </form>
   );
 }

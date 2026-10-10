@@ -44,6 +44,12 @@ create table if not exists public.impostazioni (
   minimo_eur numeric not null default 150,
   arrotonda_eur numeric not null default 10,
   base text not null default 'mediana' check (base in ('mediana','minimo','massimo')),
+  -- programma punti: 1 € pagato (IVA esclusa) = 1 punto, sugli ultimi fedelta_mesi mesi
+  fedelta_mesi int not null default 12,
+  soglia_partner_eur numeric not null default 3000,
+  sconto_partner numeric not null default 0.10,
+  soglia_gold_eur numeric not null default 6000,
+  sconto_gold numeric not null default 0.15,
   cambio_usd numeric not null default 0.90,
   cambio_gbp numeric not null default 1.15,
   soglia_anomali numeric not null default 0.40,
@@ -79,6 +85,8 @@ create table if not exists public.pratiche (
   esito text check (esito in ('riparabile','non_riparabile')),
   prezzo_confermato_eur numeric,
   pagato boolean not null default false,
+  sconto_pct numeric not null default 0,   -- sconto del livello applicato al pagamento
+  prezzo_pagato_eur numeric,               -- importo effettivamente pagato (dopo lo sconto)
   pagato_il timestamptz,
   stripe_session_id text,
   nota_laboratorio text,
@@ -125,6 +133,7 @@ begin
       new.pagato := false; new.pagato_il := null; new.stripe_session_id := null;
       new.nota_laboratorio := null; new.guasto_riparato := null;
       new.corriere := null; new.tracking := null;
+      new.sconto_pct := 0; new.prezzo_pagato_eur := null;
     end if;
     new.accettato_il := case when new.accetta_preventivo then now() else null end;
     if not new.accetta_preventivo then new.prezzo_accettato_eur := null; end if;

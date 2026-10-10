@@ -4,6 +4,7 @@ import { richiediStaff } from "@/lib/sessione";
 import { eur, dataBreve } from "@/lib/fasi";
 import { PillaFase } from "@/components/Fasi";
 import { FormLab } from "./FormLab";
+import { livelloOfficina, scontato, pct } from "@/lib/fedelta";
 import type { Evento, Officina, Pratica } from "@/lib/types";
 
 export default async function PraticaLab({ params }: { params: Promise<{ id: string }> }) {
@@ -13,6 +14,7 @@ export default async function PraticaLab({ params }: { params: Promise<{ id: str
   if (!data) notFound();
   const p = data as Pratica & { officine: Officina };
   const o = p.officine;
+  const liv = await livelloOfficina(sb, o.id);
   const { data: ev } = await sb.from("eventi").select("*").eq("pratica_id", id).order("creato_il", { ascending: false });
   const fotoUrl = p.foto.length ? (await sb.storage.from("foto").createSignedUrls(p.foto, 3600)).data?.map((x) => x.signedUrl).filter((u): u is string => !!u) ?? [] : [];
 
@@ -39,7 +41,8 @@ export default async function PraticaLab({ params }: { params: Promise<{ id: str
               <dt>Preventivo</dt><dd>{p.accetta_preventivo
                 ? (p.prezzo_accettato_eur ? <>Accettato fino a <b>{eur(p.prezzo_accettato_eur)}</b>{p.accettato_il ? ` il ${dataBreve(p.accettato_il)}` : ""}{p.prezzo_confermato_eur && p.prezzo_confermato_eur > p.prezzo_accettato_eur ? <span className="err"> · prezzo confermato più alto: richiedi nuova conferma</span> : null}</> : <>Accettato, prezzo da comunicare dopo la diagnosi</>)
                 : <span className="muted">Non accettato (richiesta precedente)</span>}</dd>
-              {p.pagato ? <><dt>Pagamento</dt><dd>Pagata {eur(p.prezzo_confermato_eur)}{p.pagato_il ? ` il ${dataBreve(p.pagato_il)}` : ""}</dd></> : null}
+              <dt>Livello officina</dt><dd>{liv.nome} · {liv.punti.toLocaleString("it-IT")} punti{liv.sconto ? ` · sconto ${pct(liv.sconto)}` : ""}{!p.pagato && p.prezzo_confermato_eur && liv.sconto ? <> · pagherà <b>{eur(scontato(Number(p.prezzo_confermato_eur), liv.sconto))}</b></> : null}</dd>
+              {p.pagato ? <><dt>Pagamento</dt><dd>Pagata {eur(p.prezzo_pagato_eur ?? p.prezzo_confermato_eur)}{Number(p.sconto_pct) ? ` (sconto ${pct(Number(p.sconto_pct))})` : ""}{p.pagato_il ? ` il ${dataBreve(p.pagato_il)}` : ""}</dd></> : null}
             </dl>
             {fotoUrl.length ? <div className="photos">{fotoUrl.map((u) => <a key={u} href={u} target="_blank" rel="noopener noreferrer"><img src={u} alt="Foto della centralina" /></a>)}</div> : null}
           </div>

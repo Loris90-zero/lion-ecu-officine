@@ -4,11 +4,14 @@ import { richiediOfficina } from "@/lib/sessione";
 import { BarraFasi, PillaFase } from "@/components/Fasi";
 import { Installa } from "@/components/Installa";
 import { Flusso } from "@/components/Flusso";
+import { CardLivello } from "@/components/Livello";
+import { livelloOfficina } from "@/lib/fedelta";
 import type { Pratica } from "@/lib/types";
 
 export default async function Home({ searchParams }: { searchParams: Promise<Record<string, string | undefined>> }) {
   const { sb, officina, user } = await richiediOfficina();
   const sp = await searchParams;
+  const livello = await livelloOfficina(sb, officina.id);
   const benvenuto = sp.benvenuto;
   const num = (v?: string) => { const n = Number(v); return isFinite(n) && n > 0 ? n : null; };
   const iniziale = sp.ritiro ? { centralina: sp.centralina ?? "", codice: sp.codice ?? "", nota: (sp.nota ?? "").slice(0, 120), stima: num(sp.stima), base: num(sp.base) } : null;
@@ -29,7 +32,8 @@ export default async function Home({ searchParams }: { searchParams: Promise<Rec
           <span className="muted" style={{ fontSize: 14 }}>Paga dall&apos;app e procediamo con la riparazione.</span>
         </Link>
       ) : null}
-      <Flusso userId={user.id} indirizzo={officina.indirizzo_ritiro} iniziale={iniziale} />
+      <Flusso userId={user.id} indirizzo={officina.indirizzo_ritiro} iniziale={iniziale} sconto={livello.sconto} livello={livello.nome} />
+      <CardLivello l={livello} />
       <div className="section">
         <div className="row"><h2>In lavorazione</h2><span className="label">{aperte.length} {aperte.length === 1 ? "centralina" : "centraline"}</span></div>
         {aperte.length === 0 ? (

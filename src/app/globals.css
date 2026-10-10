@@ -162,3 +162,9 @@ nav.tabs div{max-width:520px;margin:0 auto;display:grid;grid-auto-flow:column;gr
 .punti>div{display:flex;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-size:13px;line-height:1.3}
 .punti svg{width:28px;height:28px;flex:none;color:var(--accent)}
 .punti b{display:block;font-size:13.5px}
+.livello{gap:10px}
+.livello .row{align-items:flex-end}
+.badge-sconto{display:inline-block;margin-left:8px;font-size:13px;font-weight:700;padding:2px 8px;border-radius:999px;background:var(--accent);color:var(--accent-ink);vertical-align:middle}
+.barra{height:8px;border-radius:999px;background:var(--line);overflow:hidden}
+.barra i{display:block;height:100%;background:var(--accent);border-radius:999px}
+.prezzo-barrato{text-decoration:line-through;color:var(--ink-2);font-weight:400;font-size:.8em;margin-left:6px}

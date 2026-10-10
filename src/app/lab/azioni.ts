@@ -1,6 +1,7 @@
 "use server";
 import { revalidatePath } from "next/cache";
 import { richiediStaff } from "@/lib/sessione";
+import { livelloOfficina, scontato } from "@/lib/fedelta";
 
 export type StatoLab = { ok?: string; errore?: string };
 
@@ -16,6 +17,13 @@ export async function aggiornaPratica(_: StatoLab, fd: FormData): Promise<StatoL
   if (esito && !["riparabile", "non_riparabile"].includes(esito)) return { errore: "Esito non valido." };
   if (prezzoNum !== null && !(prezzoNum > 0)) return { errore: "Il prezzo deve essere un numero maggiore di zero." };
   if (esito === "riparabile" && !prezzoNum) return { errore: "Per una centralina riparabile serve il prezzo confermato." };
+  let pagamento = {};
+  if (fd.get("pagato_manuale") === "on" && esito === "riparabile" && prezzoNum) {
+    const { data: pr } = await sb.from("pratiche").select("officina_id").eq("id", id).single();
+    const liv = pr ? await livelloOfficina(sb, pr.officina_id) : null;
+    const sconto = liv?.sconto ?? 0;
+    pagamento = { pagato: true, pagato_il: new Date().toISOString(), sconto_pct: sconto, prezzo_pagato_eur: scontato(prezzoNum, sconto) };
+  }
   const { error } = await sb.from("pratiche").update({
     fase,
     esito,
@@ -24,7 +32,7 @@ export async function aggiornaPratica(_: StatoLab, fd: FormData): Promise<StatoL
     guasto_riparato: t("guasto_riparato"),
     corriere: t("corriere"),
     tracking: t("tracking"),
-    ...(fd.get("pagato_manuale") === "on" ? { pagato: true, pagato_il: new Date().toISOString() } : {}),
+    ...pagamento,
   }).eq("id", id);
   if (error) return { errore: "Salvataggio non riuscito: " + error.message };
   revalidatePath(`/lab/pratica/${id}`);
@@ -51,6 +59,25 @@ export async function salvaImpostazioni(_: StatoLab, fd: FormData): Promise<Stat
   if (error) return { errore: "Salvataggio non riuscito." };
   revalidatePath("/lab/impostazioni");
   return { ok: "Impostazioni salvate. Valgono dalla prossima ricerca." };
+}
+
+export async function salvaFedelta(_: StatoLab, fd: FormData): Promise<StatoLab> {
+  const { sb } = await richiediStaff();
+  const n = (k: string) => Number(String(fd.get(k) ?? "").replace(",", "."));
+  const dati = {
+    fedelta_mesi: Math.round(n("fedelta_mesi")),
+    soglia_partner_eur: n("soglia_partner_eur"),
+    sconto_partner: n("sconto_partner") / 100,
+    soglia_gold_eur: n("soglia_gold_eur"),
+    sconto_gold: n("sconto_gold") / 100,
+  };
+  if (!(dati.fedelta_mesi >= 1 && dati.fedelta_mesi <= 60)) return { errore: "I mesi devono essere tra 1 e 60." };
+  if (!(dati.soglia_partner_eur > 0 && dati.soglia_gold_eur > dati.soglia_partner_eur)) return { errore: "La soglia Gold deve essere più alta di quella Partner." };
+  if (!(dati.sconto_partner >= 0 && dati.sconto_gold >= dati.sconto_partner && dati.sconto_gold < 0.5)) return { errore: "Controlla gli sconti: Gold almeno quanto Partner, massimo 49%." };
+  const { error } = await sb.from("impostazioni").update({ ...dati, aggiornato_il: new Date().toISOString() }).eq("id", 1);
+  if (error) return { errore: "Salvataggio non riuscito." };
+  revalidatePath("/lab/impostazioni");
+  return { ok: "Programma punti aggiornato. Vale subito per tutte le officine." };
 }
 
 export async function aggiungiStaff(_: StatoLab, fd: FormData): Promise<StatoLab> {

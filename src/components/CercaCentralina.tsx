@@ -1,12 +1,13 @@
 "use client";
 import { Fragment, useRef, useState } from "react";
 import { eur } from "@/lib/fasi";
+import { scontato, pct } from "@/lib/fedelta";
 import { aBase64, ridimensiona } from "@/lib/foto";
 import type { RisultatoCerca } from "@/lib/types";
 
 export type Prefill = { centralina?: string; codice?: string; stima?: number | null; base?: number | null; nota?: string };
 
-export function CercaCentralina({ onPrenota }: { onPrenota: (p: Prefill) => void }) {
+export function CercaCentralina({ onPrenota, sconto = 0, livello = "Base" }: { onPrenota: (p: Prefill) => void; sconto?: number; livello?: string }) {
   const [q, setQ] = useState("");
   const [foto, setFoto] = useState<{ blob: Blob; url: string } | null>(null);
   const [stato, setStato] = useState<"idle" | "cerca">("idle");
@@ -116,7 +117,11 @@ export function CercaCentralina({ onPrenota }: { onPrenota: (p: Prefill) => void
             <div className="prep">
               <span className="label">Riparazione Lion ECU</span>
               {r.prezzo ? (
-                <><b>{eur(r.prezzo.prezzo)}</b>{r.prezzo.risparmio > 0 ? <span className="save">Risparmi circa il {r.prezzo.risparmio}%</span> : null}</>
+                sconto > 0 ? (
+                  <><b>{eur(scontato(r.prezzo.prezzo, sconto))}<span className="prezzo-barrato">{eur(r.prezzo.prezzo)}</span></b><span className="save">Il tuo prezzo {livello} (−{pct(sconto)})</span></>
+                ) : (
+                  <><b>{eur(r.prezzo.prezzo)}</b>{r.prezzo.risparmio > 0 ? <span className="save">Risparmi circa il {r.prezzo.risparmio}%</span> : null}</>
+                )
               ) : (<><b style={{ fontSize: 20 }}>Su richiesta</b><span className="hint">Il prezzo te lo diamo noi, subito</span></>)}
             </div>
           </div>

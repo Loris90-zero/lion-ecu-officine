@@ -1,5 +1,6 @@
 import { richiediStaff } from "@/lib/sessione";
-import { FormImpostazioni, FormStaff } from "./Forms";
+import { FormImpostazioni, FormStaff, FormFedelta } from "./Forms";
+import type { RegoleFedelta } from "@/lib/fedelta";
 import type { Impostazioni } from "@/lib/prezzo";
 
 export default async function ImpostazioniLab() {
@@ -13,6 +14,11 @@ export default async function ImpostazioniLab() {
         <h2>Prezzo della riparazione</h2>
         <p className="muted" style={{ fontSize: 14 }}>Il prezzo che l&apos;officina vede nella ricerca è una percentuale del prezzo della centralina nuova trovato online.</p>
         <FormImpostazioni imp={imp as Impostazioni} />
+      </div>
+      <div className="box">
+        <h2>Programma punti</h2>
+        <p className="muted" style={{ fontSize: 14 }}>1 punto per ogni € di riparazioni pagate (IVA esclusa). Livelli: Base, Partner, Partner Gold. Lo sconto si applica da solo al pagamento.</p>
+        <FormFedelta r={imp as RegoleFedelta} />
       </div>
       <div className="box">
         <h2>Staff del laboratorio</h2>

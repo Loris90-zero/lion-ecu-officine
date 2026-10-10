@@ -3,6 +3,7 @@ import Stripe from "stripe";
 import { supabaseServer } from "@/lib/supabase/server";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { fatturazioneCompleta } from "@/lib/fatturazione";
+import { livelloOfficina, scontato, pct } from "@/lib/fedelta";
 
 export async function POST(request: Request) {
   const sb = await supabaseServer();
@@ -10,13 +11,17 @@ export async function POST(request: Request) {
   if (!user) return NextResponse.json({ errore: "Accedi." }, { status: 401 });
   const { praticaId } = await request.json().catch(() => ({}));
   // Lettura con i permessi dell'utente: se la pratica non è sua, non la vede
-  const { data: p } = await sb.from("pratiche").select("id, numero, mezzo, centralina, esito, prezzo_confermato_eur, pagato").eq("id", String(praticaId)).maybeSingle();
+  const { data: p } = await sb.from("pratiche").select("id, numero, officina_id, mezzo, centralina, esito, prezzo_confermato_eur, pagato").eq("id", String(praticaId)).maybeSingle();
   if (!p) return NextResponse.json({ errore: "Pratica non trovata." }, { status: 404 });
   if (p.pagato) return NextResponse.json({ errore: "Già pagata." }, { status: 400 });
   if (p.esito !== "riparabile" || !p.prezzo_confermato_eur) return NextResponse.json({ errore: "Non ancora da pagare." }, { status: 400 });
 
   const { data: o } = await sb.from("officine").select("partita_iva, sede_legale, codice_sdi, pec").eq("owner_id", user.id).maybeSingle();
   if (!o || !fatturazioneCompleta(o)) return NextResponse.json({ errore: "Mancano i dati per la fattura." }, { status: 400 });
+
+  // Lo sconto del livello si calcola qui, sul server, al momento del pagamento
+  const livello = await livelloOfficina(sb, p.officina_id);
+  const importo = scontato(Number(p.prezzo_confermato_eur), livello.sconto);
 
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
   const base = process.env.NEXT_PUBLIC_SITE_URL || new URL(request.url).origin;
@@ -28,14 +33,14 @@ export async function POST(request: Request) {
       quantity: 1,
       price_data: {
         currency: "eur",
-        unit_amount: Math.round(Number(p.prezzo_confermato_eur) * 100),
-        product_data: { name: `Riparazione centralina · pratica ${p.numero}`, description: [p.mezzo, p.centralina].filter(Boolean).join(" · ") },
+        unit_amount: Math.round(importo * 100),
+        product_data: { name: `Riparazione centralina · pratica ${p.numero}`, description: [p.mezzo, p.centralina, livello.sconto ? `sconto ${livello.nome} ${pct(livello.sconto)}` : null].filter(Boolean).join(" · ") },
       },
     }],
-    metadata: { pratica_id: p.id },
+    metadata: { pratica_id: p.id, sconto_pct: String(livello.sconto) },
     success_url: `${base}/pratica/${p.id}?pagato=1`,
     cancel_url: `${base}/pratica/${p.id}`,
   });
-  await supabaseAdmin().from("pratiche").update({ stripe_session_id: session.id }).eq("id", p.id);
+  await supabaseAdmin().from("pratiche").update({ stripe_session_id: session.id, sconto_pct: livello.sconto }).eq("id", p.id);
   return NextResponse.json({ url: session.url });
 }

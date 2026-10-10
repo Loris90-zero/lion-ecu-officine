@@ -16,7 +16,7 @@ export async function POST(request: Request) {
     const s = evento.data.object as Stripe.Checkout.Session;
     const id = s.metadata?.pratica_id;
     if (id && s.payment_status === "paid") {
-      await supabaseAdmin().from("pratiche").update({ pagato: true, pagato_il: new Date().toISOString() }).eq("id", id).eq("pagato", false);
+      await supabaseAdmin().from("pratiche").update({ pagato: true, pagato_il: new Date().toISOString(), prezzo_pagato_eur: (s.amount_total ?? 0) / 100, sconto_pct: Number(s.metadata?.sconto_pct ?? 0) || 0 }).eq("id", id).eq("pagato", false);
     }
   }
   return NextResponse.json({ ricevuto: true });
