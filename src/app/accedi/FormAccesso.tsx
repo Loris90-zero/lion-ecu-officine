@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { supabaseBrowser } from "@/lib/supabase/client";
 
 function urlRitorno(dopo?: string) {
@@ -7,8 +7,9 @@ function urlRitorno(dopo?: string) {
   return `${base}/auth/callback${dopo ? `?next=${encodeURIComponent(dopo)}` : ""}`;
 }
 
-export function FormAccesso({ dopo, segnaposto = "officina@esempio.it" }: { dopo?: string; segnaposto?: string } = {}) {
-  const [email, setEmail] = useState("");
+export function FormAccesso({ dopo, segnaposto = "officina@esempio.it", emailIniziale = "", auto }: { dopo?: string; segnaposto?: string; emailIniziale?: string; auto?: "email" | "google" } = {}) {
+  const [email, setEmail] = useState(emailIniziale);
+  const partito = useRef(false);
   const [stato, setStato] = useState<"idle" | "invio" | "inviata" | "errore">("idle");
 
   async function google() {
@@ -25,11 +26,23 @@ export function FormAccesso({ dopo, segnaposto = "officina@esempio.it" }: { dopo
     setStato(error ? "errore" : "inviata");
   }
 
+  // Arrivo dal questionario del sito: parte da solo il link via email o l'accesso con Google
+  useEffect(() => {
+    if (!auto || partito.current) return;
+    partito.current = true;
+    if (auto === "google") google();
+    else if (emailIniziale.includes("@")) {
+      setStato("invio");
+      supabaseBrowser().auth.signInWithOtp({ email: emailIniziale.trim(), options: { emailRedirectTo: urlRitorno(dopo) } }).then(({ error }) => setStato(error ? "errore" : "inviata"));
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
   if (stato === "inviata")
     return (
       <div className="box">
         <h3>Controlla la tua email</h3>
-        <p className="muted">Ti abbiamo mandato un link per entrare a <b>{email}</b>. Aprilo da questo telefono.</p>
+        <p className="muted">Ti abbiamo mandato un link per entrare a <b>{email}</b>. Aprilo <b>da questo telefono</b>: ti porta dentro l&apos;app.</p>
+        <p className="hint">Non la trovi? Guarda anche nella cartella Spam o Promozioni.</p>
         <button className="linkbtn" onClick={() => setStato("idle")}>Usa un&apos;altra email</button>
       </div>
     );

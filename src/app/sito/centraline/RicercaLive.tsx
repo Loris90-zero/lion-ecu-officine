@@ -44,13 +44,13 @@ export function RicercaLive({ q, base, app }: { q: string; base: string; app: st
       <div className="s-vuoto">
         <h2 className="s-h3">Non riusciamo a identificare «{q}»</h2>
         <p>Controlla il codice sull&apos;etichetta, oppure prenota il ritiro: la identifichiamo noi al banco, gratis.</p>
-        <a className="s-btn s-btn-p" href={`${app}/accedi`}>Prenota un ritiro gratuito</a>
+        <a className="s-btn s-btn-p" href={`${base}/prenota?codice=${encodeURIComponent(q)}`}>Prenota un ritiro gratuito</a>
         <Wa testo={`Ciao EcuLion, non trovo la centralina ${q}: potete aiutarmi?`} />
       </div>
     );
 
   const nome = [r.marca, r.modello || r.famiglia].filter(Boolean).join(" ") || q;
-  const prenota = `${app}/ritiro?centralina=${encodeURIComponent(nome)}&codice=${encodeURIComponent(q)}${r.prezzo ? `&stima=${r.prezzo.prezzo}&base=${r.prezzo.base}` : ""}`;
+  const prenota = `${base}/prenota?centralina=${encodeURIComponent(nome)}&codice=${encodeURIComponent(q)}${r.prezzo ? `&stima=${r.prezzo.prezzo}&base=${r.prezzo.base}` : ""}`;
   return (
     <div className="s-due" aria-live="polite">
       <div className="s-testa" style={{ marginBottom: 0 }}>

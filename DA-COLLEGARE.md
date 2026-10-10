@@ -25,7 +25,8 @@ Ultimo step, dopo aver finito l'app. Aggiornata ad ogni modifica.
 - [ ] **Dominio ufficiale** (es. app.eculion.it) su Vercel + Site URL e Redirect URL in Supabase
 - [ ] **Resend**: email automatiche dal dominio (accesso, benvenuto, fasi, diagnosi, garanzia) + SMTP in Supabase
 - [ ] **Stripe**: chiavi + webhook, addebito **prezzo + IVA 22%**, verificare commissione reale nei Parametri finanza
-- [ ] **Login con Google** (Google Cloud + Supabase)
+- [ ] **Login con Google** (Google Cloud + Supabase): è il modo più semplice per i meccanici, lo usa il passo finale del questionario
+- [ ] Email di accesso in italiano con anche il **codice a 6 cifre** (Supabase → Email templates): su iPhone l'app installata non si apre dal link, serve il codice
 - [ ] **Informativa privacy** dal consulente (`src/app/privacy/page.tsx`)
 - [ ] **Qonto**: chiave API, conti secondari (IVA, Tasse, Spese fisse, Stipendi), accantonamenti giornalieri automatici (prima in prova, saldo minimo, tetto giornaliero), movimenti reali nella dashboard, bonifici abbinati alle pratiche
 

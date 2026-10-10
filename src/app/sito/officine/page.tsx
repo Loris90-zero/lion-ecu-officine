@@ -30,7 +30,7 @@ export default async function Officine() {
           <div style={{ background: "var(--bi)", border: "2px solid var(--as)", borderRadius: 10, padding: 28 }} id="quiz">
             <h2 className="s-h3" style={{ marginBottom: 6 }}>La tua officina è adatta? Un minuto, una domanda alla volta.</h2>
             <p className="s-muted" style={{ marginTop: 0 }}>Alla fine ricevi l&apos;accesso all&apos;app.</p>
-            <Quiz appUrl={app("")} />
+            <Quiz />
           </div>
         </div>
       </section>

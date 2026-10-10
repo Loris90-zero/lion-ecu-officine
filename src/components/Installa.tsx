@@ -28,11 +28,8 @@ export function Installa() {
       <div className="row"><b>Installa l&apos;app sul telefono</b><button className="linkbtn" onClick={chiudi}>Chiudi</button></div>
       {evento ? (
         <button className="btn btn-primary btn-block" onClick={async () => { await evento.prompt(); chiudi(); }}>Installa EcuLion</button>
-      ) : ios ? (
-        <p className="muted" style={{ fontSize: 14 }}>In Safari tocca <b>Condividi</b> e poi <b>Aggiungi alla schermata Home</b>.</p>
-      ) : (
-        <p className="muted" style={{ fontSize: 14 }}>Nel menu del browser scegli <b>Installa app</b> o <b>Aggiungi a schermata Home</b>.</p>
-      )}
+      ) : null}
+      <a className="btn btn-ghost btn-block" href="/installa">{ios ? "Come si fa su iPhone" : "Come si fa, passo per passo"}</a>
     </div>
   );
 }

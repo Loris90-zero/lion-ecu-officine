@@ -224,3 +224,19 @@ nav.tabs div{max-width:520px;margin:0 auto;display:grid;grid-auto-flow:column;gr
 .qz-avanti{font:inherit;font-weight:600;font-size:16px;padding:12px 22px;border-radius:8px;border:0;background:#ebb513;color:#141414;cursor:pointer}
 .qz-avanti:disabled{opacity:.45;cursor:not-allowed}
 .qz-fine{display:flex;flex-direction:column;gap:6px;align-items:flex-start}
+/* Guida all'installazione */
+.ins-scelta{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.ins-scelta button{font:inherit;font-weight:600;padding:12px;border-radius:10px;border:2px solid var(--line);background:var(--surface);color:inherit;cursor:pointer}
+.ins-scelta button.attivo{border-color:var(--accent);background:var(--accent-soft)}
+.ins-passi{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px}
+.ins-passi li{display:flex;gap:14px;align-items:flex-start;font-size:17px;line-height:1.45;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px}
+.ins-n{flex:none;width:34px;height:34px;border-radius:50%;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font-weight:700;font-size:18px}
+.ins-ico{width:24px;height:24px;vertical-align:-6px;display:inline-block;margin:0 2px;padding:2px;border-radius:6px;background:var(--surface-2)}
+.ins-telefono{position:relative;width:240px;max-width:100%;margin:8px auto 0;padding:22px 16px 26px;border-radius:30px;background:linear-gradient(160deg,#2b3a4a,#11161c);border:6px solid #0b0b0b;box-shadow:0 12px 30px rgba(0,0,0,.25)}
+.ins-griglia{display:grid;grid-template-columns:repeat(4,1fr);gap:14px 10px}
+.ins-app{display:flex;flex-direction:column;align-items:center;gap:5px}
+.ins-app i{width:40px;height:40px;border-radius:11px;background:rgba(255,255,255,.18)}
+.ins-app span{width:30px;height:5px;border-radius:3px;background:rgba(255,255,255,.25)}
+.ins-nostra img{width:44px;height:44px;border-radius:11px;outline:3px solid #ebb513;outline-offset:3px;display:block}
+.ins-nostra b{font-size:10px;color:#fff;font-weight:600}
+.ins-freccia{position:absolute;right:-6px;bottom:-14px;background:#ebb513;color:#141414;font-weight:700;font-size:13px;padding:4px 10px;border-radius:999px}

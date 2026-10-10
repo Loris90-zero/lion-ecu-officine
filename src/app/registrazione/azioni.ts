@@ -18,17 +18,20 @@ export async function creaOfficina(_: StatoForm, fd: FormData): Promise<StatoFor
     ragione_sociale: t("ragione_sociale"),
     referente: t("referente"),
     telefono: t("telefono"),
-    email: t("email") || user.email || null,
+    email: user.email || t("email") || null,
     consenso_whatsapp: fd.get("consenso_whatsapp") === "on",
   };
   if (!dati.ragione_sociale || !dati.referente || !dati.telefono || !dati.email)
-    return { errore: "Servono nome dell'officina, il tuo nome, cellulare ed email." };
+    return { errore: "Servono nome dell'officina, il tuo nome e il cellulare." };
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(dati.email)) return { errore: "Controlla l'indirizzo email." };
   if (fd.get("privacy") !== "on") return { errore: "Per continuare accetta l'informativa privacy." };
   // Questionario di scoring: obbligatorio, salvo se l'ha già fatto sul sito con la stessa email
   const admin = supabaseAdmin();
   const email = String(dati.email).toLowerCase();
-  const { data: lead } = await admin.from("lead").select("id, score").eq("email", email).is("officina_id", null).order("creato_il", { ascending: false }).limit(1).maybeSingle();
+  const token = String(fd.get("lead") ?? "");
+  let lead: { id: number; score: number; risposte: { prenota?: Record<string, string> } | null } | null = null;
+  if (/^[0-9a-f-]{36}$/i.test(token)) lead = (await admin.from("lead").select("id, score, risposte").eq("token", token).is("officina_id", null).maybeSingle()).data;
+  if (!lead) lead = (await admin.from("lead").select("id, score, risposte").eq("email", email).is("officina_id", null).order("creato_il", { ascending: false }).limit(1).maybeSingle()).data;
   let quiz: ReturnType<typeof valuta> | null = null;
   let flusso: Record<string, unknown> | null = null;
   if (!lead) {
@@ -45,7 +48,7 @@ export async function creaOfficina(_: StatoForm, fd: FormData): Promise<StatoFor
   let score: number;
   if (lead) {
     score = lead.score;
-    await admin.from("lead").update({ officina_id: nuova.id }).eq("id", lead.id);
+    await admin.from("lead").update({ officina_id: nuova.id, email, nome_officina: dati.ragione_sociale, nome: dati.referente, telefono: dati.telefono }).eq("id", lead.id);
   } else {
     score = quiz!.score;
     await admin.from("lead").insert({ nome_officina: dati.ragione_sociale, nome: dati.referente, telefono: dati.telefono, email, risposte: { flusso, profilo: quiz!.profilo }, score, origine: "app_registrazione", officina_id: nuova.id });
@@ -56,5 +59,11 @@ export async function creaOfficina(_: StatoForm, fd: FormData): Promise<StatoFor
     titolo: score >= SOGLIA_CALDO ? `Officina calda registrata: score ${score}` : `Nuova officina registrata: score ${score}`,
     testo: `${dati.ragione_sociale}: ${dati.referente}, ${dati.telefono}.${quiz ? ` ${quiz.profilo.riassunto}` : ""}`, link: `/lab/officine/${nuova.id}`,
   });
-  redirect("/?benvenuto=1");
+  const prenota = lead?.risposte?.prenota;
+  if (prenota && Object.keys(prenota).length) {
+    const q = new URLSearchParams({ ritiro: "1", benvenuto: "1" });
+    for (const k of ["centralina", "codice", "stima", "base"]) if (prenota[k]) q.set(k, String(prenota[k]).slice(0, 120));
+    redirect(`/?${q.toString()}`);
+  }
+  redirect("/installa?benvenuto=1");
 }

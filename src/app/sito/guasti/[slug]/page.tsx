@@ -24,7 +24,7 @@ export default async function Guida({ params }: { params: Promise<{ slug: string
           <h2 className="s-h3">Hai questo guasto?</h2>
           <p>Ritiriamo la centralina gratis, la diagnostichiamo e ti diciamo quanto costa ripararla. Paghi solo se è riparabile.</p>
           <div className="s-azioni">
-            <a className="s-btn s-btn-p" href={app("/accedi")}>Prenota un ritiro gratuito</a>
+            <a className="s-btn s-btn-p" href={u("/prenota")}>Prenota un ritiro gratuito</a>
             {a.centralina_slug ? <Link className="s-btn s-btn-g" href={u(`/centraline/${a.centralina_slug}`)}>Vedi la centralina</Link> : null}
             <Wa testo={`Ciao EcuLion, ho letto la guida «${a.titolo}» e ho questo guasto.`} />
           </div>

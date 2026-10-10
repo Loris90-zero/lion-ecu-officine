@@ -29,7 +29,7 @@ export default async function Partner() {
           <div style={{ background: "var(--bi)", border: "2px solid var(--as)", borderRadius: 10, padding: 28 }} id="quiz">
             <h2 className="s-h3" style={{ marginBottom: 6 }}>Raccontaci la tua officina</h2>
             <p className="s-muted" style={{ marginTop: 0 }}>Un minuto, una domanda alla volta. Alla fine ricevi l&apos;accesso all&apos;app.</p>
-            <Quiz appUrl={app("")} origine="sito_partner" />
+            <Quiz origine="sito_partner" />
           </div>
         </div>
       </section>

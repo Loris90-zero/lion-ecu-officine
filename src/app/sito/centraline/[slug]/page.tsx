@@ -17,7 +17,7 @@ export default async function Centralina({ params }: { params: Promise<{ slug: s
   const c = await centralina((await params).slug);
   if (!c) notFound();
   const mezzi = MEZZI.filter((m) => c.mezzi.includes(m.slug));
-  const prenota = app(`/ritiro?centralina=${encodeURIComponent(c.titolo)}&codice=${encodeURIComponent(c.codice ?? "")}${c.prezzo_da ? `&stima=${c.prezzo_da}` : ""}`);
+  const prenota = u(`/prenota?centralina=${encodeURIComponent(c.titolo)}&codice=${encodeURIComponent(c.codice ?? "")}${c.prezzo_da ? `&stima=${c.prezzo_da}` : ""}${c.prezzo_nuovo ? `&base=${c.prezzo_nuovo}` : ""}`);
   const ld = {
     "@context": "https://schema.org",
     "@graph": [
