@@ -2,7 +2,7 @@
   "name": "EcuLion — App officine",
   "short_name": "EcuLion",
   "description": "Ritiro, riparazione e garanzia delle centraline dei mezzi pesanti.",
-  "start_url": "/",
+  "start_url": "/?app=1",
   "display": "standalone",
   "background_color": "#eef1f4",
   "theme_color": "#141414",

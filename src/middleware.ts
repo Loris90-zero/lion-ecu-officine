@@ -35,6 +35,13 @@ export async function middleware(request: NextRequest) {
   );
   const { data: { user } } = await supabase.auth.getUser();
   const path = request.nextUrl.pathname;
+  // Chi apre la radice senza essere entrato (e non dall'app installata) vede il sito, non la pagina di accesso
+  if (!user && path === "/" && request.nextUrl.searchParams.get("app") !== "1" && !DOMINI_SITO.includes(host)) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/sito";
+    url.search = "";
+    return NextResponse.redirect(url);
+  }
   if (!user && !PUBBLICHE.some((p) => path.startsWith(p)) && !PUBBLICHE_ESATTE.includes(path)) {
     if (host.endsWith(".vercel.app")) {
       const url = request.nextUrl.clone();
