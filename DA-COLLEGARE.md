@@ -12,7 +12,10 @@ Ultimo step, dopo aver finito l'app. Aggiornata ad ogni modifica.
 - [ ] Su Vercel: `NEXT_PUBLIC_SITO_BASE=""`, `NEXT_PUBLIC_SITO_URL=https://eculion.it`, `NEXT_PUBLIC_APP_URL=https://app.eculion.it` (così il sito va alla radice e Google lo indicizza)
 - [ ] **Banner cookie** e consenso prima del pixel Meta
 - [ ] **Contatti veri** in `src/sito/config.ts`: telefono, WhatsApp, email, indirizzo, ragione sociale, P.IVA
-- [ ] **Foto e video veri** del laboratorio (pagina Chi siamo e home)
+- [ ] **Foto e video veri** del laboratorio e di Alex al banco prova (home e Chi siamo)
+- [ ] **Caso vero** per il confronto in home (prezzo del nuovo e prezzo EcuLion di una centralina reale) al posto dell'esempio 1.500/500
+- [ ] Due righe in più su Alex (provenienza, specialità) per la sezione «Chi ripara»
+- [ ] Ricerca dal sito: valutare i limiti (oggi 5 al giorno per visitatore, 150 al giorno in tutto) e una protezione anti-bot se servirà
 - [ ] Prime **10-20 pagine del catalogo** (dal pannello Laboratorio → Sito) e prime guide, controllate a mano prima di pubblicarle
 - [ ] Google Search Console + invio della sitemap
 - [ ] Versioni in inglese, tedesco e rumeno
