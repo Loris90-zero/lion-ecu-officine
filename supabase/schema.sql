@@ -287,3 +287,85 @@ alter table public.prezzi_riferimento enable row level security;
 alter table public.fonti_preferite enable row level security;
 create policy prezzi_rif_staff on public.prezzi_riferimento for all using (public.is_staff()) with check (public.is_staff());
 create policy fonti_pref_staff on public.fonti_preferite for all using (public.is_staff()) with check (public.is_staff());
+
+-- =====================================================================
+-- Aggiunte: staff con ruoli, notifiche, messaggi, relazioni dei tecnici
+-- =====================================================================
+alter table public.staff add column if not exists ruolo text not null default 'tecnico' check (ruolo in ('admin','tecnico'));
+alter table public.staff add column if not exists attivo boolean not null default false;   -- in attesa finché un admin non approva
+alter table public.staff add column if not exists telefono text;
+alter table public.staff add column if not exists user_id uuid references auth.users(id) on delete set null;
+alter table public.staff add column if not exists letto_fino timestamptz not null default now();
+
+create or replace function public.is_staff() returns boolean
+language sql stable security definer set search_path = public as $$
+  select exists (select 1 from public.staff s where lower(s.email) = lower(auth.jwt() ->> 'email') and s.attivo);
+$$;
+create or replace function public.is_admin() returns boolean
+language sql stable security definer set search_path = public as $$
+  select exists (select 1 from public.staff s where lower(s.email) = lower(auth.jwt() ->> 'email') and s.attivo and s.ruolo = 'admin');
+$$;
+revoke execute on function public.is_admin() from public, anon;
+grant execute on function public.is_admin() to authenticated;
+alter policy staff_insert on public.staff with check (public.is_admin());
+drop policy if exists staff_update on public.staff;
+create policy staff_update on public.staff for update using (public.is_admin());
+alter policy staff_delete on public.staff using (public.is_admin() and lower(email) <> lower(auth.jwt() ->> 'email'));
+alter policy staff_select on public.staff using (public.is_staff() or lower(email) = lower(auth.jwt() ->> 'email'));
+
+create table if not exists public.notifiche (
+  id bigserial primary key,
+  per_ruolo text not null default 'tutti' check (per_ruolo in ('tutti','tecnico','admin')),
+  tipo text not null, titolo text not null, testo text, link text,
+  pratica_id uuid references public.pratiche(id) on delete cascade,
+  creato_il timestamptz not null default now()
+);
+alter table public.notifiche enable row level security;
+drop policy if exists notifiche_select on public.notifiche;
+create policy notifiche_select on public.notifiche for select using (public.is_admin() or (public.is_staff() and per_ruolo in ('tutti','tecnico')));
+
+create table if not exists public.push_iscrizioni (          -- solo server
+  endpoint text primary key, email text not null, p256dh text not null, auth text not null,
+  creato_il timestamptz not null default now()
+);
+alter table public.push_iscrizioni enable row level security;
+
+create table if not exists public.messaggi (
+  id bigserial primary key,
+  pratica_id uuid references public.pratiche(id) on delete cascade,
+  officina_id uuid not null references public.officine(id) on delete cascade,
+  canale text not null default 'whatsapp' check (canale in ('whatsapp','email','sms')),
+  destinatario text not null, tipo text not null, testo text not null,
+  stato text not null default 'da_inviare' check (stato in ('da_inviare','inviato','inviato_a_mano','errore','senza_consenso')),
+  creato_da text, creato_il timestamptz not null default now(), inviato_il timestamptz
+);
+alter table public.messaggi enable row level security;
+drop policy if exists messaggi_staff_select on public.messaggi;
+create policy messaggi_staff_select on public.messaggi for select using (public.is_staff());
+drop policy if exists messaggi_staff_insert on public.messaggi;
+create policy messaggi_staff_insert on public.messaggi for insert with check (public.is_staff());
+drop policy if exists messaggi_staff_update on public.messaggi;
+create policy messaggi_staff_update on public.messaggi for update using (public.is_staff());
+
+create table if not exists public.interventi (                -- banca dati riparazioni (solo staff)
+  pratica_id uuid primary key references public.pratiche(id) on delete cascade,
+  testo_tecnico text not null, audio_path text, tecnico text, struttura jsonb,
+  centralina text, codice text, tipo_mezzo text,
+  creato_il timestamptz not null default now(), aggiornato_il timestamptz not null default now()
+);
+alter table public.interventi enable row level security;
+drop policy if exists interventi_staff_select on public.interventi;
+create policy interventi_staff_select on public.interventi for select using (public.is_staff());
+drop policy if exists interventi_staff_insert on public.interventi;
+create policy interventi_staff_insert on public.interventi for insert with check (public.is_staff());
+drop policy if exists interventi_staff_update on public.interventi;
+create policy interventi_staff_update on public.interventi for update using (public.is_staff());
+
+alter table public.pratiche add column if not exists certificato jsonb;   -- dati del certificato visibili all'officina
+
+insert into storage.buckets (id, name, public) values ('audio', 'audio', false) on conflict do nothing;
+drop policy if exists audio_staff_insert on storage.objects;
+create policy audio_staff_insert on storage.objects for insert to authenticated with check (bucket_id = 'audio' and public.is_staff());
+drop policy if exists audio_staff_select on storage.objects;
+create policy audio_staff_select on storage.objects for select to authenticated using (bucket_id = 'audio' and public.is_staff());
+-- Nota: in pratiche_proteggi() l'officina non può impostare sconto_pct, prezzo_pagato_eur e certificato.
