@@ -42,3 +42,17 @@ export async function livelloOfficina(sb: SupabaseClient, officinaId: string): P
   const punti = (data ?? []).reduce((s, x) => s + Number(x.prezzo_pagato_eur ?? x.prezzo_confermato_eur ?? 0), 0);
   return livelloDa(punti, r);
 }
+
+/** Livello di tutte le officine in una volta (per il pannello laboratorio, client dello staff). */
+export async function livelliOfficine(sb: SupabaseClient): Promise<{ regole: RegoleFedelta; livelli: Map<string, Livello> }> {
+  const { data: imp } = await sb.from("impostazioni").select("fedelta_mesi, soglia_partner_eur, sconto_partner, soglia_gold_eur, sconto_gold").eq("id", 1).maybeSingle();
+  const regole = (imp as RegoleFedelta | null) ?? REGOLE_PREDEFINITE;
+  const da = new Date();
+  da.setMonth(da.getMonth() - Number(regole.fedelta_mesi || 12));
+  const { data } = await sb.from("pratiche").select("officina_id, prezzo_pagato_eur, prezzo_confermato_eur").eq("pagato", true).gte("pagato_il", da.toISOString());
+  const somme = new Map<string, number>();
+  for (const x of data ?? []) somme.set(x.officina_id, (somme.get(x.officina_id) ?? 0) + Number(x.prezzo_pagato_eur ?? x.prezzo_confermato_eur ?? 0));
+  const livelli = new Map<string, Livello>();
+  for (const [id, s] of somme) livelli.set(id, livelloDa(s, regole));
+  return { regole, livelli };
+}

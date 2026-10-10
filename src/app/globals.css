@@ -168,3 +168,5 @@ nav.tabs div{max-width:520px;margin:0 auto;display:grid;grid-auto-flow:column;gr
 .barra{height:8px;border-radius:999px;background:var(--line);overflow:hidden}
 .barra i{display:block;height:100%;background:var(--accent);border-radius:999px}
 .prezzo-barrato{text-decoration:line-through;color:var(--ink-2);font-weight:400;font-size:.8em;margin-left:6px}
+.badge-chiama{display:inline-block;margin-top:4px;font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:2px 8px;border-radius:999px;background:var(--accent);color:var(--accent-ink)}
+.iva{font-size:.5em;font-weight:500;color:var(--ink-2);margin-left:2px;letter-spacing:0}

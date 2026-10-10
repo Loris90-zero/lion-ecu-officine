@@ -37,7 +37,7 @@ export function FormRitiro({ userId, indirizzo, centralina, codice, stima, base,
         <div className="box" style={{ borderColor: "var(--accent)" }}>
           <span className="label">Dalla ricerca</span>
           <b>{centralina || codice}</b>
-          <span className="muted" style={{ fontSize: 14 }}>Riparazione stimata {eur(tuo)}{sconto ? ` (con il tuo sconto del ${pct(sconto)})` : ""}{base ? ` (nuova circa ${eur(base)})` : ""}. Il tecnico la conferma dopo la diagnosi.</span>
+          <span className="muted" style={{ fontSize: 14 }}>Riparazione stimata {eur(tuo)} + IVA{sconto ? ` (con il tuo sconto del ${pct(sconto)})` : ""}{base ? ` (nuova circa ${eur(base)})` : ""}. Il tecnico la conferma dopo la diagnosi.</span>
           <input type="hidden" name="stima" value={stima} />
           {base ? <input type="hidden" name="base" value={base} /> : null}
         </div>
@@ -82,7 +82,7 @@ export function FormRitiro({ userId, indirizzo, centralina, codice, stima, base,
         <input type="checkbox" name="accetta_preventivo" value="si" required />
         <span>
           {stima ? (
-            <>Se dalla diagnosi la centralina risulta <b>riparabile</b>, accetto la riparazione al prezzo di <b>{eur(tuo)}</b>{sconto ? <> (già scontato del {pct(sconto)})</> : null}. Se non è riparabile me la rispedite gratis, senza costi.</>
+            <>Se dalla diagnosi la centralina risulta <b>riparabile</b>, accetto la riparazione al prezzo di <b>{eur(tuo)} + IVA</b>{sconto ? <> (già scontato del {pct(sconto)})</> : null}. Se non è riparabile me la rispedite gratis, senza costi.</>
           ) : (
             <>Accetto che il prezzo della riparazione mi venga comunicato dopo la diagnosi. Se la centralina <b>non è riparabile</b> me la rispedite gratis, senza costi.</>
           )}

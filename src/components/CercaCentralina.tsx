@@ -118,9 +118,9 @@ export function CercaCentralina({ onPrenota, sconto = 0, livello = "Base" }: { o
               <span className="label">Riparazione Lion ECU</span>
               {r.prezzo ? (
                 sconto > 0 ? (
-                  <><b>{eur(scontato(r.prezzo.prezzo, sconto))}<span className="prezzo-barrato">{eur(r.prezzo.prezzo)}</span></b><span className="save">Il tuo prezzo {livello} (−{pct(sconto)})</span></>
+                  <><b>{eur(scontato(r.prezzo.prezzo, sconto))}<span className="iva"> + IVA</span><span className="prezzo-barrato">{eur(r.prezzo.prezzo)}</span></b><span className="save">Il tuo prezzo {livello} (−{pct(sconto)})</span></>
                 ) : (
-                  <><b>{eur(r.prezzo.prezzo)}</b>{r.prezzo.risparmio > 0 ? <span className="save">Risparmi circa il {r.prezzo.risparmio}%</span> : null}</>
+                  <><b>{eur(r.prezzo.prezzo)}<span className="iva"> + IVA</span></b>{r.prezzo.risparmio > 0 ? <span className="save">Risparmi circa il {r.prezzo.risparmio}%</span> : null}</>
                 )
               ) : (<><b style={{ fontSize: 20 }}>Su richiesta</b><span className="hint">Il prezzo te lo diamo noi, subito</span></>)}
             </div>

@@ -44,9 +44,9 @@ export default async function DettaglioPratica({ params, searchParams }: { param
           <span className="label">Diagnosi completata</span>
           <h3>La centralina è riparabile</h3>
           {p.nota_laboratorio ? <p style={{ fontSize: 14 }}>{p.nota_laboratorio}</p> : null}
-          <div className="row"><span className="muted">Prezzo riparazione</span><b className="mono" style={{ fontSize: 20 }}>{eur(daVersare)}{livello?.sconto ? <span className="prezzo-barrato">{eur(p.prezzo_confermato_eur)}</span> : null}</b></div>
+          <div className="row"><span className="muted">Prezzo riparazione</span><b className="mono" style={{ fontSize: 20 }}>{eur(daVersare)}<span className="iva"> + IVA</span>{livello?.sconto ? <span className="prezzo-barrato">{eur(p.prezzo_confermato_eur)}</span> : null}</b></div>
           {livello?.sconto ? <p className="okmsg">Sconto {livello.nome} del {pct(livello.sconto)} già applicato.</p> : null}
-          {fatturazioneCompleta(officina) ? <Paga praticaId={p.id} importo={eur(daVersare)} /> : <FormFattura o={officina} />}
+          {fatturazioneCompleta(officina) ? <Paga praticaId={p.id} importo={`${eur(daVersare)} + IVA`} /> : <FormFattura o={officina} />}
           <p className="hint">Garanzia a vita sul guasto riparato. Ritiro e riconsegna inclusi.</p>
         </div>
       ) : null}
@@ -82,10 +82,10 @@ export default async function DettaglioPratica({ params, searchParams }: { param
           <dt>Sintomo</dt><dd>{p.sintomo}</dd>
           {p.codici_errore ? <><dt>Codici errore</dt><dd className="mono">{p.codici_errore}</dd></> : null}
           <dt>Ritiro</dt><dd>{p.giorno_ritiro}, {p.fascia_ritiro}<br />{p.indirizzo_ritiro}</dd>
-          {p.prezzo_stimato_eur && !p.prezzo_confermato_eur ? <><dt>Stima</dt><dd>{eur(p.prezzo_stimato_eur)}</dd></> : null}
+          {p.prezzo_stimato_eur && !p.prezzo_confermato_eur ? <><dt>Stima</dt><dd>{eur(p.prezzo_stimato_eur)} + IVA</dd></> : null}
           {p.accetta_preventivo ? <><dt>Preventivo</dt><dd>{p.prezzo_accettato_eur ? `Accettato: ${eur(p.prezzo_accettato_eur)} se riparabile` : "Accettato, prezzo dopo la diagnosi"}</dd></> : null}
           {p.corriere ? <><dt>Corriere</dt><dd>{p.corriere}{p.tracking ? <> · <span className="mono">{p.tracking}</span></> : null}</dd></> : null}
-          {p.pagato ? <><dt>Pagamento</dt><dd>{eur(p.prezzo_pagato_eur ?? p.prezzo_confermato_eur)} pagato{Number(p.sconto_pct) ? ` (sconto ${pct(Number(p.sconto_pct))})` : ""}{p.pagato_il ? ` il ${dataBreve(p.pagato_il)}` : ""}</dd></> : null}
+          {p.pagato ? <><dt>Pagamento</dt><dd>{eur(p.prezzo_pagato_eur ?? p.prezzo_confermato_eur)} + IVA pagato{Number(p.sconto_pct) ? ` (sconto ${pct(Number(p.sconto_pct))})` : ""}{p.pagato_il ? ` il ${dataBreve(p.pagato_il)}` : ""}</dd></> : null}
         </dl>
         {fotoUrl.length ? <div className="photos">{fotoUrl.map((u) => <img key={u} src={u} alt="Foto della centralina" />)}</div> : null}
       </div>

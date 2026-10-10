@@ -37,6 +37,15 @@ create table if not exists public.officine (
   creato_il timestamptz not null default now()
 );
 
+-- ---------- Gestione commerciale delle officine (solo staff) ----------
+create table if not exists public.officine_crm (
+  officina_id uuid primary key references public.officine(id) on delete cascade,
+  stato text not null default 'nuova' check (stato in ('nuova','contattata','attiva','ferma','persa')),
+  note text,
+  prossimo_contatto date,
+  aggiornato_il timestamptz not null default now()
+);
+
 -- ---------- Impostazioni (una riga sola) ----------
 create table if not exists public.impostazioni (
   id int primary key default 1 check (id = 1),
@@ -216,6 +225,15 @@ drop policy if exists eventi_select on public.eventi;
 create policy eventi_select on public.eventi for select using (
   public.is_staff() or pratica_id in (
     select p.id from public.pratiche p join public.officine o on o.id = p.officina_id where o.owner_id = auth.uid()));
+
+-- officine_crm: solo staff (note interne, l'officina non le vede)
+alter table public.officine_crm enable row level security;
+drop policy if exists officine_crm_staff_select on public.officine_crm;
+create policy officine_crm_staff_select on public.officine_crm for select using (public.is_staff());
+drop policy if exists officine_crm_staff_insert on public.officine_crm;
+create policy officine_crm_staff_insert on public.officine_crm for insert with check (public.is_staff());
+drop policy if exists officine_crm_staff_update on public.officine_crm;
+create policy officine_crm_staff_update on public.officine_crm for update using (public.is_staff());
 
 -- ricerche: nessun accesso dal browser (solo server)
 
