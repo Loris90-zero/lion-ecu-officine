@@ -43,7 +43,8 @@ Ultimo step, dopo aver finito l'app. Aggiornata ad ogni modifica.
 - [ ] Negozi preferiti per gru e macchine industriali (fornitori di Loris)
 
 ## Brand
-- [ ] **Logo definitivo** (bozze A–E sulla tavola) e nome EcuLion in tutta l'app (oggi «Lion ECU System»)
+- [x] Logo EcuLion di Loris (L gialla con il leone) in app, laboratorio, super admin e sito; icone e colori giallo/nero
+- [ ] File vettoriali del logo (SVG o PDF) per stampa e massima nitidezza
 
 ## Più avanti
 - [ ] **Software di contabilità** collegato (fatture SDI attive e passive, partendo dal servizio di fatturazione che usate)
