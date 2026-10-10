@@ -1,4 +1,4 @@
-/** I due punti forti di Lion ECU, sempre in cima alla home. */
+/** I due punti forti di EcuLion, sempre in cima alla home. */
 export function PuntiForti() {
   return (
     <div className="punti">

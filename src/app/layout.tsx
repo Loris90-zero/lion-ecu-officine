@@ -3,18 +3,18 @@ import "./globals.css";
 import { RegistraSW } from "@/components/RegistraSW";
 
 export const metadata: Metadata = {
-  title: "Lion ECU — Officine",
+  title: "EcuLion — Officine",
   description: "Ritiro, riparazione e garanzia delle centraline dei mezzi pesanti.",
   manifest: "/manifest.webmanifest",
-  icons: { icon: "/icone/icona-192.png", apple: "/icone/apple-touch-icon.png" },
-  appleWebApp: { capable: true, title: "Lion ECU", statusBarStyle: "default" },
+  icons: { icon: [{ url: "/icone/favicon-32.png", sizes: "32x32" }, { url: "/icone/icona-192.png", sizes: "192x192" }], apple: "/icone/apple-touch-icon.png" },
+  appleWebApp: { capable: true, title: "EcuLion", statusBarStyle: "default" },
 };
 
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
-  themeColor: "#24384d",
+  themeColor: "#141414",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

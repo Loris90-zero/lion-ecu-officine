@@ -5,7 +5,7 @@ import { aggiungiPrezzo, aggiornaPrezzo, cambiaAttivo, aggiungiFonte, cambiaFont
 type Riga = { id: number; codici: string[]; descrizione: string | null; prezzo_eur: number; valuta: string; prezzo_originale: number | null; fonte_nome: string | null; fonte_url: string | null; origine: string; attivo: boolean; aggiornato_il: string };
 type Fonte = { dominio: string; categoria: string; nota: string | null; attivo: boolean };
 
-export const metadata = { title: "Prezzi di riferimento — Lion ECU" };
+export const metadata = { title: "Prezzi di riferimento — EcuLion" };
 
 export default async function Prezzi({ searchParams }: { searchParams: Promise<{ q?: string }> }) {
   const { sb } = await richiediAdmin();

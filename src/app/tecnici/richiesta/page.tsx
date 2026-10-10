@@ -12,7 +12,7 @@ export default async function RichiestaAccesso() {
   const nome = (user.user_metadata?.full_name as string | undefined) ?? "";
   return (
     <main className="auth">
-      <Logo sotto="Laboratorio" href="/tecnici" />
+      <Logo grande sotto="Laboratorio" href="/tecnici" />
       {io ? (
         <div className="section">
           <h1>Richiesta inviata</h1>

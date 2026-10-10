@@ -34,7 +34,7 @@ export default function LayoutSito({ children }: { children: React.ReactNode }) 
       <footer className="s-piede">
         <div className="s-wrap">
           <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-            <Marchio />
+            <Marchio su="scuro" />
             <p style={{ margin: 0, maxWidth: "32em" }}>Laboratorio di riparazione centraline elettroniche per mezzi pesanti, macchine da lavoro e barche. {CONTATTI.citta}.</p>
             {CONTATTI.ragioneSociale ? <p style={{ margin: 0 }}>{CONTATTI.ragioneSociale}{CONTATTI.partitaIva ? `, P.IVA ${CONTATTI.partitaIva}` : ""}</p> : null}
           </div>

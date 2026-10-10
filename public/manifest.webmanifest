@@ -1,11 +1,11 @@
 {
-  "name": "Lion ECU — Officine",
-  "short_name": "Lion ECU",
+  "name": "EcuLion — App officine",
+  "short_name": "EcuLion",
   "description": "Ritiro, riparazione e garanzia delle centraline dei mezzi pesanti.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#eef1f4",
-  "theme_color": "#24384d",
+  "theme_color": "#141414",
   "lang": "it",
   "icons": [
     { "src": "/icone/icona-192.png", "sizes": "192x192", "type": "image/png" },

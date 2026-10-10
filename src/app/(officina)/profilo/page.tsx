@@ -1,7 +1,7 @@
 import { richiediOfficina } from "@/lib/sessione";
 import { FormProfilo } from "./FormProfilo";
 
-export const metadata = { title: "Profilo — Lion ECU" };
+export const metadata = { title: "Profilo — EcuLion" };
 
 export default async function Profilo() {
   const { sb, officina: o, user } = await richiediOfficina();

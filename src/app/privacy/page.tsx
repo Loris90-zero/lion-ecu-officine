@@ -1,6 +1,6 @@
 import { Logo } from "@/components/Logo";
 
-export const metadata = { title: "Informativa privacy — Lion ECU" };
+export const metadata = { title: "Informativa privacy — EcuLion" };
 
 export default function Privacy() {
   return (

@@ -27,7 +27,7 @@ export function Installa() {
     <div className="box" style={{ borderColor: "var(--accent)" }}>
       <div className="row"><b>Installa l&apos;app sul telefono</b><button className="linkbtn" onClick={chiudi}>Chiudi</button></div>
       {evento ? (
-        <button className="btn btn-primary btn-block" onClick={async () => { await evento.prompt(); chiudi(); }}>Installa Lion ECU</button>
+        <button className="btn btn-primary btn-block" onClick={async () => { await evento.prompt(); chiudi(); }}>Installa EcuLion</button>
       ) : ios ? (
         <p className="muted" style={{ fontSize: 14 }}>In Safari tocca <b>Condividi</b> e poi <b>Aggiungi alla schermata Home</b>.</p>
       ) : (

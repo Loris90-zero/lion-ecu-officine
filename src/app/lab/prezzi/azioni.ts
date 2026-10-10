@@ -13,7 +13,7 @@ export async function aggiungiPrezzo(fd: FormData) {
   await sb.from("prezzi_riferimento").insert({
     codici, prezzo_eur: prezzo, prezzo_originale: prezzo, valuta: "EUR", origine: "laboratorio",
     descrizione: String(fd.get("descrizione") ?? "").trim() || null,
-    fonte_nome: String(fd.get("fonte") ?? "").trim() || "Listino Lion ECU",
+    fonte_nome: String(fd.get("fonte") ?? "").trim() || "Listino EcuLion",
   });
   revalidatePath("/lab/prezzi");
 }

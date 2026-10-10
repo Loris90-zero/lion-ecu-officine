@@ -3,7 +3,7 @@ import { richiediOfficina } from "@/lib/sessione";
 import { dataLunga } from "@/lib/fasi";
 import type { Pratica } from "@/lib/types";
 
-export const metadata = { title: "Garanzie — Lion ECU" };
+export const metadata = { title: "Garanzie — EcuLion" };
 
 export default async function Garanzie() {
   const { sb, officina } = await richiediOfficina();

@@ -16,7 +16,7 @@ export default async function Certificato({ params }: { params: Promise<{ id: st
       <Link href="/garanzie" className="linkbtn" style={{ color: "var(--ink-2)" }}>← Garanzie</Link>
       <div className="cert">
         <div className="seal">Garanzia<br />a vita</div>
-        <span className="label">Lion ECU System</span>
+        <span className="label">EcuLion</span>
         <h2>Certificato di garanzia</h2>
         <dl>
           <dt>Pratica</dt><dd className="mono">{p.numero}</dd>

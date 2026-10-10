@@ -115,7 +115,7 @@ export function CercaCentralina({ onPrenota, sconto = 0, livello = "Base" }: { o
               ) : (<><b>—</b><span className="hint">Prezzo del nuovo non disponibile</span></>)}
             </div>
             <div className="prep">
-              <span className="label">Riparazione Lion ECU</span>
+              <span className="label">Riparazione EcuLion</span>
               {r.prezzo ? (
                 sconto > 0 ? (
                   <><b>{eur(scontato(r.prezzo.prezzo, sconto))}<span className="iva"> + IVA</span><span className="prezzo-barrato">{eur(r.prezzo.prezzo)}</span></b><span className="save">Il tuo prezzo {livello} (−{pct(sconto)})</span></>

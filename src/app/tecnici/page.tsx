@@ -10,7 +10,7 @@ export default async function AccessoTecnici({ searchParams }: { searchParams: P
   if (user) redirect("/tecnici/richiesta");
   return (
     <main className="auth">
-      <Logo sotto="Laboratorio" href="/tecnici" />
+      <Logo grande sotto="Laboratorio" href="/tecnici" />
       <div className="section">
         <h1>Accesso tecnici e staff</h1>
         <p className="muted">Entra con la tua email di lavoro. La prima volta ti registri e un responsabile approva il tuo accesso.</p>
