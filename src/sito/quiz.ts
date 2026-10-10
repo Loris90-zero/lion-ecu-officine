@@ -39,7 +39,7 @@ export const NODI: Record<string, Nodo> = {
     { v: "sospensioni", t: "Sospensioni" }, { v: "idraulica", t: "Idraulica e gru" }, { v: "cruscotto", t: "Cruscotti e body controller" },
   ] },
   terzi_chi: { id: "terzi_chi", testo: "A chi le mandate di solito?", opzioni: [
-    { v: "bosch", t: "Al servizio di riparazione Bosch" },
+    { v: "ufficiale", t: "Al concessionario o alla rete ufficiale del marchio" },
     { v: "riparatore", t: "A un riparatore indipendente" },
     { v: "ricondizionata", t: "Le cambiamo con una ricondizionata" },
     { v: "vari", t: "Dipende, a laboratori diversi" },
@@ -186,7 +186,7 @@ export function valuta(r: Risposte) {
   // Opportunità: come lavorano oggi
   if (r.oggi === "terzi") {
     s += 18;
-    if (r.terzi_chi === "bosch") { s += 7; leve.unshift("Usano il servizio Bosch, che chiude per le officine indipendenti: proponiti come alternativa"); }
+    if (r.terzi_chi === "ufficiale") { s += 7; leve.unshift("Passano dalla rete ufficiale: punta su prezzo (circa un terzo del nuovo) e tempi (3 giorni)"); }
     if (r.terzi_voto === "male") s += 5; else if (r.terzi_voto === "cosi") s += 3; else if (r.terzi_voto === "bene") s -= 3;
     for (const p of lista("terzi_problema", r)) note.push(`Problema con l'attuale: ${etichetta("terzi_problema", p).toLowerCase()}`);
   } else if (r.oggi === "nuova") {
