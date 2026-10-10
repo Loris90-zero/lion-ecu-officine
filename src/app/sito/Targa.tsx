@@ -4,7 +4,7 @@ import { Wa } from "@/sito/Whatsapp";
 /** La targhetta di alluminio della centralina: il codice si cerca da qui. */
 export function Targa({ id = "codice-targa" }: { id?: string }) {
   return (
-    <form className="s-targa" action={u("/centraline")} method="get" role="search">
+    <form className="s-targa" action={u("/preventivo")} method="get" role="search">
       <i className="r1" aria-hidden="true" /><i className="r2" aria-hidden="true" />
       <div className="s-targa-riga"><span>EcuLion</span><span>Laboratorio centraline</span></div>
       <label htmlFor={id}>Codice sull&apos;etichetta della centralina</label>

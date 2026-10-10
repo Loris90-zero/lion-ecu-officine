@@ -178,3 +178,29 @@
 .s-google{gap:10px;background:var(--bi)}
 .s-google svg{width:20px;height:20px}
 .s-oppure{text-align:center;font-size:14px;color:var(--gr)}
+
+/* Schermata del preventivo */
+.pv{padding:32px 0 72px;background:var(--fo)}
+.pv-wrap{max-width:760px;margin:0 auto;padding:0 16px;display:flex;flex-direction:column;gap:24px}
+.pv-card{background:var(--bi);border:2px solid var(--as);border-radius:14px;padding:28px;display:flex;flex-direction:column;gap:16px}
+.pv-codice{margin:0;font-size:15px;color:var(--gr)}
+.pv-nome{font-family:var(--fh);font-weight:700;font-size:clamp(36px,7vw,58px);line-height:1;margin:0}
+.pv-tipo{margin:-6px 0 0;font-size:18px;color:var(--ac)}
+.pv-prezzi{display:grid;grid-template-columns:1.3fr 1fr;gap:2px;background:var(--al);border-radius:10px;overflow:hidden;margin-top:6px}
+.pv-prezzi>div{background:var(--fo);padding:18px;display:flex;flex-direction:column;gap:4px}
+.pv-prezzi span{font-size:15px;font-weight:600;color:var(--gr)}
+.pv-nostro{background:#fdf6dc!important;border-left:5px solid var(--am)}
+.pv-nostro b{font-family:var(--fh);font-size:clamp(52px,11vw,84px);line-height:.95}
+.pv-nostro b small{font-family:var(--fb);font-size:18px;font-weight:600;color:var(--gr)}
+.pv-nostro .pv-richiesta{font-size:26px;line-height:1.1}
+.pv-nuova b{font-family:var(--fh);font-size:32px;line-height:1;color:var(--gr);text-decoration:line-through;text-decoration-thickness:2px}
+@media (max-width:560px){.pv-prezzi{grid-template-columns:1fr}.pv-card{padding:20px}}
+.pv-risparmio{margin:0;font-weight:700;font-size:19px;color:var(--ve)}
+.pv-avanti{min-height:60px;font-size:19px;width:100%}
+.pv-nota{margin:0;font-size:14px;color:var(--gr)}
+.pv-dettagli{display:flex;flex-direction:column;gap:12px}
+.pv-attesa .s-barra{margin-top:8px}
+.pv-altro{display:flex;flex-direction:column;gap:8px}
+.pv-altro label{font-weight:600}
+.pv-altro div{display:flex;gap:8px}
+.pv-altro input{flex:1;min-width:0;font-size:18px;padding:12px 14px;border-radius:6px;border:1.5px solid #9aa6b2}

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { Wa } from "@/sito/Whatsapp";
 import { u, app, BASE } from "@/sito/config";
 import { RicercaLive } from "./RicercaLive";
@@ -13,6 +14,8 @@ const eur = (n: number) => `${Math.round(n).toLocaleString("it-IT")} €`;
 export default async function Centraline({ searchParams }: { searchParams: Promise<{ q?: string }> }) {
   const { q } = await searchParams;
   const lista = await centralinePubblicate(q);
+  // Codice senza scheda nel catalogo: si passa alla schermata del preventivo
+  if (q && !lista.length) redirect(u(`/preventivo?q=${encodeURIComponent(q)}`));
   return (
     <section className="s-sez-s">
       <div className="s-wrap">
