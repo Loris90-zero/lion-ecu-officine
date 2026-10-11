@@ -10,6 +10,7 @@ Ultimo step, dopo aver finito l'app. Aggiornata ad ogni modifica.
 - [x] Prezzi a fasce per tipo di centralina (provvisori 300 / 450 / 600 € + IVA). **Da confermare con Alessandro**: prezzi, cosa va in ogni fascia, prezzo fisso o «da»; si cambiano da Laboratorio → Impostazioni. Rigenerare i prezzi delle pagine catalogo già create
 
 ## Sito eculion.it
+- [ ] Portare «Non ho il codice» anche nella ricerca dell'app (la foto c'è già)
 - [ ] **Comprare il dominio** eculion.it (dati della società) e collegarlo a Vercel: eculion.it → sito, app.eculion.it → app
 - [ ] Su Vercel: `NEXT_PUBLIC_SITO_BASE=""`, `NEXT_PUBLIC_SITO_URL=https://eculion.it`, `NEXT_PUBLIC_APP_URL=https://app.eculion.it` (così il sito va alla radice e Google lo indicizza)
 - [ ] **Banner cookie** e consenso prima del pixel Meta

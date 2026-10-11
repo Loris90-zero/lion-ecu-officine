@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { Wa } from "@/sito/Whatsapp";
 
-type R = {
+export type R = {
   trovata: boolean; marca?: string; modello?: string; tipo?: string; famiglia?: string; codici: string[]; veicoli: string[];
   problemi_comuni: { problema: string; sintomi?: string }[]; prezzo: { base: number; prezzo: number; risparmio: number; nomeFascia?: string; da?: boolean } | null;
   generico: boolean; pagina: string | null;
@@ -10,17 +10,18 @@ type R = {
 const eur = (n: number) => `${Math.round(n).toLocaleString("it-IT")} €`;
 
 /** Schermata del preventivo: risultato grande in alto, sotto il pulsante per andare avanti. */
-export function Risultato({ q, base, app }: { q: string; base: string; app: string }) {
-  const [r, setR] = useState<R | null>(null);
+export function Risultato({ q, base, app, iniziale = null }: { q: string; base: string; app: string; iniziale?: R | null }) {
+  const [r, setR] = useState<R | null>(iniziale);
   const [errore, setErrore] = useState<string | null>(null);
 
   useEffect(() => {
+    if (iniziale) return;
     let vivo = true;
     fetch("/api/cerca-pubblica", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ q }) })
       .then(async (res) => { const j = await res.json(); if (!vivo) return; if (!res.ok || j.errore) setErrore(j.errore ?? "Analisi non riuscita."); else setR(j); })
       .catch(() => vivo && setErrore("Analisi non riuscita. Riprova tra poco."));
     return () => { vivo = false; };
-  }, [q]);
+  }, [q, iniziale]);
 
   if (errore)
     return (

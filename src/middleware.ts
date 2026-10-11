@@ -19,7 +19,7 @@ function segnaSorgente(request: NextRequest, response: NextResponse, host: strin
   return response;
 }
 
-const PUBBLICHE = ["/accedi", "/auth", "/api/stripe/webhook", "/api/cerca-pubblica", "/api/traccia", "/api/cron", "/disiscriviti", "/manifest.webmanifest", "/manifest-lab.webmanifest", "/sw.js", "/icone", "/privacy", "/sito", "/robots.txt", "/sitemap.xml"];
+const PUBBLICHE = ["/accedi", "/auth", "/api/stripe/webhook", "/api/cerca-pubblica", "/api/tipo-centralina", "/api/traccia", "/api/cron", "/disiscriviti", "/manifest.webmanifest", "/manifest-lab.webmanifest", "/sw.js", "/icone", "/privacy", "/sito", "/robots.txt", "/sitemap.xml"];
 const PUBBLICHE_ESATTE = ["/tecnici"];
 
 /** Domini del sito pubblico: lì il sito sta alla radice (le pagine vivono in /sito). */

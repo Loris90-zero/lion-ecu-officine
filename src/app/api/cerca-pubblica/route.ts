@@ -30,17 +30,20 @@ export async function POST(request: Request) {
   const body = await request.json().catch(() => ({}));
   if (body?.sito_web) return NextResponse.json({ errore: "Richiesta non valida." }, { status: 400 });
   const q = typeof body.q === "string" ? body.q.trim().slice(0, 60) : "";
-  const chiave = q.toUpperCase().replace(/[^A-Z0-9]/g, "");
-  if (chiave.length < 4) return NextResponse.json({ errore: "Scrivi il codice che trovi sull'etichetta della centralina." }, { status: 400 });
+  const img = body.immagine && typeof body.immagine.data === "string" && ["image/jpeg", "image/png", "image/webp"].includes(body.immagine.tipo)
+    ? { data: String(body.immagine.data), tipo: String(body.immagine.tipo) } : undefined;
+  if (img && img.data.length > 4_000_000) return NextResponse.json({ errore: "La foto è troppo grande. Riprova." }, { status: 400 });
+  let chiave = q.toUpperCase().replace(/[^A-Z0-9]/g, "");
+  if (!img && chiave.length < 4) return NextResponse.json({ errore: "Scrivi il codice che trovi sull'etichetta della centralina." }, { status: 400 });
 
   const admin = supabaseAdmin();
   const { data: imp } = await admin.from("impostazioni").select("*").eq("id", 1).single();
-  const pagina = await paginaPerChiave(chiave);
+  const pagina = chiave ? await paginaPerChiave(chiave) : null;
   const linkPagina = pagina?.stato === "pubblicata" ? pagina.slug : null;
 
-  // 1. Cache: stessa centralina cercata nelle ultime 2 settimane (dall'app o dal sito)
+  // 1. Cache: stessa centralina cercata nelle ultime 2 settimane (dall'app o dal sito); con la foto si analizza sempre
   const da = new Date(Date.now() - 14 * 864e5).toISOString();
-  const { data: c } = await admin.from("ricerche").select("risultato").eq("chiave", chiave).eq("risultato->>v", "3").gte("creato_il", da).order("creato_il", { ascending: false }).limit(1).maybeSingle();
+  const { data: c } = img ? { data: null } : await admin.from("ricerche").select("risultato").eq("chiave", chiave).eq("risultato->>v", "3").gte("creato_il", da).order("creato_il", { ascending: false }).limit(1).maybeSingle();
   if (c?.risultato) {
     const r = await completa(admin, c.risultato as RisultatoCerca, imp as Impostazioni, q, false);
     return NextResponse.json(pubblico(r, linkPagina));
@@ -61,15 +64,17 @@ export async function POST(request: Request) {
 
   // 3. Ricerca nuova
   try {
-    const grezzo = await cercaCentralina(q, undefined, await fontiPreferite(admin));
-    await admin.from("ricerche").insert({ chiave, risultato: grezzo, ip_hash: ipHash, origine: "sito" });
-    const r = await completa(admin, grezzo, imp as Impostazioni, q, true);
+    const grezzo = await cercaCentralina(q, img, await fontiPreferite(admin));
+    if (img && !chiave) chiave = (grezzo.codici?.[0] ?? "").toUpperCase().replace(/[^A-Z0-9]/g, "");
+    const codiceLetto = q || grezzo.codici?.[0] || "";
+    await admin.from("ricerche").insert({ chiave: chiave || null, risultato: grezzo, ip_hash: ipHash, origine: "sito" });
+    const r = await completa(admin, grezzo, imp as Impostazioni, codiceLetto, true);
     // Una centralina nuova trovata dal sito diventa una bozza del catalogo, da controllare e pubblicare
     if (r.trovata && !pagina) {
-      const b = await creaDaRisultato(grezzo, q, chiave).catch(() => null);
-      if (b && "slug" in b && b.slug) await notificaStaff(admin, { per_ruolo: "admin", tipo: "catalogo", titolo: "Nuova bozza nel catalogo", testo: `Cercata dal sito: ${q}. Controllala e pubblicala.`, link: `/lab/sito/centralina/${b.slug}` });
+      const b = chiave.length >= 4 ? await creaDaRisultato(grezzo, codiceLetto, chiave).catch(() => null) : null;
+      if (b && "slug" in b && b.slug) await notificaStaff(admin, { per_ruolo: "admin", tipo: "catalogo", titolo: "Nuova bozza nel catalogo", testo: `Cercata dal sito: ${codiceLetto}. Controllala e pubblicala.`, link: `/lab/sito/centralina/${b.slug}` });
     }
-    return NextResponse.json(pubblico(r, linkPagina));
+    return NextResponse.json({ ...pubblico(r, linkPagina), codice: codiceLetto });
   } catch (e) {
     console.error("cerca-pubblica", e);
     await admin.from("ricerche").insert({ chiave: null, risultato: null, ip_hash: ipHash, origine: "sito" });
