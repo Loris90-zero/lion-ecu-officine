@@ -17,7 +17,7 @@ function pubblico(r: RisultatoCerca, pagina: string | null) {
     trovata: r.trovata, marca: r.marca, modello: r.modello, tipo: r.tipo, famiglia: r.famiglia,
     codici: (r.codici ?? []).slice(0, 4), veicoli: (r.veicoli ?? []).slice(0, 8),
     problemi_comuni: (r.problemi_comuni ?? []).slice(0, 5),
-    prezzo: r.prezzo ? { base: r.prezzo.base, prezzo: r.prezzo.prezzo, risparmio: r.prezzo.risparmio } : null,
+    prezzo: r.prezzo ? { base: r.prezzo.base, prezzo: r.prezzo.prezzo, risparmio: r.prezzo.risparmio, nomeFascia: r.prezzo.nomeFascia, da: r.prezzo.da } : null,
     generico: r.generico ?? false, pagina,
   };
 }

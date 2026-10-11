@@ -4,7 +4,7 @@ import { Wa } from "@/sito/Whatsapp";
 
 type R = {
   trovata: boolean; marca?: string; modello?: string; tipo?: string; famiglia?: string; codici: string[]; veicoli: string[];
-  problemi_comuni: { problema: string; sintomi?: string }[]; prezzo: { base: number; prezzo: number; risparmio: number } | null;
+  problemi_comuni: { problema: string; sintomi?: string }[]; prezzo: { base: number; prezzo: number; risparmio: number; nomeFascia?: string; da?: boolean } | null;
   generico: boolean; pagina: string | null;
 };
 const eur = (n: number) => `${Math.round(n).toLocaleString("it-IT")} €`;
@@ -64,8 +64,9 @@ export function Risultato({ q, base, app }: { q: string; base: string; app: stri
 
         <div className="pv-prezzi">
           <div className="pv-nostro">
-            <span>Riparazione EcuLion</span>
-            {r.prezzo ? <b>{eur(r.prezzo.prezzo)}<small> + IVA</small></b> : <b className="pv-richiesta">Prezzo dopo la diagnosi gratuita</b>}
+            <span>Riparazione EcuLion{r.prezzo?.nomeFascia ? ` · ${r.prezzo.nomeFascia}` : ""}</span>
+            {r.prezzo ? <b>{r.prezzo.da ? <small>da </small> : null}{eur(r.prezzo.prezzo)}<small> + IVA</small></b> : <b className="pv-richiesta">Prezzo dopo la diagnosi gratuita</b>}
+            {r.prezzo && !r.prezzo.da ? <em className="pv-fisso">Prezzo fisso</em> : null}
           </div>
           {r.prezzo?.base ? (
             <div className="pv-nuova">
@@ -84,7 +85,7 @@ export function Risultato({ q, base, app }: { q: string; base: string; app: stri
           <li>Paghi solo se è riparabile</li>
           <li>Garanzia a vita sul guasto</li>
         </ul>
-        <p className="pv-nota">Prezzo indicativo: lo conferma il tecnico dopo la diagnosi gratuita. Se cambia decidi tu, e se non procedi te la rispediamo gratis.</p>
+        <p className="pv-nota">{r.prezzo && !r.prezzo.da ? "Prezzo fisso per questo tipo di centralina. La diagnosi gratuita verifica che sia riparabile: se non lo è, non paghi niente e te la rispediamo gratis." : "Prezzo indicativo: lo conferma il tecnico dopo la diagnosi gratuita. Se cambia decidi tu, e se non procedi te la rispediamo gratis."}</p>
       </div>
 
       {r.problemi_comuni.length || r.veicoli.length ? (

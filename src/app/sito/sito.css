@@ -204,3 +204,28 @@
 .pv-altro label{font-weight:600}
 .pv-altro div{display:flex;gap:8px}
 .pv-altro input{flex:1;min-width:0;font-size:18px;padding:12px 14px;border-radius:6px;border:1.5px solid #9aa6b2}
+
+/* Listino a fasce */
+.s-fasce{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+.s-fascia{background:var(--bi);border:2px solid var(--as);border-radius:10px;padding:20px 20px 18px;display:flex;flex-direction:column;gap:6px}
+.s-fascia:last-child{background:var(--as);color:#fff}
+.s-fascia:last-child p,.s-fascia:last-child .s-fascia-nome{color:#cfcdc6}
+.s-fascia-nome{font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gr)}
+.s-fascia b{font-family:var(--fh);font-size:clamp(40px,6vw,56px);line-height:1}
+.s-fascia b small{font-family:var(--fb);font-size:16px;font-weight:600;opacity:.75}
+.s-fascia p{margin:0;font-size:15px;color:var(--ac)}
+.pv-fisso{display:inline-block;font-style:normal;font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--gr);margin-top:4px}
+
+/* Hero: su telefono il codice subito sotto il titolo */
+.s-hero .s-hero-grid{display:grid;grid-template-columns:1.1fr .9fr;grid-template-areas:"testa targa" "resto targa";gap:24px 56px;align-items:start}
+.s-hero-grid .s-h-testa{grid-area:testa;display:flex;flex-direction:column;gap:18px}
+.s-hero-grid .s-h-targa{grid-area:targa;align-self:center}
+.s-hero-grid .s-h-resto{grid-area:resto;display:flex;flex-direction:column;gap:22px}
+@media (max-width:900px){
+  .s-hero{padding:28px 0 56px}
+  .s-hero .s-hero-grid{grid-template-columns:1fr;grid-template-areas:"testa" "targa" "resto";gap:22px}
+  .s-hero-grid .s-h1{font-size:clamp(30px,8.4vw,44px)}
+  .s-hero-grid .s-target{font-size:15px}
+  .s-hero-grid .s-targa{padding:22px 20px 18px}
+  .s-hero-grid .s-targa-riga{margin-bottom:12px}
+}

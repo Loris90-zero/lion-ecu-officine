@@ -31,7 +31,7 @@ export type RisultatoCerca = {
   altri_prezzi: { prezzo_eur: number; condizione?: string; venditore?: string; url: string; valuta?: string; prezzo_originale?: number }[];
   fonti: { titolo?: string; url: string }[];
   note?: string;
-  prezzo?: { base: number; prezzo: number; risparmio: number } | null;
+  prezzo?: { base: number; prezzo: number; risparmio: number; fascia?: number; nomeFascia?: string; categoria?: string; da?: boolean } | null;
   dallaCache?: boolean;
   v?: number;
   generico?: boolean;

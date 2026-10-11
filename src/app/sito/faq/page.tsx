@@ -7,7 +7,7 @@ const pct = (n: number) => `${Math.round(Number(n) * 100)}%`;
 export default async function Faq() {
   const p = await parametriPubblici();
   const faq = [
-    ["Quanto costa una riparazione?", `Il preventivo lo vedi subito, scrivendo il codice della centralina. Di solito è circa il ${pct(p.percentuale)} del prezzo di una centralina nuova, con un minimo di ${Math.round(p.minimo_eur)} € + IVA. Il prezzo lo vedi nell'app prima di spedire e il tecnico lo conferma dopo la diagnosi.`],
+    ["Quanto costa una riparazione?", `Il prezzo dipende dal tipo di centralina ed è ${p.prezzo_da ? "a partire da" : "fisso"}: ${p.fasce.map((f) => `${f.prezzo} € + IVA per ${f.descrizione.charAt(0).toLowerCase()}${f.descrizione.slice(1)}`).join("; ")}. Scrivendo il codice vedi subito quanto costa la tua. La diagnosi è gratuita: se non è riparabile non paghi niente.`],
     ["Il ritiro e la diagnosi si pagano?", "No. Ritiro, diagnosi e rispedizione sono gratuiti. Paghi solo se la centralina è riparabile."],
     ["E se la centralina non è riparabile?", "Te la rispediamo gratis, senza nessun costo."],
     ["Quanto tempo ci vuole?", "Di solito 3 giorni dal ritiro alla riconsegna: 24 ore per il ritiro, 24 ore per diagnosi e riparazione, 24 ore per la riconsegna. Se servono componenti particolari da ordinare, i tempi possono allungarsi e ti avvisiamo prima di procedere."],

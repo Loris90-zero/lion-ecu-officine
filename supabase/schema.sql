@@ -62,6 +62,9 @@ create table if not exists public.impostazioni (
   cambio_usd numeric not null default 0.90,
   cambio_gbp numeric not null default 1.15,
   soglia_anomali numeric not null default 0.40,
+  -- prezzo della riparazione a fasce (per tipo di centralina); percentuale resta solo come riferimento storico
+  fasce jsonb not null default '[{"n":1,"nome":"Fascia 1","prezzo":300,"descrizione":"Centraline piccole: cruscotti, body controller, moduli e quadri minori","categorie":["cruscotto","carrozzeria"]},{"n":2,"nome":"Fascia 2","prezzo":450,"descrizione":"Centraline medie: freni EBS e ABS, cambio, sospensioni, idraulica","categorie":["freni","cambio","sospensioni","idraulica","altro"]},{"n":3,"nome":"Fascia 3","prezzo":600,"descrizione":"Centraline motore di camion, bus e macchine movimento terra","categorie":["motore"]}]',
+  prezzo_da boolean not null default false,   -- true = "da X €" (può salire dopo la diagnosi), false = prezzo fisso
   aggiornato_il timestamptz not null default now()
 );
 insert into public.impostazioni (id) values (1) on conflict do nothing;

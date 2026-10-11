@@ -5,6 +5,8 @@ import { parametriPubblici } from "@/sito/dati";
 import { Targa } from "./Targa";
 import { FormFlotta } from "./flotte/FormFlotta";
 import { CtaPartner } from "./CtaPartner";
+import { Fasce } from "./Fasce";
+import { daA } from "@/sito/dati";
 
 export const revalidate = 3600;
 
@@ -12,11 +14,14 @@ const pct = (n: number) => `${Math.round(Number(n) * 100)}%`;
 
 export default async function Home() {
   const p = await parametriPubblici();
+  const { min, max } = daA(p.fasce);
   const faq = [
     ["E se si guasta di nuovo?", "Se si ripresenta lo stesso guasto, la ripariamo di nuovo. La garanzia sul guasto riparato è a vita."],
     ["Quanto resta fermo il mezzo?", "Di solito 3 giorni dal ritiro alla riconsegna. Se servono componenti particolari da ordinare, ti avvisiamo prima di procedere."],
     ["Come la spedisco?", "Non devi organizzare niente: prenoti il ritiro dall'app e il corriere passa da te. Basta imballarla bene."],
-    ["Il prezzo può cambiare?", "Il tecnico lo conferma dopo la diagnosi gratuita. Se cambia, decidi tu: se non procedi, te la rispediamo gratis."],
+    p.prezzo_da
+      ? ["Il prezzo può cambiare?", "Il tecnico lo conferma dopo la diagnosi gratuita. Se cambia, decidi tu: se non procedi, te la rispediamo gratis."]
+      : ["Il prezzo può cambiare?", "No. Il prezzo della fascia è fisso e lo vedi prima di spedire. La diagnosi gratuita serve a verificare che sia riparabile: se non lo è, non paghi niente e te la rispediamo gratis."],
   ];
   const ld = { "@context": "https://schema.org", "@type": "FAQPage", mainEntity: faq.map(([q, a]) => ({ "@type": "Question", name: q, acceptedAnswer: { "@type": "Answer", text: a } })) };
 
@@ -26,11 +31,14 @@ export default async function Home() {
 
       {/* 1. Apertura: target e preventivo immediato */}
       <section className="s-hero">
-        <div className="s-wrap">
-          <div className="s-hero-testo">
+        <div className="s-wrap s-hero-grid">
+          <div className="s-h-testa">
             <p className="s-target">Per meccanici, meccatronici e proprietari di flotte di mezzi pesanti</p>
             <h1 className="s-h1">Scrivi il codice della centralina. In un minuto sai quanto costa ripararla.</h1>
-            <p className="s-lead">Di solito circa un terzo del prezzo del nuovo. Ritiro gratis, diagnosi gratis, e paghi solo se è riparabile.</p>
+          </div>
+          <div className="s-h-targa"><Targa /></div>
+          <div className="s-h-resto">
+            <p className="s-lead" style={{ margin: 0 }}>Prezzo {p.prezzo_da ? "chiaro" : "fisso"} per tipo di centralina, da {min} € + IVA. Ritiro gratis, diagnosi gratis, e paghi solo se è riparabile.</p>
             <ul className="s-garanzie">
               <li>Ritiro gratuito</li>
               <li>Paghi solo se è riparabile</li>
@@ -38,7 +46,6 @@ export default async function Home() {
             </ul>
             <CtaPartner />
           </div>
-          <Targa />
         </div>
       </section>
 
@@ -50,20 +57,33 @@ export default async function Home() {
           </div>
           <div className="s-confronto" role="table" aria-label="Centralina nuova o riparazione">
             <div role="row" className="s-c-testa"><span role="columnheader" /><span role="columnheader">Centralina nuova</span><span role="columnheader">Riparazione EcuLion</span></div>
-            <div role="row"><span role="rowheader">Prezzo</span><span role="cell">1.500 €</span><span role="cell"><b>500 €</b></span></div>
+            <div role="row"><span role="rowheader">Prezzo</span><span role="cell">1.500 €</span><span role="cell"><b>{max} € {p.prezzo_da ? "circa" : "fisso"}</b></span></div>
             <div role="row"><span role="rowheader">Tempi</span><span role="cell">quando arriva il ricambio</span><span role="cell"><b>3 giorni</b></span></div>
             <div role="row"><span role="rowheader">Garanzia</span><span role="cell">quella del ricambio</span><span role="cell"><b>a vita sul guasto riparato</b></span></div>
           </div>
-          <p className="s-muted" style={{ fontSize: 14, marginTop: 10 }}>Esempio indicativo. Il prezzo vero della tua centralina lo vedi scrivendo il codice.</p>
+          <p className="s-muted" style={{ fontSize: 14, marginTop: 10 }}>Esempio indicativo con una centralina motore. Il prezzo della tua lo vedi scrivendo il codice.</p>
           <div className="s-due" style={{ marginTop: 40 }}>
             <p className="s-h3" style={{ fontSize: 40 }}>Quale sceglierà?</p>
             <div>
-              <p className="s-lead" style={{ marginTop: 0 }}>Il cliente risparmia mille euro e riparte prima. Tu non perdi il lavoro: smonti, rimonti e il margine resta tuo. Noi ripariamo, e il mezzo torna a lavorare.</p>
+              <p className="s-lead" style={{ marginTop: 0 }}>Il cliente risparmia centinaia di euro e riparte prima. Tu non perdi il lavoro: smonti, rimonti e il margine resta tuo. Noi ripariamo, e il mezzo torna a lavorare.</p>
               <p style={{ fontWeight: 600, fontSize: 19 }}>Vincono tutti, e il cliente si ricorda chi gli ha fatto risparmiare.</p>
               <a className="s-btn s-btn-p" href="#preventivo">Calcola il preventivo per il tuo cliente</a>
               <Wa testo="Ciao EcuLion, ho un cliente con una centralina guasta: vorrei un preventivo." />
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* 2b. Listino a fasce */}
+      <section className="s-sez" id="prezzi">
+        <div className="s-wrap">
+          <div className="s-testa">
+            <h2 className="s-h2">Tre prezzi. Chiari, uguali per tutti.</h2>
+            <p className="s-lead">Il prezzo dipende solo dal tipo di centralina. Scrivi il codice e ti diciamo subito in che fascia è.</p>
+          </div>
+          <Fasce fasce={p.fasce} da={p.prezzo_da} />
+          <p className="s-muted" style={{ fontSize: 14, marginTop: 12 }}>Prezzi IVA esclusa. Ritiro, diagnosi e rispedizione sono sempre gratis. Le officine partner hanno in più il {pct(p.sconto_partner)} o il {pct(p.sconto_gold)} di sconto.</p>
+          <div className="s-azioni" style={{ marginTop: 20 }}><a className="s-btn s-btn-p" href="#preventivo">Scopri la fascia della tua centralina</a><Wa testo="Ciao EcuLion, vorrei sapere in che fascia è la mia centralina." /></div>
         </div>
       </section>
 

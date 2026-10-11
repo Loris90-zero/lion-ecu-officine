@@ -1,14 +1,18 @@
 import "server-only";
 import { supabaseAdmin } from "@/lib/supabase/admin";
+import { fasceDa, FASCE_PREDEFINITE, type Fascia } from "@/lib/prezzo";
+
+export const daA = (f: Fascia[]) => ({ min: Math.min(...f.map((x) => x.prezzo)), max: Math.max(...f.map((x) => x.prezzo)) });
 
 /** Letture pubbliche del sito: solo contenuti pubblicati e parametri non riservati. */
-type Parametri = { percentuale: number; minimo_eur: number; fedelta_mesi: number; soglia_partner_eur: number; sconto_partner: number; soglia_gold_eur: number; sconto_gold: number };
-const PREDEFINITI: Parametri = { percentuale: 0.35, minimo_eur: 150, fedelta_mesi: 12, soglia_partner_eur: 3000, sconto_partner: 0.1, soglia_gold_eur: 6000, sconto_gold: 0.15 };
+type Parametri = { fasce: Fascia[]; prezzo_da: boolean; fedelta_mesi: number; soglia_partner_eur: number; sconto_partner: number; soglia_gold_eur: number; sconto_gold: number };
+const PREDEFINITI: Parametri = { fasce: FASCE_PREDEFINITE, prezzo_da: false, fedelta_mesi: 12, soglia_partner_eur: 3000, sconto_partner: 0.1, soglia_gold_eur: 6000, sconto_gold: 0.15 };
 
 export async function parametriPubblici(): Promise<Parametri> {
   try {
-    const { data } = await supabaseAdmin().from("impostazioni").select("percentuale, minimo_eur, fedelta_mesi, soglia_partner_eur, sconto_partner, soglia_gold_eur, sconto_gold").eq("id", 1).single();
-    return (data as Parametri | null) ?? PREDEFINITI;
+    const { data } = await supabaseAdmin().from("impostazioni").select("fasce, prezzo_da, fedelta_mesi, soglia_partner_eur, sconto_partner, soglia_gold_eur, sconto_gold").eq("id", 1).single();
+    if (!data) return PREDEFINITI;
+    return { ...(data as Omit<Parametri, "fasce">), fasce: fasceDa((data as { fasce: unknown }).fasce) };
   } catch { return PREDEFINITI; }
 }
 

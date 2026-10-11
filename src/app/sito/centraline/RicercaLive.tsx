@@ -4,7 +4,7 @@ import { Wa } from "@/sito/Whatsapp";
 
 type R = {
   trovata: boolean; marca?: string; modello?: string; tipo?: string; famiglia?: string; codici: string[]; veicoli: string[];
-  problemi_comuni: { problema: string; sintomi?: string }[]; prezzo: { base: number; prezzo: number; risparmio: number } | null;
+  problemi_comuni: { problema: string; sintomi?: string }[]; prezzo: { base: number; prezzo: number; risparmio: number; nomeFascia?: string; da?: boolean } | null;
   generico: boolean; pagina: string | null; errore?: string; limite?: boolean;
 };
 const eur = (n: number) => `${Math.round(n).toLocaleString("it-IT")} €`;

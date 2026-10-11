@@ -157,7 +157,7 @@ export function percorri(input: Risposte) {
 }
 
 const LEVA: Record<string, string> = {
-  prezzo: "Prezzo: circa un terzo del nuovo", tempi: "Tempi: 3 giorni dal ritiro alla riconsegna", garanzia: "Garanzia a vita con certificato verificabile",
+  prezzo: "Prezzo: fisso per tipo di centralina, lo sai subito", tempi: "Tempi: 3 giorni dal ritiro alla riconsegna", garanzia: "Garanzia a vita con certificato verificabile",
   preventivo: "Preventivo immediato dal codice", ritiro: "Ritiro e rispedizione gratuiti", supporto: "Un tecnico di riferimento", app: "Tutto dall'app",
 };
 const etichetta = (id: string, v: string) => NODI[id]?.opzioni.find((o) => o.v === v)?.t ?? v;
@@ -186,7 +186,7 @@ export function valuta(r: Risposte) {
   // Opportunità: come lavorano oggi
   if (r.oggi === "terzi") {
     s += 18;
-    if (r.terzi_chi === "ufficiale") { s += 7; leve.unshift("Passano dalla rete ufficiale: punta su prezzo (circa un terzo del nuovo) e tempi (3 giorni)"); }
+    if (r.terzi_chi === "ufficiale") { s += 7; leve.unshift("Passano dalla rete ufficiale: punta su prezzo fisso (molto meno del nuovo) e tempi (3 giorni)"); }
     if (r.terzi_voto === "male") s += 5; else if (r.terzi_voto === "cosi") s += 3; else if (r.terzi_voto === "bene") s -= 3;
     for (const p of lista("terzi_problema", r)) note.push(`Problema con l'attuale: ${etichetta("terzi_problema", p).toLowerCase()}`);
   } else if (r.oggi === "nuova") {

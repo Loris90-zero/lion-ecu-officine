@@ -17,7 +17,7 @@ export default async function ImpostazioniLab() {
       <h1>Impostazioni</h1>
       <div className="box">
         <h2>Prezzo della riparazione</h2>
-        <p className="muted" style={{ fontSize: 14 }}>Il prezzo che l&apos;officina vede nella ricerca è una percentuale del prezzo della centralina nuova trovato online.</p>
+        <p className="muted" style={{ fontSize: 14 }}>Ogni tipo di centralina sta in una fascia con un prezzo. L&apos;AI riconosce il tipo dal codice e l&apos;officina vede subito il prezzo della sua fascia.</p>
         <FormImpostazioni imp={imp as Impostazioni} />
       </div>
       <div className="box">

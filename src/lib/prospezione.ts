@@ -77,7 +77,7 @@ export async function bozzaSequenza(target: string, idea: string): Promise<Passo
       role: "user",
       content: `Scrivi una sequenza di 4 email commerciali B2B in italiano per EcuLion, laboratorio di Montesilvano che ripara centraline elettroniche di mezzi pesanti, macchine da lavoro e barche.
 Destinatari: ${CATEGORIE[target] ?? CATEGORIE.officine}.
-Punti di forza veri (non inventarne altri, niente numeri o testimonianze inventate): preventivo immediato dal codice della centralina sul sito eculion.it; riparazione di solito circa un terzo del prezzo del nuovo; ritiro e rispedizione gratuiti; diagnosi gratuita, paghi solo se è riparabile; garanzia a vita sul guasto riparato con certificato; circa 3 giorni tra ritiro e riconsegna; laboratorio guidato da Alex Chiriak, oltre 6 anni di esperienza; programma partner con sconti 10% e 15%.
+Punti di forza veri (non inventarne altri, niente numeri o testimonianze inventate): preventivo immediato dal codice della centralina sul sito eculion.it; prezzo fisso per tipo di centralina, da 300 a 600 € + IVA, di solito molto meno della centralina nuova; ritiro e rispedizione gratuiti; diagnosi gratuita, paghi solo se è riparabile; garanzia a vita sul guasto riparato con certificato; circa 3 giorni tra ritiro e riconsegna; laboratorio guidato da Alex Chiriak, oltre 6 anni di esperienza; programma partner con sconti 10% e 15%.
 ${idea ? `Indicazioni del titolare: ${idea.slice(0, 500)}` : ""}
 Regole: email brevi (massimo 90 parole), tono diretto da officina a officina, una sola richiesta per email, niente punti esclamativi a raffica. Usa {nome} per il nome dell'attività e {citta} per la città. Non aggiungere firma né link di disiscrizione: li aggiunge il sistema.
 Giorni consigliati: 0, 3, 7, 14.

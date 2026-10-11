@@ -1,36 +1,55 @@
 "use client";
-import { useActionState, useState } from "react";
+import { useActionState } from "react";
 import { salvaImpostazioni, aggiungiStaff, salvaFedelta, type StatoLab } from "../azioni";
 import type { RegoleFedelta } from "@/lib/fedelta";
-import { calcolaPrezzo, type Impostazioni } from "@/lib/prezzo";
+import { fasceDa, FASCE_PREDEFINITE, CATEGORIE_CENTRALINA, type Categoria, type Impostazioni } from "@/lib/prezzo";
 import { eur } from "@/lib/fasi";
 
 export function FormImpostazioni({ imp }: { imp: Impostazioni }) {
   const [stato, azione, inCorso] = useActionState<StatoLab, FormData>(salvaImpostazioni, {});
-  const [v, setV] = useState({ percentuale: Math.round(Number(imp.percentuale) * 100), minimo_eur: Number(imp.minimo_eur), arrotonda_eur: Number(imp.arrotonda_eur), base: imp.base });
-  const esempio = calcolaPrezzo([1200, 1490, 1900], { percentuale: v.percentuale / 100, minimo_eur: v.minimo_eur, arrotonda_eur: v.arrotonda_eur, base: v.base });
+  const fasce = fasceDa(imp.fasce);
+  const righe = fasce.length < 3 ? [...fasce, ...FASCE_PREDEFINITE.slice(fasce.length)] : fasce;
   return (
     <form action={azione}>
-      <div className="grid2">
-        <div className="field"><label htmlFor="percentuale">Percentuale sul nuovo (%)</label><input id="percentuale" name="percentuale" inputMode="decimal" value={v.percentuale} onChange={(e) => setV({ ...v, percentuale: Number(e.target.value) })} /></div>
-        <div className="field"><label htmlFor="minimo_eur">Prezzo minimo (€)</label><input id="minimo_eur" name="minimo_eur" inputMode="decimal" value={v.minimo_eur} onChange={(e) => setV({ ...v, minimo_eur: Number(e.target.value) })} /></div>
-      </div>
-      <div className="grid2">
-        <div className="field"><label htmlFor="arrotonda_eur">Arrotonda a (€)</label><input id="arrotonda_eur" name="arrotonda_eur" inputMode="decimal" value={v.arrotonda_eur} onChange={(e) => setV({ ...v, arrotonda_eur: Number(e.target.value) })} /></div>
-        <div className="field"><label htmlFor="base">Prezzo del nuovo da usare</label>
-          <select id="base" name="base" value={v.base} onChange={(e) => setV({ ...v, base: e.target.value as Impostazioni["base"] })}>
-            <option value="mediana">Valore centrale tra quelli trovati</option>
-            <option value="minimo">Il più basso trovato</option>
-            <option value="massimo">Il più alto trovato</option>
-          </select>
+      <input type="hidden" name="n_fasce" value={righe.length} />
+      {righe.map((f, i) => (
+        <fieldset key={i} className="box" style={{ gap: 8 }}>
+          <div className="grid2">
+            <div className="field"><label htmlFor={`f_nome_${i}`}>Nome</label><input id={`f_nome_${i}`} name={`f_nome_${i}`} defaultValue={f.nome} /></div>
+            <div className="field"><label htmlFor={`f_prezzo_${i}`}>Prezzo (€ + IVA)</label><input id={`f_prezzo_${i}`} name={`f_prezzo_${i}`} inputMode="decimal" defaultValue={f.prezzo} /></div>
+          </div>
+          <div className="field"><label htmlFor={`f_desc_${i}`}>Cosa comprende (lo vede il cliente)</label><input id={`f_desc_${i}`} name={`f_desc_${i}`} defaultValue={f.descrizione} /></div>
+          <div className="chips" role="group" aria-label={`Tipi di centralina in ${f.nome}`} style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+            {(Object.keys(CATEGORIE_CENTRALINA) as Categoria[]).map((c) => (
+              <label key={c} className="hint" style={{ display: "flex", gap: 6, alignItems: "center", border: "1px solid var(--line)", borderRadius: 99, padding: "4px 10px" }}>
+                <input type="checkbox" name={`f_cat_${i}`} value={c} defaultChecked={f.categorie.includes(c)} />{CATEGORIE_CENTRALINA[c]}
+              </label>
+            ))}
+          </div>
+        </fieldset>
+      ))}
+      <label className="hint" style={{ display: "flex", gap: 8, alignItems: "center", fontSize: 14 }}>
+        <input type="checkbox" name="prezzo_da" defaultChecked={!!imp.prezzo_da} />
+        Mostra il prezzo come «da … €» (può salire dopo la diagnosi). Senza spunta è un prezzo fisso.
+      </label>
+      <details>
+        <summary className="hint">Confronto con il prezzo del nuovo</summary>
+        <div className="grid2" style={{ marginTop: 10 }}>
+          <div className="field"><label htmlFor="base">Prezzo del nuovo da mostrare</label>
+            <select id="base" name="base" defaultValue={imp.base}>
+              <option value="mediana">Valore centrale tra quelli trovati</option>
+              <option value="minimo">Il più basso trovato</option>
+              <option value="massimo">Il più alto trovato</option>
+            </select>
+          </div>
+          <div className="field"><label htmlFor="soglia_anomali">Escludi i «nuovi» sotto questa % del più caro</label><input id="soglia_anomali" name="soglia_anomali" inputMode="decimal" defaultValue={Math.round(Number(imp.soglia_anomali ?? 0.4) * 100)} /></div>
         </div>
-      </div>
-      <div className="grid2">
-        <div className="field"><label htmlFor="cambio_usd">1 dollaro in euro</label><input id="cambio_usd" name="cambio_usd" inputMode="decimal" defaultValue={Number(imp.cambio_usd ?? 0.9)} /></div>
-        <div className="field"><label htmlFor="cambio_gbp">1 sterlina in euro</label><input id="cambio_gbp" name="cambio_gbp" inputMode="decimal" defaultValue={Number(imp.cambio_gbp ?? 1.15)} /></div>
-      </div>
-      <div className="field"><label htmlFor="soglia_anomali">Escludi i &quot;nuovi&quot; sotto questa % del nuovo più caro trovato</label><input id="soglia_anomali" name="soglia_anomali" inputMode="decimal" defaultValue={Math.round(Number(imp.soglia_anomali ?? 0.4) * 100)} /><span className="hint">Serve a scartare usati o compatibili classificati male come nuovi.</span></div>
-      {esempio ? <p className="hint">Esempio: con prezzi del nuovo a 1.200, 1.490 e 1.900 € la riparazione costa {eur(esempio.prezzo)} (risparmio {esempio.risparmio}%).</p> : null}
+        <div className="grid2">
+          <div className="field"><label htmlFor="cambio_usd">1 dollaro in euro</label><input id="cambio_usd" name="cambio_usd" inputMode="decimal" defaultValue={Number(imp.cambio_usd ?? 0.9)} /></div>
+          <div className="field"><label htmlFor="cambio_gbp">1 sterlina in euro</label><input id="cambio_gbp" name="cambio_gbp" inputMode="decimal" defaultValue={Number(imp.cambio_gbp ?? 1.15)} /></div>
+        </div>
+        <p className="hint">Il prezzo del nuovo trovato online serve solo a mostrare al cliente quanto risparmia.</p>
+      </details>
       {stato.errore ? <p className="err">{stato.errore}</p> : null}
       {stato.ok ? <p className="okmsg">{stato.ok}</p> : null}
       <button className="btn btn-primary" type="submit" disabled={inCorso}>Salva</button>

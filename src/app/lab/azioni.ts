@@ -1,4 +1,5 @@
 "use server";
+import { CATEGORIE_CENTRALINA, type Categoria, type Fascia } from "@/lib/prezzo";
 import { revalidatePath } from "next/cache";
 import { richiediStaff, richiediAdmin } from "@/lib/sessione";
 import { livelloOfficina, scontato } from "@/lib/fedelta";
@@ -43,22 +44,31 @@ export async function aggiornaPratica(_: StatoLab, fd: FormData): Promise<StatoL
 export async function salvaImpostazioni(_: StatoLab, fd: FormData): Promise<StatoLab> {
   const { sb } = await richiediAdmin();
   const n = (k: string) => Number(String(fd.get(k) ?? "").replace(",", "."));
-  const percentuale = n("percentuale") / 100;
-  const minimo_eur = n("minimo_eur");
-  const arrotonda_eur = n("arrotonda_eur");
-  const base = String(fd.get("base"));
+  const base = String(fd.get("base") ?? "mediana");
   const cambio_usd = n("cambio_usd");
   const cambio_gbp = n("cambio_gbp");
   const soglia_anomali = n("soglia_anomali") / 100;
   if (!(cambio_usd > 0) || !(cambio_gbp > 0)) return { errore: "Controlla i cambi di dollaro e sterlina." };
   if (!(soglia_anomali >= 0 && soglia_anomali < 1)) return { errore: "La soglia dei prezzi anomali deve essere tra 0 e 99." };
-  if (!(percentuale > 0 && percentuale < 1)) return { errore: "La percentuale deve essere tra 1 e 99." };
-  if (!(minimo_eur >= 0) || !(arrotonda_eur >= 1)) return { errore: "Controlla minimo e arrotondamento." };
   if (!["mediana", "minimo", "massimo"].includes(base)) return { errore: "Base non valida." };
-  const { error } = await sb.from("impostazioni").update({ percentuale, minimo_eur, arrotonda_eur, base, cambio_usd, cambio_gbp, soglia_anomali, aggiornato_il: new Date().toISOString() }).eq("id", 1);
+  const quante = Math.min(5, Math.max(1, n("n_fasce") || 3));
+  const usate = new Set<string>();
+  const fasce: Fascia[] = [];
+  for (let i = 0; i < quante; i++) {
+    const prezzo = n(`f_prezzo_${i}`);
+    if (!(prezzo > 0)) continue;
+    const categorie = fd.getAll(`f_cat_${i}`).map(String).filter((c): c is Categoria => c in CATEGORIE_CENTRALINA && !usate.has(c));
+    categorie.forEach((c) => usate.add(c));
+    fasce.push({ n: fasce.length + 1, nome: String(fd.get(`f_nome_${i}`) ?? "").trim().slice(0, 40) || `Fascia ${fasce.length + 1}`, prezzo: Math.round(prezzo), descrizione: String(fd.get(`f_desc_${i}`) ?? "").trim().slice(0, 160), categorie });
+  }
+  if (!fasce.length) return { errore: "Serve almeno una fascia con un prezzo." };
+  const mancano = (Object.keys(CATEGORIE_CENTRALINA) as Categoria[]).filter((c) => !usate.has(c));
+  if (mancano.length) return { errore: `Metti in una fascia anche: ${mancano.map((c) => CATEGORIE_CENTRALINA[c]).join(", ")}.` };
+  const { error } = await sb.from("impostazioni").update({ fasce, prezzo_da: fd.get("prezzo_da") === "on", base, cambio_usd, cambio_gbp, soglia_anomali, aggiornato_il: new Date().toISOString() }).eq("id", 1);
   if (error) return { errore: "Salvataggio non riuscito." };
   revalidatePath("/lab/impostazioni");
-  return { ok: "Impostazioni salvate. Valgono dalla prossima ricerca." };
+  revalidatePath("/sito", "layout");
+  return { ok: "Fasce salvate. Valgono dalla prossima ricerca, anche sul sito." };
 }
 
 export async function salvaFedelta(_: StatoLab, fd: FormData): Promise<StatoLab> {

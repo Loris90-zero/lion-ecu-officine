@@ -7,7 +7,7 @@ Ultimo step, dopo aver finito l'app. Aggiornata ad ogni modifica.
 - [ ] **Notifica di score alto al venditore** assegnato all'officina
 - [ ] **Area venditori** con dashboard personale: le sue officine, chi chiamare, score, provvigioni (50 € per cliente attivato + 5% sui lavori, da confermare)
 - [ ] **Ads automatiche**: libreria creatività per target (Claude scrive i ganci, Canva/Descript fanno grafiche e video), test a budget piccolo, regole giornaliere sui numeri veri (vincenti +20% di budget, perdenti in pausa, nuove varianti delle migliori), tetto giornaliero e mensile, pulsante «ferma tutto», storico azioni + notifica. Da decidere: costo per ritiro massimo (quello della Finanza?), tetto mensile, approvazione creatività, aumenti automatici o con «Approva»
-- [ ] Listino riparazioni per famiglia di centralina (al posto della % sul nuovo): da decidere
+- [x] Prezzi a fasce per tipo di centralina (provvisori 300 / 450 / 600 € + IVA). **Da confermare con Alessandro**: prezzi, cosa va in ogni fascia, prezzo fisso o «da»; si cambiano da Laboratorio → Impostazioni. Rigenerare i prezzi delle pagine catalogo già create
 
 ## Sito eculion.it
 - [ ] **Comprare il dominio** eculion.it (dati della società) e collegarlo a Vercel: eculion.it → sito, app.eculion.it → app

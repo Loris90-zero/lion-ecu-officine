@@ -110,23 +110,23 @@ export function CercaCentralina({ onPrenota, sconto = 0, livello = "Base" }: { o
           <div className="prices">
             <div className="pnew">
               <span className="label">Centralina nuova</span>
-              {r.prezzo ? (
+              {r.prezzo?.base ? (
                 <><b>{eur(r.prezzo.base)}</b><span className="hint">Prezzo indicativo del ricambio nuovo</span></>
               ) : (<><b>—</b><span className="hint">Prezzo del nuovo non disponibile</span></>)}
             </div>
             <div className="prep">
-              <span className="label">Riparazione EcuLion</span>
+              <span className="label">Riparazione EcuLion{r.prezzo?.nomeFascia ? ` · ${r.prezzo.nomeFascia}` : ""}</span>
               {r.prezzo ? (
                 sconto > 0 ? (
-                  <><b>{eur(scontato(r.prezzo.prezzo, sconto))}<span className="iva"> + IVA</span><span className="prezzo-barrato">{eur(r.prezzo.prezzo)}</span></b><span className="save">Il tuo prezzo {livello} (−{pct(sconto)})</span></>
+                  <><b>{r.prezzo.da ? <span className="iva">da </span> : null}{eur(scontato(r.prezzo.prezzo, sconto))}<span className="iva"> + IVA</span><span className="prezzo-barrato">{eur(r.prezzo.prezzo)}</span></b><span className="save">Il tuo prezzo {livello} (−{pct(sconto)})</span></>
                 ) : (
-                  <><b>{eur(r.prezzo.prezzo)}<span className="iva"> + IVA</span></b>{r.prezzo.risparmio > 0 ? <span className="save">Risparmi circa il {r.prezzo.risparmio}%</span> : null}</>
+                  <><b>{r.prezzo.da ? <span className="iva">da </span> : null}{eur(r.prezzo.prezzo)}<span className="iva"> + IVA</span></b>{!r.prezzo.da ? <span className="hint">Prezzo fisso</span> : null}{r.prezzo.risparmio > 0 ? <span className="save">Risparmi circa il {r.prezzo.risparmio}%</span> : null}</>
                 )
               ) : (<><b style={{ fontSize: 20 }}>Su richiesta</b><span className="hint">Il prezzo te lo diamo noi, subito</span></>)}
             </div>
           </div>
           <button className="btn btn-primary btn-block" onClick={() => onPrenota(prefill(r))}>Prenota il ritiro di questa centralina</button>
-          <p className="hint">Prezzo confermato dal tecnico dopo la diagnosi. Paghi solo se la centralina è riparabile, altrimenti te la rispediamo gratis.</p>
+          <p className="hint">{r.prezzo && !r.prezzo.da ? "Prezzo fisso per questo tipo di centralina." : "Prezzo confermato dal tecnico dopo la diagnosi."} Paghi solo se la centralina è riparabile, altrimenti te la rispediamo gratis.</p>
           {r.problemi_comuni.length ? (
             <div className="section" style={{ gap: 8 }}>
               <span className="label">Guasti più comuni</span>
